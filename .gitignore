@@ -31,12 +31,19 @@ temp/
 # Environment files
 .env
 .env.*.local
+.env.local
+.env.development
+.env.production
+.env.test
+.npmrc
 
 # Editor & OS
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+.vs/
+.history/
 *.swp
 *.swo
 *.orig
@@ -46,6 +53,16 @@ data/site-content.backup.json
 data/*.backup.json
 server/public/uploads/
 !server/public/uploads/.gitkeep
+
+# SSL/TLS keys & certs
+*.pem
+*.key
+*.crt
+*.pfx
+
+# Hosting providers
+.vercel/
+.netlify/
 
 # Archives & temp packages
 *.tgz
