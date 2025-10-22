@@ -1,0 +1,381 @@
+{
+  "meta": {
+    "title": "Ojedapreparacion.com",
+    "description": "Bienvenidos a mi pagina oficial"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#fe9200",
+      "accent": "#000000",
+      "text": "#ffffff",
+      "muted": "#111111"
+    },
+    "fonts": {
+      "heading": "Fredoka One, sans-serif",
+      "body": "Poppins, sans-serif"
+    },
+    "background": {
+      "video": "https://storage.coverr.co/videos/p00abr6GU488mPR01MSQH3KW26uwRHLQsh?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6Ijg3NjdFMzIzRjlGQzEzN0E4QTAyIiwiaWF0IjoxNjMyMzQyNTg1fQ.asWBLC_D3_R7tQtMs0aMVJKpQ0yv530eAw2GqMrTEBg",
+      "poster": "https://storage.coverr.co/t/p00abr6GU488mPR01MSQH3KW26uwRHLQsh",
+      "image": "https://images.unsplash.com/photo-1611497855907-4d35287bb9cb?ixid=M3wxMTAwMjh8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NDg0NjgxNjh8&ixlib=rb-4.1.0",
+      "filter": "dark"
+    }
+  },
+  "navigation": [
+    {
+      "pageId": "home",
+      "label": "Sorteo",
+      "path": "/"
+    },
+    {
+      "pageId": "ganadoresanteriores",
+      "label": "ganadores anteriores",
+      "path": "/ganadoresanteriores/"
+    }
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "slug": "",
+      "title": "Sorteo",
+      "hero": {
+        "title": "Ojeda preparacion",
+        "subtitle": "Reserva tu lugar y gana un premio este 31/10",
+        "profileImage": "/uploads/1761115174201_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.png",
+        "bannerImage": "/uploads/hero-banner-home.webp",
+        "buttons": [
+          {
+            "label": "Participar ahora",
+            "href": "https://mpago.la/2qmCYbg"
+          },
+          {
+            "label": "Ver premios",
+            "href": "#premios"
+          }
+        ],
+        "social": [
+          {
+            "platform": "tiktok",
+            "url": "https://www.tiktok.com/@ojedapreparacion?_t=8jsmqzsu3at&_r=1"
+          },
+          {
+            "platform": "instagram",
+            "url": "https://www.instagram.com/sorteo.ojeda/"
+          },
+          {
+            "platform": "youtube",
+            "url": "https://youtube.com/@ojedapreparacion4412?feature=shared"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/share/16oeL7Rejs/?mibextid=wwXIfr"
+          },
+          {
+            "platform": "whatsapp",
+            "url": "https://whatsapp.com/channel/0029Vb5dDFT0bIdhfmabL11s"
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "premios",
+          "type": "richText",
+          "data": {
+            "title": "Los premios son",
+            "alignment": "center",
+            "lines": [
+              "LOS PREMIOS SON:",
+              "1 KTM 390 con 9000 km",
+              "2 Honda XR 150 MD 2024",
+              "3 $500.000 en efectivo",
+              "4 $250.000 en efectivo",
+              "5 $100.000 en efectivo"
+            ]
+          }
+        },
+        {
+          "id": "comprar-chances",
+          "type": "linkCards",
+          "data": {
+            "title": "Elegir cuantas chances queres",
+            "cards": [
+              {
+                "id": "6ae0c669-d5bf-4d43-9f46-77e466d0fd1d",
+                "title": "1 chance ",
+                "subtitle": "Pagas $1999 tenes 1 chance",
+                "href": "https://mpago.la/2qmCYbg",
+                "image": "/uploads/home-comprar-chances-card-6ae0c669-d5bf-4d43-9f46-77e466d0fd1d.jpg",
+                "animation": "tada"
+              },
+              {
+                "id": "232014ac-a705-4ec2-b38e-ef3479fc9eba",
+                "title": "5 chances $5999",
+                "subtitle": "Participás con número de operación x10",
+                "href": "https://mpago.la/2mAXs7h",
+                "image": "/uploads/home-comprar-chances-card-232014ac-a705-4ec2-b38e-ef3479fc9eba.jpg",
+                "animation": "tada"
+              },
+              {
+                "id": "128dc007-ff02-4757-8239-06a4cd0e27e6",
+                "title": "Promo 15 chances $9.999 ",
+                "subtitle": "Pagás $9.999 te multiplico x15 el número de operación",
+                "href": "https://mpago.la/2XsjSFe",
+                "image": "/uploads/home-comprar-chances-card-128dc007-ff02-4757-8239-06a4cd0e27e6.webp",
+                "animation": "shake"
+              },
+              {
+                "id": "53e891a9-182f-4e40-8118-d72eb2e2a22c",
+                "title": "Promo 50 chances $19.999",
+                "subtitle": "Pagás $19.999 te multiplico x50 el número de operación",
+                "href": "https://mpago.la/1ajBq2p",
+                "image": "/uploads/home-comprar-chances-card-53e891a9-182f-4e40-8118-d72eb2e2a22c.webp",
+                "animation": "none"
+              },
+              {
+                "id": "a93d97f6-dd06-4952-9bf4-9c10f3f4aa05",
+                "title": "300 chances $59.999",
+                "subtitle": "X300 chances",
+                "href": "https://mpago.la/1wd76Rr",
+                "image": "/uploads/home-comprar-chances-card-a93d97f6-dd06-4952-9bf4-9c10f3f4aa05.png",
+                "animation": "none"
+              }
+            ]
+          }
+        },
+        {
+          "id": "numero-comprobante",
+          "type": "imageHighlight",
+          "data": {
+            "title": "Número de comprobante",
+            "body": "Así es como te llega a vos y a mí el mismo número de comprobante. Es el que utilizo para la urna de participantes; si pagaste varias chances este número de operación se repite tantas veces como compraste.",
+            "image": "/uploads/home-numero-comprobante-highlight.jpg"
+          }
+        },
+        {
+          "id": "tenes-dudas",
+          "type": "richText",
+          "data": {
+            "title": "Tenes dudas?",
+            "alignment": "center",
+            "lines": [
+              "Mi nombre es Fernando Ojeda. Arriba tenes mis aplicaciones oficiales"
+            ]
+          }
+        },
+        {
+          "id": "galeria-premio",
+          "type": "imageGrid",
+          "data": {
+            "layout": "two-column",
+            "images": [
+              {
+                "id": "8ababa72-380d-4853-b277-c1928254fc05",
+                "src": "/uploads/home-galeria-premio-img-0.jpg",
+                "href": ""
+              },
+              {
+                "id": "8b3b6a43-0aac-48fe-bb97-492f0cb93123",
+                "src": "/uploads/home-galeria-premio-img-1.jpg",
+                "href": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "fotos-premio",
+          "type": "imageCarousel",
+          "data": {
+            "title": "Fotos Del Premio",
+            "description": "Deslizá para ver más",
+            "images": [
+              "/uploads/home-fotos-premio-carousel-0.jpg",
+              "/uploads/home-fotos-premio-carousel-1.jpg",
+              "/uploads/home-fotos-premio-carousel-2.jpg",
+              "/uploads/home-fotos-premio-carousel-3.jpg",
+              "/uploads/home-fotos-premio-carousel-4.jpg"
+            ]
+          }
+        },
+        {
+          "id": "informacion",
+          "type": "richText",
+          "data": {
+            "title": "Información",
+            "alignment": "center",
+            "lines": [
+              "Sorteo en vivo el viernes 31 de octubre. Seguinos en @SORTEO.OJEDA para enterarte de todo."
+            ]
+          }
+        },
+        {
+          "id": "como-participas",
+          "type": "imageHighlight",
+          "data": {
+            "title": "Como saber con que numer participas?",
+            "body": "Te dejo un ejemplo y cual seria tu numero. cuando pagas se te genera un numero de operacion como este de aca abajo. Cada persona tiene un diferente",
+            "image": "/uploads/home-como-participas-highlight.jpg"
+          }
+        },
+        {
+          "id": "tienda-online",
+          "type": "cta",
+          "data": {
+            "title": "Hacé click para conocer mi tienda online",
+            "body": "Soy mecánico de motos; empecé a vender repuestos en Instagram y ahora implementé la tienda donde vas a encontrar productos variados.",
+            "href": "https://tiendaojeda.mitiendanube.com/",
+            "buttonLabel": "Click acá",
+            "image": "/uploads/home-tienda-online-cta.png"
+          }
+        },
+        {
+          "id": "como-participar-seccion",
+          "type": "richText",
+          "data": {
+            "title": "Cómo participar",
+            "html": "<ol><li>Elegí tu pack.</li><li>Pagá por Mercado Pago.</li><li>Guardá el comprobante (número de operación).</li><li>Mirá el sorteo en vivo.</li></ol>"
+          }
+        },
+        {
+          "id": "transparencia",
+          "type": "richText",
+          "data": {
+            "title": "Transparencia",
+            "lines": [
+              "Transmitimos en vivo y publicamos ganadores con foto y ticket."
+            ]
+          }
+        },
+        {
+          "id": "proximo-sorteo",
+          "type": "keyValue",
+          "data": {
+            "title": "Próximo sorteo",
+            "items": [
+              { "k": "Fecha", "v": "31 de octubre, 20:00" },
+              { "k": "Transmisión", "v": "Instagram @sorteo.ojeda" }
+            ]
+          }
+        },
+        {
+          "id": "faq",
+          "type": "faq",
+          "data": {
+            "title": "Preguntas frecuentes",
+            "items": [
+              { "q": "¿Cómo sé si gané?", "a": "Lo publicamos en la web y redes; además te contactamos." },
+              { "q": "¿Qué pasa si pierdo el comprobante?", "a": "Podés validarlo con tu e‑mail y hora de pago." }
+            ]
+          }
+        },
+        {
+          "id": "bases",
+          "type": "richText",
+          "data": {
+            "title": "Bases",
+            "html": "<small>Este sorteo no está patrocinado por Mercado Pago ni por redes. Premios sujetos a condiciones publicadas.</small>"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ganadoresanteriores",
+      "slug": "ganadoresanteriores",
+      "title": "Ganadores anteriores",
+      "hero": {
+        "title": "Ganadores anteriores",
+        "subtitle": "Historias reales de quienes ya se llevaron los premios",
+        "profileImage": "/uploads/hero-profile-home.png",
+        "bannerImage": "/uploads/hero-banner-home.webp",
+        "buttons": [
+          {
+            "label": "Quiero participar",
+            "href": "https://mpago.la/2qmCYbg"
+          }
+        ],
+        "social": [
+          {
+            "platform": "tiktok",
+            "url": "https://www.tiktok.com/@ojedapreparacion?_t=8jsmqzsu3at&_r=1"
+          },
+          {
+            "platform": "instagram",
+            "url": "https://www.instagram.com/sorteo.ojeda/"
+          },
+          {
+            "platform": "youtube",
+            "url": "https://youtube.com/@ojedapreparacion4412?feature=shared"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/share/16oeL7Rejs/?mibextid=wwXIfr"
+          },
+          {
+            "platform": "whatsapp",
+            "url": "https://whatsapp.com/channel/0029Vb5dDFT0bIdhfmabL11s"
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "proceso",
+          "type": "richText",
+          "data": {
+            "title": "Transparencia en cada sorteo",
+            "alignment": "center",
+            "lines": [
+              "Todos los sorteos se realizan en vivo a traves de nuestras redes oficiales.",
+              "Cada ganador queda registrado con su comprobante y datos para garantizar la entrega."
+            ]
+          }
+        },
+        {
+          "id": "ganadores",
+          "type": "winnerCards",
+          "data": {
+            "title": "Ganadores destacados",
+            "cards": [
+              {
+                "id": "winner-2024-10",
+                "winner": "Mariana Gomez",
+                "prize": "KTM 390 0km",
+                "ticket": "MP-9241-1043",
+                "date": "Octubre 2024",
+                "location": "Cordoba, Argentina",
+                "image": "/uploads/home-fotos-premio-carousel-0.jpg"
+              },
+              {
+                "id": "winner-2024-08",
+                "winner": "Luis Martinez",
+                "prize": "Honda XR 150 MD 2024",
+                "ticket": "MP-7712-8890",
+                "date": "Agosto 2024",
+                "location": "Rosario, Argentina",
+                "image": "/uploads/home-galeria-premio-img-0.jpg"
+              },
+              {
+                "id": "winner-2024-06",
+                "winner": "Carolina Perez",
+                "prize": "$250.000 en efectivo",
+                "ticket": "MP-5523-1901",
+                "date": "Junio 2024",
+                "location": "Mendoza, Argentina",
+                "image": "/uploads/home-galeria-premio-img-1.jpg"
+              }
+            ]
+          }
+        },
+        {
+          "id": "como-participar",
+          "type": "cta",
+          "data": {
+            "title": "Sumate al proximo sorteo",
+            "body": "Reserva tu lugar hoy mismo y segui la transmision en vivo para saber si sos el proximo ganador.",
+            "href": "https://mpago.la/2qmCYbg",
+            "buttonLabel": "Comprar chances",
+            "image": "/uploads/home-numero-comprobante-highlight.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}

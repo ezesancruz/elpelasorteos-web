@@ -1,0 +1,79 @@
+﻿========================================
+INSTRUCTIVO DE DESPLIEGUE Y EDICIÓN - Proyecto "Ojedapreparacion"
+========================================
+
+1. Objetivo
+-----------
+Este instructivo resume cómo montar el entorno, editar el contenido dinámico y publicar el sitio estático que acompaña a la campaña de sorteos de Ojeda Preparación.
+
+2. Requisitos previos
+---------------------
+- Windows 10/11, macOS o cualquier distribución Linux con navegador moderno (Chrome, Edge, Firefox).
+- Node.js 18 o superior (requerido para el servidor de guardado y el API de subida de imágenes).
+- Git (opcional, recomendado para versionar cambios).
+- Conexión a internet solo para cargar fuentes externas y subir imágenes nuevas.
+
+3. Estructura principal del proyecto (carpeta "web")
+----------------------------------------------------
+web/
+|-- data/                    -> Contiene `site-content.json`, la fuente de datos principal.
+|-- ganadoresanteriores/     -> Versión precalculada de la página "Ganadores".
+|-- scripts/                 -> Lógica del sitio y panel de edición (`app.js`, `editor.js`).
+|-- server/                  -> Servidor Express con API para guardar contenido y subir archivos.
+|   `-- public/uploads/      -> Carpeta donde se guardan las imágenes subidas desde el editor.
+|-- sorteo/                  -> Atajo estático a la home del sorteo.
+|-- styles/                  -> Estilos globales (`main.css`).
+|-- index.html               -> Punto de entrada principal.
+|-- package.json             -> Dependencias y scripts (`npm run dev`).
+`-- README*.md / LICENCE     -> Documentación recién incorporada.
+
+4. Puesta en marcha rápida
+--------------------------
+1. Clonar o descargar el repositorio y abrir la carpeta `web`.
+2. Instalar dependencias una sola vez: `npm install`.
+3. Iniciar el servidor de desarrollo: `npm run dev`.
+4. Abrir `http://localhost:5173` en el navegador. El sitio queda servido junto con el panel de edición.
+5. Para detenerlo, volver a la terminal y presionar `Ctrl + C`.
+
+5. Uso del editor visual integrado
+----------------------------------
+1. Con la página abierta aparecerá el botón flotante `?` en la esquina inferior derecha.
+2. Al presionarlo se despliega el panel con las secciones:
+   - **Página**: elegir "Sorteo" o "Ganadores anteriores".
+   - **Hero**: títulos, textos, botones y redes sociales.
+   - **Secciones**: agregar, reordenar o quitar bloques (`richText`, `linkCards`, `imageGrid`, `imageCarousel`, `imageHighlight`, `cta`, `winnerCards`).
+   - **Tema**: colores, tipografías y fondos.
+3. Los cambios se ven en tiempo real mientras se editan.
+4. Para conservar los cambios:
+   - **Descargar JSON**: exporta un archivo con el contenido actualizado. Reemplaza manualmente `data/site-content.json` si no estás usando el servidor.
+   - **Guardar cambios**: sobrescribe `data/site-content.json` siempre que `npm run dev` siga activo.
+5. Para subir imágenes desde el panel, el servidor crea archivos en `server/public/uploads/` y devuelve una URL relativa (`/uploads/...`).
+
+6. Edición manual del contenido
+-------------------------------
+- Abrir `data/site-content.json` con un editor de texto.
+- El archivo contiene las páginas en el array `pages[]`. Cada sección tiene la forma `{ "type": "...", "data": { ... } }`.
+- Respeta la estructura JSON; si hay dudas, validar en https://jsonlint.com.
+- Las rutas de imágenes pueden ser externas o relativas a `server/public/uploads/`.
+
+7. Flujo de publicación
+-----------------------
+1. Ejecutar los cambios y verificar en local (`npm run dev`).
+2. Realizar un respaldo de `data/site-content.json` antes de publicar (por ejemplo `site-content.backup.json`).
+3. Para un hosting estático (Netlify, Vercel, GitHub Pages, S3, etc.) basta con subir el contenido de la carpeta `web` sin el directorio `server/`. El sitio funciona como SPA.
+4. Si se necesita permitir guardado en producción, desplegar también el servidor Express en la infraestructura elegida y exponer las rutas `/api/content` y `/api/upload` (HTTPS recomendado).
+
+8. Solución de problemas frecuentes
+-----------------------------------
+- **El botón "Guardar cambios" falla**: confirma que `npm run dev` está activo y que el JSON es válido.
+- **No se ven nuevas imágenes**: verifica que la subida terminó sin error y que el archivo exista en `server/public/uploads/`.
+- **El sitio muestra pantalla en blanco**: abre la consola del navegador (F12 -> Console) y revisa errores de JSON o rutas inexistentes.
+- **Error de permisos al guardar**: revisa que la carpeta `data/` tenga permisos de escritura.
+
+9. Documentación complementaria
+-------------------------------
+- `README.md`: guía resumida en inglés para colaboradores.
+- `README_es.md`: versión en español del README con instrucciones rápidas.
+- `LICENCE`: términos de uso del código (licencia MIT).
+
+Con esta información cualquier persona puede operar, actualizar y compartir el proyecto sin depender de instrucciones externas.

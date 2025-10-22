@@ -1,0 +1,30 @@
+Registro de cambios - 2025-10-22_13-45-51
+
+Punto 1: Sharp en el uploader (WebP + resize automático)
+- Se esperaba: instalar Sharp y modificar `/api/upload` para redimensionar (1600px si es banner/hero, 1000px para resto) y convertir a WebP (calidad ~80). Eliminar el temporal y devolver la URL procesada.
+- Hecho: instalé `sharp` y ajusté `server/editor-server.js: uploader` para rotar según EXIF, redimensionar según heurística banner/hero, convertir a WebP calidad 80, borrar el archivo temporal y responder con la URL final.
+
+Punto 2: Thumbnails (miniaturas) para grillas y carruseles
+- Se esperaba: generar un segundo output (thumb ~500px, WebP ~78) y devolver `{ url, thumb }`. En el renderer, usar `thumb` en listas/grillas/carruseles.
+- Hecho: en `server/editor-server.js` agregué salida `-thumb.webp` (500px, q=78) y la respuesta `{ url, thumb }`. En `scripts/app.js` añadí `resolveImageSrc` y extendí `createImg` con `preferThumb`, actualizando `linkCards`, `imageGrid`, `imageCarousel` y `winnerCards` para preferir miniaturas.
+
+Punto 3: Secciones de contenido (Cómo participar, Transparencia, Próximo sorteo, FAQ, Bases)
+- Se esperaba: enriquecer `data/site-content.json` con dichas secciones; agregar renderer `faq` y, si hace falta, `keyValue`; permitir HTML en richText; estilos básicos para FAQ.
+- Hecho: añadí renderers `faq` y `keyValue`, mejoré `renderRichTextSection` para aceptar `data.html` y sumé estilos en `styles/main.css`. En `data/site-content.json` agregué secciones: "Cómo participar" (richText con HTML), "Transparencia" (richText), "Próximo sorteo" (keyValue), "Preguntas frecuentes" (faq) y "Bases" (richText HTML).
+
+Punto 4: Analytics (eventos de clic en CTAs/links)
+- Se esperaba: insertar tag GA4 en `index.html`, crear helper `track` en app y disparar eventos en CTAs, packs y redes (y ganadores opcional).
+- Hecho: agregué snippet GA4 en `index.html` con ID placeholder `G-XXXXXXXXXX`. En `scripts/app.js` incorporé `track()` y bind de eventos: `cta_participar_click`/`cta_click` en botones del hero, `pack_click` en tarjetas de compra (extrayendo cantidad si aparece en el título), `social_click` en redes y `ganador_click` en cards de ganadores.
+
+Punto 5: SEO técnico: pre-render estático (snapshots)
+- Se esperaba: script con Puppeteer que levante el server, renderice rutas y guarde HTML estático en `dist/`, removiendo scripts de app/edición.
+- Hecho: creé `scripts/prerender.js` que levanta `server/editor-server.js`, espera disponibilidad, recorre rutas `['/','/ganadoresanteriores/']`, captura HTML, elimina scripts de `scripts/app.js` y `scripts/editor.js` y guarda en `dist`. Agregué script npm `prerender` en `package.json`.
+
+Archivos modificados/creados (principales)
+- server/editor-server.js
+- scripts/app.js
+- styles/main.css
+- data/site-content.json
+- scripts/prerender.js (nuevo)
+- index.html
+- package.json (scripts/deps)
