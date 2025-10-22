@@ -1,0 +1,30 @@
+services:
+  web:
+    build: .
+    container_name: web
+    env_file: .env
+    environment:
+      - PORT=8080
+    volumes:
+      - uploads:/app/server/public/uploads
+    restart: always
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  uploads:
+  caddy_data:
+  caddy_config:
+

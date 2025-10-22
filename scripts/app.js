@@ -361,6 +361,27 @@ function renderRichTextSection(section) {
   return container;
 }
 
+// Delegación de eventos GA4 (fallback global)
+if (!window.__ga4DelegatedClicks) {
+  document.addEventListener('click', (e) => {
+    const a = e.target && (e.target.closest ? e.target.closest('a') : null);
+    if (!a) return;
+
+    // Evitar duplicados en componentes que ya disparan eventos
+    if (a.closest('.social-list, .link-cards, .button-row')) return;
+
+    // Clicks en packs (links a MercadoPago) presentes en contenido libre
+    if (/mpago\.la|mercadopago/i.test(a.href || '')) {
+      const label = (a.textContent || '').trim();
+      track('pack_click', { label });
+      if (/participar|comprar/i.test(a.textContent || '')) {
+        track('cta_participar_click', { location: 'content' });
+      }
+    }
+  }, true);
+  window.__ga4DelegatedClicks = true;
+}
+
 function renderKeyValueSection(section) {
   const container = baseSection('keyValue');
   if (section.data?.title) {

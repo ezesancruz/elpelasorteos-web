@@ -1,0 +1,6 @@
+elpelasorteos.shop, www.elpelasorteos.shop {
+  encode zstd gzip
+  tls ezesancruz@gmail.com
+  reverse_proxy web:8080
+}
+

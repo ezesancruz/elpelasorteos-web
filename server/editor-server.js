@@ -7,6 +7,25 @@ const { randomUUID } = require('crypto');
 
 const app = express();
 
+// === SECURITY FLAGS ===
+const EDITOR_ENABLED = process.env.EDITOR_ENABLED === 'true';
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+
+// Exponer flag al frontend
+app.get('/api/config', (_req, res) => {
+  res.json({ editorEnabled: EDITOR_ENABLED });
+});
+
+function requireEditorEnabled(_req, res, next) {
+  if (!EDITOR_ENABLED) return res.status(403).json({ error: 'editor disabled' });
+  next();
+}
+function requireAdmin(req, res, next) {
+  const token = req.get('x-admin-token') || req.query.token || '';
+  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'unauthorized' });
+  next();
+}
+
 // === CONFIG ===
 const PORT = process.env.PORT || 5173;                  // one port, one server
 const ROOT_DIR = path.join(__dirname, '..');            // index.html, scripts, styles, data
@@ -34,7 +53,7 @@ app.get('/api/content', (_req, res) => {
   }
 });
 
-app.put('/api/content', (req, res) => {
+app.put('/api/content', requireEditorEnabled, requireAdmin, (req, res) => {
   try {
     fs.writeFileSync(CONTENT_PATH, JSON.stringify(req.body, null, 2), 'utf8');
     res.json({ ok: true });
@@ -62,7 +81,7 @@ const upload = multer({
   },
 });
 
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/upload', requireEditorEnabled, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 

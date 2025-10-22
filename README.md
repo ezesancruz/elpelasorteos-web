@@ -54,6 +54,17 @@ web/
 - **Dynamic hosting**: deploy the Node.js server (e.g., on Render, Railway, Fly.io, VPS). Keep `/api/content` and `/api/upload` behind HTTPS if exposed publicly.
 - Backup `data/site-content.json` regularly and keep `server/public/uploads/` outside of version control (see `.gitignore`).
 
+## Pre-render (optional, SEO-friendly)
+Create static HTML snapshots for key routes without dynamic scripts.
+
+```bash
+npm run prerender
+```
+
+- Outputs `dist/` snapshots for `/` and `/ganadoresanteriores/`.
+- Strips `<script src="scripts/app.js">` and `scripts/editor.js` from snapshots to make them fully static.
+- Useful for static hosting (upload `dist/` as your site root) or CI/CD pre-rendering.
+
 ## Related docs
 - `README_es.md`: localized quick start in Spanish.
 - `INSTRUCTIVO.txt`: extended operator manual for editors and stakeholders.

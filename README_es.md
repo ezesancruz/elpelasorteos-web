@@ -54,6 +54,17 @@ web/
 - **Hosting dinámico**: despliega el servidor Node.js (Render, Railway, Fly.io, VPS, etc.) y publica `/api/content` y `/api/upload` detrás de HTTPS.
 - Realiza respaldos frecuentes de `data/site-content.json` y mantén `server/public/uploads/` fuera del control de versiones (ver `.gitignore`).
 
+## Pre-render (opcional, mejora SEO)
+Genera snapshots HTML estáticos para rutas clave sin los scripts dinámicos.
+
+```bash
+npm run prerender
+```
+
+- Genera archivos en `dist/` para `/` y `/ganadoresanteriores/`.
+- Remueve los `<script src="scripts/app.js">` y `scripts/editor.js` en los snapshots para que sean 100% estáticos.
+- Útil si vas a subir a hosting estático (sube `dist/` como raíz del sitio) o si querés prerender en CI/CD.
+
 ## Documentación relacionada
 - `README.md`: versión en inglés para colaboradores internacionales.
 - `INSTRUCTIVO.txt`: manual extendido para operadores.

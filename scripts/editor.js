@@ -6,7 +6,11 @@
   toggle: null
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json());
+    if (!cfg?.editorEnabled) return; // no mostramos el editor si está deshabilitado
+  } catch (_) {}
   waitForApp().then(initEditor).catch(err => console.error(err));
 });
 

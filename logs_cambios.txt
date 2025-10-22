@@ -1,0 +1,91 @@
+Registro de cambios - 2025-10-22_13-45-51
+
+Punto 1: Sharp en el uploader (WebP + resize automÃ¡tico)
+- Se esperaba: instalar Sharp y modificar `/api/upload` para redimensionar (1600px si es banner/hero, 1000px para resto) y convertir a WebP (calidad ~80). Eliminar el temporal y devolver la URL procesada.
+- Hecho: instalÃ© `sharp` y ajustÃ© `server/editor-server.js: uploader` para rotar segÃºn EXIF, redimensionar segÃºn heurÃ­stica banner/hero, convertir a WebP calidad 80, borrar el archivo temporal y responder con la URL final.
+
+Punto 2: Thumbnails (miniaturas) para grillas y carruseles
+- Se esperaba: generar un segundo output (thumb ~500px, WebP ~78) y devolver `{ url, thumb }`. En el renderer, usar `thumb` en listas/grillas/carruseles.
+- Hecho: en `server/editor-server.js` agreguÃ© salida `-thumb.webp` (500px, q=78) y la respuesta `{ url, thumb }`. En `scripts/app.js` aÃ±adÃ­ `resolveImageSrc` y extendÃ­ `createImg` con `preferThumb`, actualizando `linkCards`, `imageGrid`, `imageCarousel` y `winnerCards` para preferir miniaturas.
+
+Punto 3: Secciones de contenido (CÃ³mo participar, Transparencia, PrÃ³ximo sorteo, FAQ, Bases)
+- Se esperaba: enriquecer `data/site-content.json` con dichas secciones; agregar renderer `faq` y, si hace falta, `keyValue`; permitir HTML en richText; estilos bÃ¡sicos para FAQ.
+- Hecho: aÃ±adÃ­ renderers `faq` y `keyValue`, mejorÃ© `renderRichTextSection` para aceptar `data.html` y sumÃ© estilos en `styles/main.css`. En `data/site-content.json` agreguÃ© secciones: "CÃ³mo participar" (richText con HTML), "Transparencia" (richText), "PrÃ³ximo sorteo" (keyValue), "Preguntas frecuentes" (faq) y "Bases" (richText HTML).
+
+Punto 4: Analytics (eventos de clic en CTAs/links)
+- Se esperaba: insertar tag GA4 en `index.html`, crear helper `track` en app y disparar eventos en CTAs, packs y redes (y ganadores opcional).
+- Hecho: agreguÃ© snippet GA4 en `index.html` con ID placeholder `G-XXXXXXXXXX`. En `scripts/app.js` incorporÃ© `track()` y bind de eventos: `cta_participar_click`/`cta_click` en botones del hero, `pack_click` en tarjetas de compra (extrayendo cantidad si aparece en el tÃ­tulo), `social_click` en redes y `ganador_click` en cards de ganadores.
+
+Punto 5: SEO tÃ©cnico: pre-render estÃ¡tico (snapshots)
+- Se esperaba: script con Puppeteer que levante el server, renderice rutas y guarde HTML estÃ¡tico en `dist/`, removiendo scripts de app/ediciÃ³n.
+- Hecho: creÃ© `scripts/prerender.js` que levanta `server/editor-server.js`, espera disponibilidad, recorre rutas `['/','/ganadoresanteriores/']`, captura HTML, elimina scripts de `scripts/app.js` y `scripts/editor.js` y guarda en `dist`. AgreguÃ© script npm `prerender` en `package.json`.
+
+Archivos modificados/creados (principales)
+- server/editor-server.js
+- scripts/app.js
+- styles/main.css
+- data/site-content.json
+- scripts/prerender.js (nuevo)
+- index.html
+- package.json (scripts/deps)
+
+run codex resume 019a0cb5-b9d2-7fa2-b8ba-1621a7585845
+
+---
+
+### Anï¿½lisis inicial de carpeta y lectura de Plan.txt
+Timestamp: 2025-10-22 18:27:03
+Pedido: Analizar carpeta web y leer Plan.txt; trabajar por fases y pedir confirmaciï¿½n antes de avanzar.
+Entregado: Estructura de proyecto resumida; Plan.txt leï¿½do y fases identificadas; listo para ejecutar Fase 1 bajo confirmaciï¿½n.
+SessionID: f98a0893-295d-47e8-ad9d-1db8dbe3e392
+---
+
+### Fase 1: Seguridad del editor (backend + frontend)
+Timestamp: 2025-10-22 18:29:43
+Pedido: Agregar flags EDITOR_ENABLED y ADMIN_TOKEN en Express, exponer /api/config, proteger PUT /api/content y POST /api/upload con middlewares y ocultar el editor en el front cuando estï¿½ deshabilitado.
+Entregado: server/editor-server.js: aï¿½adï¿½ flags, endpoint /api/config y middlewares requireEditorEnabled y requireAdmin; apliquï¿½ a PUT /api/content y POST /api/upload. scripts/editor.js: cambiï¿½ el listener DOMContentLoaded para consultar /api/config y no renderizar el editor si editorEnabled=false.
+SessionID: cb1856b9-b6e9-4b78-b0a0-04a651537883
+---
+
+### Fase 2: SEO & Open Graph
+Timestamp: 2025-10-22 18:32:10
+Pedido: Actualizar <head> en index.html con título, description, canonical, OG y Twitter Card; crear robots.txt y sitemap.xml en la raíz del sitio.
+Entregado: index.html: título y metas SEO/OG/Twitter + favicon añadidos. robots.txt y sitemap.xml creados con rutas y sitemap apuntando a elpelasorteos.shop.
+SessionID: 543b12e9-ee22-49aa-b62c-f125900a9ad8
+---
+
+### Fase 3: Analytics GA4 + eventos
+Timestamp: 2025-10-22 18:35:09
+Pedido: Reforzar medición de clicks: social_click, pack_click y cta_participar_click; usar GA4 (gtag) y delegación global sin tocar markup.
+Entregado: scripts/app.js: se confirmó la función track (GA4) y eventos ya presentes en componentes; se añadió delegación global con guardas para evitar duplicados en .social-list, .link-cards y .button-row, capturando mpago/mercadopago y CTA por heurística en contenido libre.
+SessionID: a7c1b73c-ed03-4a94-88e2-bd5d3cd534bc
+---
+
+### Fase 4: Docker + Caddy + .env
+Timestamp: 2025-10-22 18:38:00
+Pedido: Agregar Dockerfile, docker-compose.yml, Caddyfile y variables en .env para correr Node/Express detrás de Caddy con volumen persistente de /uploads.
+Entregado: Dockerfile adaptado a estructura actual (repo en raíz). docker-compose.yml con servicios web y caddy, volumen uploads en /app/server/public/uploads. Caddyfile con dominio y reverse_proxy a web:8080. .env.example y .env creados con EDITOR_ENABLED=false, ADMIN_TOKEN y PORT=8080.
+SessionID: a8490d8a-2d67-48f1-bb10-bdcd3a703f2f
+---
+
+### Fase 5: AWS Lightsail (deploy real)
+Timestamp: 2025-10-22 18:41:28
+Pedido: Documentar pasos para desplegar en Lightsail: instalar Docker y compose, clonar repo, configurar .env, construir y levantar con docker compose, abrir puertos y verificar.
+Entregado: Creado DEPLOY_LIGHTSAIL.md con comandos y recomendaciones (IP estática, puertos 80/443, email en Caddy, verificación con curl).
+SessionID: b218c16b-b5fd-456e-9521-aff3caa285f7
+---
+
+### Fase 6: DNS (Namecheap + Lightsail)
+Timestamp: 2025-10-22 18:44:04
+Pedido: Configurar DNS para que el dominio raíz y www apunten a la instancia Lightsail: A @ -> IP estática; CNAME www -> elpelasorteos.shop. Documentar verificación y notas.
+Entregado: Creado DNS_NAMECHEAP_LIGHTSAIL.md con pasos para Namecheap (A y CNAME), opción alternativa con zona DNS de Lightsail, verificación con nslookup/curl y notas sobre Caddy y Cloudflare.
+SessionID: 729f3ad3-f44b-4295-b272-605d14b61029
+---
+
+### Fase 7: Pre-render (opcional)
+Timestamp: 2025-10-22 18:46:23
+Pedido: Habilitar prerender para generar /dist con snapshots de rutas clave sin scripts, y documentar cómo usarlo.
+Entregado: Se confirmó scripts/prerender.js y el script npm 'prerender'. Se añadieron secciones de documentación en README_es.md y README.md explicando 'npm run prerender', qué genera y cómo desplegar estático desde dist/.
+SessionID: 9094f225-bd29-4cae-868d-f834280ede0b
+---
+
