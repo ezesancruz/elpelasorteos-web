@@ -5,7 +5,8 @@
     "scripts":  {
                     "start":  "node server/editor-server.js",
                     "dev":  "node server/editor-server.js",
-                    "prerender": "node scripts/prerender.js"
+                    "prerender":  "node scripts/prerender.js",
+                    "favicons": "node scripts/generate-favicons.js"
                 },
     "dependencies":  {
                          "express":  "^4.19.2",
