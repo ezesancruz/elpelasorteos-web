@@ -6,7 +6,7 @@
   "theme": {
     "colors": {
       "primary": "#fe9200",
-      "accent": "#ffffff",
+      "accent": "#fe9200",
       "text": "#ffffff",
       "muted": "#111111"
     },
@@ -113,73 +113,6 @@
           }
         },
         {
-          "id": "opcionesCompra",
-          "type": "linkCards",
-          "data": {
-            "title": "Elegir cuantas chances queres",
-            "cards": [
-              {
-                "id": "6ae0c669-d5bf-4d43-9f46-77e466d0fd1d",
-                "title": "🍀 La chance de la suerte – 1 Chance ($1.999)",
-                "subtitle": "Todo empieza con una… a veces la suerte solo necesita una oportunidad. 🌟",
-                "href": "https://mpago.li/1CYuRKR",
-                "image": {
-                  "src": "/uploads/home-comprar-chances-card-6ae0c669-d5bf-4d43-9f46-77e466d0fd1d.jpg"
-                },
-                "animation": "tada"
-              },
-              {
-                "id": "232014ac-a705-4ec2-b38e-ef3479fc9eba",
-                "title": "🎯 Triplete ganador – 3 Chances ($4.999)",
-                "subtitle": "Tres intentos para tentar al destino… ¿quién dice que la tercera no es la vencida? 🎲",
-                "href": "https://mpago.li/24R141W",
-                "image": {
-                  "src": "/uploads/home-comprar-chances-card-232014ac-a705-4ec2-b38e-ef3479fc9eba.jpg"
-                },
-                "animation": "tada"
-              },
-              {
-                "id": "128dc007-ff02-4757-8239-06a4cd0e27e6",
-                "title": "🗓️ La semanera – 7 Chances ($8.999)",
-                "subtitle": "Una para cada día: que la suerte te acompañe toda la semana. 🍀",
-                "href": "https://mpago.li/2cCM53g",
-                "image": {
-                  "src": "/uploads/home-comprar-chances-card-128dc007-ff02-4757-8239-06a4cd0e27e6.webp"
-                },
-                "animation": "shake"
-              },
-              {
-                "id": "53e891a9-182f-4e40-8118-d72eb2e2a22c",
-                "title": "🔥 Veinte ganador – 20 chances ($17.999)",
-                "subtitle": "Más chances, más adrenalina… ¡acá la suerte se empieza a poner seria! 💪",
-                "href": "https://mpago.li/2H1Gm3f",
-                "image": {
-                  "src": "/uploads/home-comprar-chances-card-53e891a9-182f-4e40-8118-d72eb2e2a22c.webp"
-                },
-                "animation": "none"
-              },
-              {
-                "id": "a93d97f6-dd06-4952-9bf4-9c10f3f4aa05",
-                "title": "💥 La mega chance – 70 chances ($29.999)",
-                "subtitle": "70 tiros al destino, imposible que la suerte no te mire. 🚀",
-                "href": "https://mpago.li/1RNuWMs",
-                "image": {
-                  "src": "/uploads/home-comprar-chances-card-a93d97f6-dd06-4952-9bf4-9c10f3f4aa05.png"
-                },
-                "animation": "none"
-              },
-              {
-                "title": "👑 La leyenda del suertudo – 200 chances ($49.999))",
-                "subtitle": "El pack de los que no esperan milagros… los provocan. 🍀👊",
-                "href": "https://mpago.li/2hYDQBP",
-                "image": {
-                  "src": ""
-                }
-              }
-            ]
-          }
-        },
-        {
           "id": "numero-comprobante",
           "type": "detalleVisual",
           "data": {
@@ -208,7 +141,8 @@
                 "subtitle": "Todo empieza con una… a veces la suerte solo necesita una oportunidad. 🌟",
                 "href": "https://mpago.li/1CYuRKR",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/345aede9-cc6e-44aa-a2f0-8839fc1d69f3_1.webp",
+                  "thumb": "/uploads/345aede9-cc6e-44aa-a2f0-8839fc1d69f3_1-thumb.webp"
                 }
               },
               {
@@ -216,7 +150,8 @@
                 "subtitle": "Tres intentos para tentar al destino… ¿quién dice que la tercera no es la vencida? 🎲",
                 "href": "https://mpago.li/24R141W",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2.webp",
+                  "thumb": "/uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2-thumb.webp"
                 }
               },
               {
@@ -224,7 +159,8 @@
                 "subtitle": "Una para cada día: que la suerte te acompañe toda la semana. 🍀",
                 "href": "https://mpago.li/2cCM53g",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/0904d626-7f3a-4e4d-b4b3-f71827290278_3.webp",
+                  "thumb": "/uploads/0904d626-7f3a-4e4d-b4b3-f71827290278_3-thumb.webp"
                 }
               },
               {
@@ -232,7 +168,8 @@
                 "subtitle": "Más chances, más adrenalina… ¡acá la suerte se empieza a poner seria! 💪",
                 "href": "https://mpago.li/2H1Gm3f",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/4dadd876-d6db-4821-9a88-511607cb0b6b_4.webp",
+                  "thumb": "/uploads/4dadd876-d6db-4821-9a88-511607cb0b6b_4-thumb.webp"
                 }
               },
               {
@@ -240,7 +177,8 @@
                 "subtitle": "70 tiros al destino, imposible que la suerte no te mire. 🚀",
                 "href": "https://mpago.li/1RNuWMs",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/775b7e03-3554-4a44-a84b-646fedb3238f_5.webp",
+                  "thumb": "/uploads/775b7e03-3554-4a44-a84b-646fedb3238f_5-thumb.webp"
                 }
               },
               {
@@ -248,7 +186,8 @@
                 "subtitle": "El pack de los que no esperan milagros… los provocan. 🍀👊",
                 "href": "https://mpago.li/2hYDQBP",
                 "image": {
-                  "src": ""
+                  "src": "/uploads/e77d14dd-a998-49cb-9f5c-d4f7851454b5_6.webp",
+                  "thumb": "/uploads/e77d14dd-a998-49cb-9f5c-d4f7851454b5_6-thumb.webp"
                 }
               }
             ]
