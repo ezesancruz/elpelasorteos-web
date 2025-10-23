@@ -648,8 +648,7 @@ const sectionEditors = {
       header.appendChild(remove);
       item.appendChild(header);
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
-      item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 3 / 4 }));
-      list.appendChild(item);
+      item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 9 / 16 }));      list.appendChild(item);
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -989,7 +988,7 @@ function guessAspectFromPath(pathArr = []) {
   if (joined.includes('profile')) return 1;
   if (joined.includes('winner')) return 3 / 4;
   if (joined.includes('galeria') || joined.includes('gallery')) return 3 / 4;
-  if (joined.includes('carousel') || joined.includes('carrusel')) return 3 / 4;
+  if (joined.includes('carousel') || joined.includes('carrusel')) return 9 / 16;
   if (joined.includes('card')) return 4 / 3;
   return 4 / 3;
 }

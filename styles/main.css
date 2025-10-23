@@ -305,8 +305,8 @@ main {
 
 .carousel [data-img-frame] {
   border-radius: 18px;
-  width: clamp(230px, 40vw, 360px);
-  aspect-ratio: auto;
+  width: clamp(190px, 32vw, 280px);
+  aspect-ratio: 9 / 16;
   scroll-snap-align: center;
 }
 
