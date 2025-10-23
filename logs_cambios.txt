@@ -159,3 +159,7 @@ ID de sesiÃ³n: f048ab91-f93c-4276-9507-63024b6f76f8
 - Pedido: Envolver imágenes clickeables con enlace a versión completa y activar un visor (lightbox) con soporte de zoom, teclado, móvil y captions (alt o título).
 - Entregado: Se agregó scripts/lightbox.js con overlay, navegación por teclado (Esc, ?/?), zoom (rueda, doble click/tap, pinch), arrastre/pan en zoom, gestos táctiles y captions desde alt/title. Se envuelven automáticamente imágenes dentro de .section en enlaces a su versión completa (respetando enlaces externos). Se actualizó scripts/app.js para aportar data-fullsrc y title desde los datos de imagen, y se añadió CSS minimal en styles/main.css. Se referencia el módulo en index.html.
 
+[#] Auto-resize por slot (CSS) | 2025-10-23 00:42:12 | SessionID=e04f1e77-2038-4e60-bad2-cdefcd22895a
+- Pedido: Normalizar contenedores por slot con relación de aspecto (Portada 5:6, Banner 16:9, Miniatura 1:1, Galería 16:9, Cards 4:3), modo por defecto: Cubrir para Portada/Banner/etc. y Contener para logos; sin reexportar imágenes.
+- Entregado: Se quitaron inline object-fit en createImg para delegar al CSS. Se definieron ratios y fit por slot: .hero-banner (16:9 cover), .imageHighlight__media img (5:6 cover), grid de imágenes 1:1 cover, carousel 16:9 cover, link-card 4:3 cover, winner-card 1:1 cover, CTA 1:1 contain. Se añadieron utilidades .image--cover/.image--contain. Esto permite auto-resize en desktop y mobile sin procesar archivos.
+

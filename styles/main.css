@@ -727,3 +727,10 @@ main {
   line-height: 1;
   cursor: pointer;
 }
+/* Utilities: relación y ajuste */
+.image--cover, .image--contain {
+  width: 100%;
+  height: 100%;
+}
+.image--cover { object-fit: cover !important; }
+.image--contain { object-fit: contain !important; }
