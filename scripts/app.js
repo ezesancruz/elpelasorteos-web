@@ -770,6 +770,16 @@ function renderImageGridSection(section) {
     card.className = 'image-card';
 
     const altText = image.alt || image.title || section.data?.title || 'Imagen';
+    const titleText = (image.title || '').trim();
+    const descriptionText = (image.subtitle || image.description || '').trim();
+
+    if (titleText) {
+      const header = document.createElement('div');
+      header.className = 'image-card__title';
+      header.textContent = titleText;
+      card.appendChild(header);
+    }
+
     const media = document.createElement('a');
     media.className = 'image-card__media';
     media.href = image.href || src;
@@ -784,23 +794,15 @@ function renderImageGridSection(section) {
     media.appendChild(frame);
     card.appendChild(media);
 
-    const hasTitle = Boolean(image.title && image.title.trim());
-    const hasSubtitle = Boolean(image.subtitle && image.subtitle.trim());
-    if (hasTitle || hasSubtitle) {
+    if (descriptionText) {
       const body = document.createElement('div');
       body.className = 'image-card__body';
-      if (hasTitle) {
-        const title = document.createElement('div');
-        title.className = 'image-card__title';
-        title.textContent = image.title || '';
-        body.appendChild(title);
-      }
-      if (hasSubtitle) {
-        const subtitle = document.createElement('div');
-        subtitle.className = 'image-card__subtitle';
-        subtitle.textContent = image.subtitle || '';
-        body.appendChild(subtitle);
-      }
+
+      const subtitle = document.createElement('div');
+      subtitle.className = 'image-card__subtitle';
+      subtitle.textContent = descriptionText;
+      body.appendChild(subtitle);
+
       card.appendChild(body);
     }
 

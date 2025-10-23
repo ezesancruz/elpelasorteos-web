@@ -284,15 +284,46 @@ main {
 }
 
 /* Miniaturas (grid) – ratio flexible */
-.section--galeriaImagenes .image-grid a {
-  display: block;
-  aspect-ratio: auto;
-  overflow: hidden;
-  border-radius: 18px;
+.section--galeriaImagenes .image-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
-.section--galeriaImagenes .image-grid a [data-img-frame] {
+
+.section--galeriaImagenes .image-card__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.section--galeriaImagenes .image-card__media {
+  display: block;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.section--galeriaImagenes .image-card__media [data-img-frame] > img {
   width: 100%;
-  height: auto;
+  max-height: 240px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.section--galeriaImagenes .image-card__media [data-img-frame] > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.section--galeriaImagenes .image-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section--galeriaImagenes .image-card__subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
 }
 
 .carousel {
