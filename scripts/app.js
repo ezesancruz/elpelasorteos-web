@@ -257,6 +257,34 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     const title = (typeof srcOrObj === 'object' && srcOrObj && (srcOrObj.title || srcOrObj.caption)) || '';
     if (!img.title && title) img.title = String(title);
   } catch (_) {}
+  // Ajuste de recorte/posición (fit + align/focus)
+  try {
+    if (srcOrObj && typeof srcOrObj === 'object') {
+      if (srcOrObj.fit && (srcOrObj.fit === 'cover' || srcOrObj.fit === 'contain')) {
+        img.style.objectFit = srcOrObj.fit;
+      }
+      let pos = '';
+      if (typeof srcOrObj.focusX === 'number' && typeof srcOrObj.focusY === 'number') {
+        const fx = Math.max(0, Math.min(100, srcOrObj.focusX));
+        const fy = Math.max(0, Math.min(100, srcOrObj.focusY));
+        pos = `${fx}% ${fy}%`;
+      } else if (typeof srcOrObj.align === 'string') {
+        const map = {
+          'top-left': 'left top',
+          'top-center': 'center top',
+          'top-right': 'right top',
+          'center-left': 'left center',
+          'center': 'center center',
+          'center-right': 'right center',
+          'bottom-left': 'left bottom',
+          'bottom-center': 'center bottom',
+          'bottom-right': 'right bottom'
+        };
+        pos = map[srcOrObj.align] || '';
+      }
+      if (pos) img.style.objectPosition = pos;
+    }
+  } catch (_) {}
   return img;
 }
 
@@ -269,10 +297,8 @@ function renderHero(hero = {}) {
   section.appendChild(heroEl);
 
   if (hero.bannerImage) {
-    const banner = document.createElement('img');
+    const banner = createImg(hero.bannerImage, hero.title || 'Banner');
     banner.className = 'hero-banner';
-    banner.src = hero.bannerImage;
-    banner.alt = hero.title || 'Banner';
     heroEl.appendChild(banner);
   }
 

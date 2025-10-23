@@ -3,16 +3,39 @@
   site: null,
   pageId: null,
   panel: null,
-  toggle: null
+  toggle: null,
+  config: null
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const cfg = await fetch('/api/config').then(r => r.json());
-    if (!cfg?.editorEnabled) return; // no mostramos el editor si está deshabilitado
-  } catch (_) {}
-  waitForApp().then(initEditor).catch(err => console.error(err));
+    const resp = await fetch('/api/config');
+    if (!resp || !resp.ok) throw new Error('config no disponible');
+    const cfg = await resp.json();
+        editorState.config = cfg;
+    await waitForApp();
+    initEditor();
+  } catch (err) {
+    console.warn('Editor no disponible (backend no activo o deshabilitado)', err);
+  }
 });
+
+// Lee el token de administrador guardado en el mismo origen
+// Para configurarlo manualmente desde la consola del navegador:
+// localStorage.setItem('ADMIN_TOKEN', 'TU_TOKEN_LARGO')
+const getAdminToken = () => localStorage.getItem('ADMIN_TOKEN') || '';
+const withAdmin = (extra = {}) => {
+  const t = getAdminToken();
+  return t ? { ...extra, 'x-admin-token': t } : extra;
+};
+
+// Adjunta el token también por query (?token=...) para mayor compatibilidad
+const withAdminUrl = (url) => {
+  const t = getAdminToken();
+  if (!t) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}token=${encodeURIComponent(t)}`;
+};
 
 function waitForApp() {
   return new Promise((resolve, reject) => {
@@ -87,7 +110,11 @@ function rerenderEditorPreservingScroll(renderFn) {
 async function uploadImage(file) {
   const fd = new FormData();
   fd.append('image', file);
-  const res = await fetch('/api/upload', { method: 'POST', body: fd });
+  const res = await fetch(withAdminUrl('/api/upload'), {
+    method: 'POST',
+    headers: withAdmin(), // no establecer Content-Type manual con FormData
+    body: fd
+  });
   if (!res.ok) throw new Error('No se pudo subir la imagen');
   const { url } = await res.json();
   return url;
@@ -126,10 +153,10 @@ async function onPickImage(event, pathArr) {
 
 function createToggle() {
   const btn = document.createElement('button');
+  btn.id = 'editor-toggle';
   btn.className = 'editor-toggle';
   btn.type = 'button';
-  btn.title = 'Editar contenido';
-  btn.textContent = 'Ã¢Å“Å½';
+  btn.textContent = 'Editar';
   btn.addEventListener('click', () => togglePanel());
   document.body.appendChild(btn);
   editorState.toggle = btn;
@@ -154,8 +181,72 @@ function createPanel() {
   const body = document.createElement('div');
   body.className = 'editor-panel__body';
 
+  // Controles de autenticación (token ADMIN)
+  const auth = document.createElement('div');
+  auth.className = 'editor-panel__auth';
+  function renderAuth() {
+    auth.innerHTML = '';
+    const token = getAdminToken();
+    const status = document.createElement('div');
+    status.textContent = token ? 'Estado: Autenticado' : 'Estado: No autenticado';
+    auth.appendChild(status);
+    if (token) {
+      const masked = token.slice(0, 4) + '...' + token.slice(-4);
+      const maskEl = document.createElement('div');
+      maskEl.textContent = 'Token: ' + masked;
+      auth.appendChild(maskEl);
+      const changeBtn = document.createElement('button');
+      changeBtn.type = 'button';
+      changeBtn.textContent = 'Cambiar token';
+      changeBtn.addEventListener('click', () => {
+        const next = window.prompt('Pegá el nuevo ADMIN_TOKEN');
+        if (typeof next === 'string') {
+          if (next) localStorage.setItem('ADMIN_TOKEN', next); else localStorage.removeItem('ADMIN_TOKEN');
+          renderAuth();
+        }
+      });
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.textContent = 'Salir';
+      clearBtn.addEventListener('click', () => {
+        localStorage.removeItem('ADMIN_TOKEN');
+        renderAuth();
+      });
+      auth.appendChild(changeBtn);
+      auth.appendChild(clearBtn);
+    } else {
+      const input = document.createElement('input');
+      input.type = 'password';
+      input.placeholder = 'Pegar ADMIN_TOKEN aquí';
+      const saveBtn = document.createElement('button');
+      saveBtn.type = 'button';
+      saveBtn.textContent = 'Guardar token';
+      saveBtn.addEventListener('click', () => {
+        const val = input.value.trim();
+        if (val) {
+          localStorage.setItem('ADMIN_TOKEN', val);
+          input.value = '';
+          renderAuth();
+        } else {
+          alert('El token no puede estar vacío');
+        }
+      });
+      auth.appendChild(input);
+      auth.appendChild(saveBtn);
+    }
+  }
+  const tokenRequired = !!(editorState.config && editorState.config.tokenRequired);
+  if (tokenRequired) {
+    renderAuth();
+  } else {
+    const status = document.createElement('div');
+    status.textContent = 'Edición local: no requiere token';
+    auth.appendChild(status);
+  }
+
   const actions = document.createElement('div');
   actions.className = 'editor-panel__actions';
+  actions.appendChild(auth);
   const downloadBtn = document.createElement('button');
   downloadBtn.type = 'button';
   downloadBtn.textContent = 'Descargar JSON';
@@ -660,22 +751,176 @@ function createInput(labelText, value, onChange) {
 function createImageField(labelText, value, pathArr, onChange) {
   const container = document.createElement('div');
   container.className = 'editor-image-field';
+
+  // Helpers
+  const isSrcPath = String(pathArr[pathArr.length - 1]) === 'src';
+  const objPath = isSrcPath ? pathArr.slice(0, -1) : pathArr.slice();
+
+  function getValueByPath(obj, p) {
+    return p.reduce((acc, key) => (acc != null ? acc[key] : undefined), obj);
+  }
+  function ensureImageObjectAtPath(p) {
+    const parent = p.slice(0, -1).reduce((acc, key) => (acc[key] == null ? (acc[key] = (typeof key === 'number' ? [] : {})) : acc[key]), editorState.site);
+    const last = p[p.length - 1];
+    const curr = parent[last];
+    if (typeof curr === 'string') {
+      parent[last] = { src: curr };
+    } else if (curr == null) {
+      parent[last] = { src: '' };
+    }
+    return parent[last];
+  }
+  function setObjField(field, val) {
+    if (isSrcPath) {
+      // parent object is at objPath
+      const base = getValueByPath(editorState.site, objPath) || ensureImageObjectAtPath(pathArr);
+      base[field] = val;
+    } else {
+      const base = ensureImageObjectAtPath(pathArr);
+      base[field] = val;
+    }
+    debouncedPreview();
+  }
+
+  // Valor actual normalizado
+  const current = (() => {
+    if (typeof value === 'string') return { src: value };
+    if (value && typeof value === 'object') return { ...value };
+    return { src: '' };
+  })();
+
+  // URL
   const textLabel = document.createElement('label');
   textLabel.textContent = labelText;
   const textInput = document.createElement('input');
   textInput.type = 'text';
-  textInput.value = value || '';
+  textInput.value = current.src || '';
   textInput.addEventListener('input', event => {
-    onChange(event.target.value);
+    const url = event.target.value;
+    if (isSrcPath) {
+      onChange(url);
+    } else {
+      ensureImageObjectAtPath(pathArr).src = url;
+      debouncedPreview();
+    }
     onFieldInput(event);
   });
   textLabel.appendChild(textInput);
   container.appendChild(textLabel);
+
+  // Subir archivo
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
-  fileInput.addEventListener('change', event => onPickImage(event, pathArr));
+  fileInput.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadImage(file);
+      if (isSrcPath) {
+        onChange(url);
+      } else {
+        ensureImageObjectAtPath(pathArr).src = url;
+        debouncedPreview();
+      }
+      if (textInput) textInput.value = url;
+    } catch (e) {
+      console.error('uploadImage', e);
+      alert('No se pudo subir la imagen');
+    } finally {
+      event.target.value = '';
+    }
+  });
   container.appendChild(fileInput);
+
+  // Ajuste: cover/contain
+  const fitLabel = document.createElement('label');
+  fitLabel.textContent = 'Ajuste';
+  const fitSelect = document.createElement('select');
+  ;[
+    { v: '', l: 'Por defecto (slot)' },
+    { v: 'cover', l: 'Cubrir' },
+    { v: 'contain', l: 'Contener' }
+  ].forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt.v; o.textContent = opt.l;
+    if (opt.v === (current.fit || '')) o.selected = true;
+    fitSelect.appendChild(o);
+  });
+  fitSelect.addEventListener('change', (e) => {
+    const val = e.target.value || undefined;
+    setObjField('fit', val);
+    onFieldInput(e);
+  });
+  fitLabel.appendChild(fitSelect);
+  container.appendChild(fitLabel);
+
+  // Alineación 3x3
+  const alignLabel = document.createElement('label');
+  alignLabel.textContent = 'Alineación';
+  const alignSelect = document.createElement('select');
+  const alignOpts = [
+    { v: '', l: 'Por defecto (centro)' },
+    { v: 'top-left', l: 'Arriba Izquierda' },
+    { v: 'top-center', l: 'Arriba Centro' },
+    { v: 'top-right', l: 'Arriba Derecha' },
+    { v: 'center-left', l: 'Centro Izquierda' },
+    { v: 'center', l: 'Centro' },
+    { v: 'center-right', l: 'Centro Derecha' },
+    { v: 'bottom-left', l: 'Abajo Izquierda' },
+    { v: 'bottom-center', l: 'Abajo Centro' },
+    { v: 'bottom-right', l: 'Abajo Derecha' }
+  ];
+  alignOpts.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt.v; o.textContent = opt.l;
+    if (opt.v === (current.align || '')) o.selected = true;
+    alignSelect.appendChild(o);
+  });
+  alignSelect.addEventListener('change', (e) => {
+    const val = e.target.value || undefined;
+    setObjField('align', val);
+    onFieldInput(e);
+  });
+  alignLabel.appendChild(alignSelect);
+  container.appendChild(alignLabel);
+
+  // Foco fino XY
+  const xyWrapper = document.createElement('div');
+  const fxLabel = document.createElement('label');
+  fxLabel.textContent = 'Foco X (%)';
+  const fxInput = document.createElement('input');
+  fxInput.type = 'number';
+  fxInput.min = '0'; fxInput.max = '100'; fxInput.step = '1';
+  fxInput.value = (typeof current.focusX === 'number') ? String(current.focusX) : '';
+  fxInput.placeholder = '0–100';
+  fxInput.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    const num = val === '' ? undefined : Math.max(0, Math.min(100, Number(val)));
+    setObjField('focusX', num);
+    onFieldInput(e);
+  });
+  fxLabel.appendChild(fxInput);
+
+  const fyLabel = document.createElement('label');
+  fyLabel.textContent = 'Foco Y (%)';
+  const fyInput = document.createElement('input');
+  fyInput.type = 'number';
+  fyInput.min = '0'; fyInput.max = '100'; fyInput.step = '1';
+  fyInput.value = (typeof current.focusY === 'number') ? String(current.focusY) : '';
+  fyInput.placeholder = '0–100';
+  fyInput.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    const num = val === '' ? undefined : Math.max(0, Math.min(100, Number(val)));
+    setObjField('focusY', num);
+    onFieldInput(e);
+  });
+  fyLabel.appendChild(fyInput);
+
+  xyWrapper.appendChild(fxLabel);
+  xyWrapper.appendChild(fyLabel);
+  container.appendChild(xyWrapper);
+
   return container;
 }
 
@@ -769,9 +1014,9 @@ function downloadContent() {
 
 async function saveContent() {
   try {
-    const response = await fetch('/api/content', {
+    const response = await fetch(withAdminUrl('/api/content'), {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: withAdmin({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(editorState.site, null, 2)
     });
     if (!response.ok) throw new Error(`Status ${response.status}`);
@@ -788,6 +1033,11 @@ function deepClone(value) {
   }
   return JSON.parse(JSON.stringify(value));
 }
+
+
+
+
+
 
 
 
