@@ -519,7 +519,7 @@ function renderSectionsEditor() {
 }
 
 const sectionEditors = {
-  richText(section, index) {
+  textoInformativo(section, index) {
     const wrapper = document.createElement('div');
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     const textarea = createTextarea('Lineas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
@@ -528,7 +528,7 @@ const sectionEditors = {
     wrapper.appendChild(textarea);
     return wrapper;
   },
-  linkCards(section, index) {
+  opcionesCompra(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -564,7 +564,7 @@ const sectionEditors = {
     wrapper.appendChild(addBtn);
     return wrapper;
   },
-  imageGrid(section, index) {
+  galeriaImagenes(section, index) {
     const list = document.createElement('div');
     const pageIndex = currentPageIndex();
     list.className = 'editor-inline-list';
@@ -597,7 +597,7 @@ const sectionEditors = {
     wrapper.appendChild(addBtn);
     return wrapper;
   },
-  imageCarousel(section, index) {
+  carruselImagenes(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -631,7 +631,7 @@ const sectionEditors = {
     wrapper.appendChild(addBtn);
     return wrapper;
   },
-  imageHighlight(section, index) {
+  detalleVisual(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -640,7 +640,7 @@ const sectionEditors = {
     wrapper.appendChild(createImageField('Imagen', section.data?.image || '', imagePath, value => updateSection(index, s => s.data.image = value)));
     return wrapper;
   },
-  cta(section, index) {
+  botonAccion(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -651,7 +651,7 @@ const sectionEditors = {
     wrapper.appendChild(createImageField('Imagen', section.data?.image || '', imagePath, value => updateSection(index, s => s.data.image = value)));
     return wrapper;
   },
-  winnerCards(section, index) {
+  muroGanadores(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -692,39 +692,39 @@ const sectionEditors = {
 };
 
 const defaultSections = {
-  richText: {
-    id: 'richText-new',
-    type: 'richText',
+  textoInformativo: {
+    id: 'textoInformativo-new',
+    type: 'textoInformativo',
     data: { title: 'Nuevo bloque', lines: ['Contenido editable'] }
   },
-  linkCards: {
-    id: 'linkCards-new',
-    type: 'linkCards',
+  opcionesCompra: {
+    id: 'opcionesCompra-new',
+    type: 'opcionesCompra',
     data: { title: 'Nuevas opciones', cards: [{ title: 'Titulo', subtitle: 'Descripcion', href: '#', image: '' }] }
   },
-  imageGrid: {
-    id: 'imageGrid-new',
-    type: 'imageGrid',
+  galeriaImagenes: {
+    id: 'galeriaImagenes-new',
+    type: 'galeriaImagenes',
     data: { images: [{ src: '', href: '' }] }
   },
-  imageCarousel: {
-    id: 'imageCarousel-new',
-    type: 'imageCarousel',
+  carruselImagenes: {
+    id: 'carruselImagenes-new',
+    type: 'carruselImagenes',
     data: { title: 'Galeria', description: '', images: [''] }
   },
-  imageHighlight: {
-    id: 'imageHighlight-new',
-    type: 'imageHighlight',
+  detalleVisual: {
+    id: 'detalleVisual-new',
+    type: 'detalleVisual',
     data: { title: 'Destacado', body: 'Descripcion', image: '' }
   },
-  cta: {
-    id: 'cta-new',
-    type: 'cta',
+  botonAccion: {
+    id: 'botonAccion-new',
+    type: 'botonAccion',
     data: { title: 'Llamado a la accion', body: 'Descripcion', href: '#', buttonLabel: 'Ver mas', image: '' }
   },
-  winnerCards: {
-    id: 'winnerCards-new',
-    type: 'winnerCards',
+  muroGanadores: {
+    id: 'muroGanadores-new',
+    type: 'muroGanadores',
     data: { title: 'Ganadores', cards: [{ winner: 'Nombre', prize: 'Premio', ticket: '', date: '', location: '', image: '' }] }
   }
 };

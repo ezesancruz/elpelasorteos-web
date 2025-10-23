@@ -616,19 +616,19 @@ function renderSection(section) {
 }
 
 const sectionRenderers = {
-  richText: renderRichTextSection,
-  linkCards: renderLinkCardsSection,
-  imageGrid: renderImageGridSection,
-  imageCarousel: renderImageCarouselSection,
-  imageHighlight: renderImageHighlightSection,
-  cta: renderCTASection,
-  winnerCards: renderWinnerCardsSection,
+  textoInformativo: renderRichTextSection,
+  opcionesCompra: renderLinkCardsSection,
+  galeriaImagenes: renderImageGridSection,
+  carruselImagenes: renderImageCarouselSection,
+  detalleVisual: renderImageHighlightSection,
+  botonAccion: renderCTASection,
+  muroGanadores: renderWinnerCardsSection,
   keyValue: renderKeyValueSection,
   faq: renderFAQSection
 };
 
 function renderRichTextSection(section) {
-  const container = baseSection('richText');
+  const container = baseSection('textoInformativo');
   if (section.data?.title) {
     const heading = document.createElement('h2');
     heading.textContent = section.data.title;
@@ -716,7 +716,7 @@ function renderFAQSection(section) {
 }
 
 function renderLinkCardsSection(section) {
-  const container = baseSection('linkCards');
+  const container = baseSection('opcionesCompra');
   if (section.data?.title) {
     const heading = document.createElement('h2');
     heading.textContent = section.data.title;
@@ -754,7 +754,7 @@ function renderLinkCardsSection(section) {
 }
 
 function renderImageGridSection(section) {
-  const container = baseSection('imageGrid');
+  const container = baseSection('carruselImagenes');
   const grid = document.createElement('div');
   grid.className = 'image-grid';
   section.data?.images?.forEach(image => {
@@ -797,7 +797,7 @@ function renderImageCarouselSection(section) {
 }
 
 function renderImageHighlightSection(section) {
-  const container = baseSection('imageHighlight');
+  const container = baseSection('detalleVisual');
   const media = document.createElement('div');
   media.className = 'imageHighlight__media';
   if (section.data?.image) {
@@ -822,7 +822,7 @@ function renderImageHighlightSection(section) {
 }
 
 function renderCTASection(section) {
-  const container = baseSection('cta');
+  const container = baseSection('botonAccion');
   if (section.data?.image) {
     const img = createImg(section.data.image, section.data?.title || 'CTA');
     container.appendChild(img);
@@ -850,7 +850,7 @@ function renderCTASection(section) {
 }
 
 function renderWinnerCardsSection(section) {
-  const container = baseSection('winnerCards');
+  const container = baseSection('muroGanadores');
   if (section.data?.title) {
     const heading = document.createElement('h2');
     heading.textContent = section.data.title;

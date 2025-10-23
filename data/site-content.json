@@ -6,7 +6,7 @@
   "theme": {
     "colors": {
       "primary": "#fe9200",
-      "accent": "#000000",
+      "accent": "#ffffff",
       "text": "#ffffff",
       "muted": "#111111"
     },
@@ -97,22 +97,23 @@
       "sections": [
         {
           "id": "premios",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
-            "title": "Los premios son",
+            "title": "🏆 Premios del Sorteo",
             "alignment": "center",
             "lines": [
-              "LOS PREMIOS SON:",
-              "1 KTM 390 con 9000 km",
-              "2 Honda XR 150 MD 2024",
-              "3 $500.000 en efectivo",
-              "4 $250.000 en efectivo",
-              "5 $100.000 en efectivo"
+              "1° Premio: 🏍️ Honda Wave 110cc 0 km",
+              "Directo del concesionario, lista para ser tuya.",
+              "2° al 5° Premio: 🎁 A definir",
+              "Premios sorpresa que se anunciarán en los próximos días… 👀",
+              "(Spoiler: van a estar buenísimos).",
+              "💸 Además, cada semana sorteamos $15.000 entre 3 o más ganadores.",
+              "¡Sí! Tres chances de ganar todas las semanas, solo por participar."
             ]
           }
         },
         {
-          "id": "comprar-chances",
+          "id": "opcionesCompra",
           "type": "linkCards",
           "data": {
             "title": "Elegir cuantas chances queres",
@@ -180,7 +181,7 @@
         },
         {
           "id": "numero-comprobante",
-          "type": "imageHighlight",
+          "type": "detalleVisual",
           "data": {
             "title": "N�mero de comprobante",
             "body": "As� es como te llega a vos y a m� el mismo n�mero de comprobante. Es el que utilizo para la urna de participantes; si pagaste varias chances este n�mero de operaci�n se repite tantas veces como compraste.",
@@ -191,7 +192,7 @@
         },
         {
           "id": "tenes-dudas",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "Tenes dudas?",
             "alignment": "center",
@@ -202,7 +203,7 @@
         },
         {
           "id": "galeria-premio",
-          "type": "imageGrid",
+          "type": "galeriaImagenes",
           "data": {
             "layout": "two-column",
             "images": [
@@ -221,7 +222,7 @@
         },
         {
           "id": "fotos-premio",
-          "type": "imageCarousel",
+          "type": "carruselImagenes",
           "data": {
             "title": "Fotos Del Premio",
             "description": "Desliz� para ver m�s",
@@ -246,7 +247,7 @@
         },
         {
           "id": "informacion",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "Informaci�n",
             "alignment": "center",
@@ -268,7 +269,7 @@
         },
         {
           "id": "tienda-online",
-          "type": "cta",
+          "type": "botonAccion",
           "data": {
             "title": "Hac� click para conocer mi tienda online",
             "body": "Soy mec�nico de motos; empec� a vender repuestos en Instagram y ahora implement� la tienda donde vas a encontrar productos variados.",
@@ -281,7 +282,7 @@
         },
         {
           "id": "como-participar-seccion",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "C�mo participar",
             "html": "<ol><li>Eleg� tu pack.</li><li>Pag� por Mercado Pago.</li><li>Guard� el comprobante (n�mero de operaci�n).</li><li>Mir� el sorteo en vivo.</li></ol>"
@@ -289,7 +290,7 @@
         },
         {
           "id": "transparencia",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "Transparencia",
             "lines": [
@@ -333,7 +334,7 @@
         },
         {
           "id": "bases",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "Bases",
             "html": "<small>Este sorteo no est� patrocinado por Mercado Pago ni por redes. Premios sujetos a condiciones publicadas.</small>"
@@ -382,7 +383,7 @@
       "sections": [
         {
           "id": "proceso",
-          "type": "richText",
+          "type": "textoInformativo",
           "data": {
             "title": "Transparencia en cada sorteo",
             "alignment": "center",
@@ -394,7 +395,7 @@
         },
         {
           "id": "ganadores",
-          "type": "winnerCards",
+          "type": "muroGanadores",
           "data": {
             "title": "Ganadores destacados",
             "cards": [
@@ -430,7 +431,7 @@
         },
         {
           "id": "como-participar",
-          "type": "cta",
+          "type": "botonAccion",
           "data": {
             "title": "Sumate al proximo sorteo",
             "body": "Reserva tu lugar hoy mismo y segui la transmision en vivo para saber si sos el proximo ganador.",
