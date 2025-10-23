@@ -435,19 +435,19 @@ function renderSectionsEditor() {
 
     const up = document.createElement('button');
     up.type = 'button';
-    up.textContent = 'Ã¢â€ â€˜';
+    up.textContent = '↑';
     up.disabled = index === 0;
     up.addEventListener('click', () => moveSection(index, -1));
 
     const down = document.createElement('button');
     down.type = 'button';
-    down.textContent = 'Ã¢â€ â€œ';
+    down.textContent = '↓';
     down.disabled = index === page.sections.length - 1;
     down.addEventListener('click', () => moveSection(index, 1));
 
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.textContent = 'Ã¢Å“â€¢';
+    remove.textContent = 'x';
     remove.addEventListener('click', () => removeSection(index));
 
     controls.appendChild(up);
