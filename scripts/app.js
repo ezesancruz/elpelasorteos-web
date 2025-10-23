@@ -290,21 +290,33 @@ function createImg(srcOrObj, alt = '', opts = {}) {
 
 function renderHero(hero = {}) {
   const section = document.createElement('section');
-  section.className = 'section';
+  section.className = 'section section--hero';
 
   const heroEl = document.createElement('div');
   heroEl.className = 'hero';
   section.appendChild(heroEl);
 
   if (hero.bannerImage) {
+    const media = document.createElement('div');
+    media.className = 'hero__media';
     const banner = createImg(hero.bannerImage, hero.title || 'Banner');
     banner.className = 'hero-banner';
-    heroEl.appendChild(banner);
+    media.appendChild(banner);
+    heroEl.appendChild(media);
   }
 
   const body = document.createElement('div');
   body.className = 'hero-body';
   heroEl.appendChild(body);
+
+    if (hero.profileImage) {
+    const profileWrapper = document.createElement('div');
+    profileWrapper.className = 'hero__profile-wrapper';
+    const profile = createImg(hero.profileImage, hero.title || 'Perfil');
+    profile.className = 'hero-profile';
+    profileWrapper.appendChild(profile);
+    body.appendChild(profileWrapper);
+  }
 
   const title = document.createElement('h1');
   title.className = 'hero__title';
@@ -338,12 +350,6 @@ function renderHero(hero = {}) {
   
   const social = renderSocial(hero.social);
   if (social) body.appendChild(social);
-
-  if (hero.profileImage) {
-    const profile = createImg(hero.profileImage, hero.title || 'Perfil');
-    profile.className = 'hero-profile';
-    heroEl.appendChild(profile);
-  }
 
   return section;
 }

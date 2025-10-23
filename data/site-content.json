@@ -42,13 +42,14 @@
         "title": "EL PELA | 1er Sorteo - Honda Wave S 110cc 0km.",
         "subtitle": "Reserva tu lugar y gana un premio este 31/10",
         "profileImage": {
-          "src": "/uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp"
+          "src": "/uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp",
+          "align": "center"
         },
         "bannerImage": {
           "src": "/uploads/9cbb3b73-03c0-4504-8d96-2db0f8adaa1c_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp",
           "fit": "cover",
-          "align": "bottom-center",
-          "focusY": 30
+          "align": "center",
+          "focusY": 0
         },
         "buttons": [
           {
@@ -63,23 +64,19 @@
         "social": [
           {
             "platform": "tiktok",
-            "url": "https://www.tiktok.com/@ojedapreparacion?_t=8jsmqzsu3at&_r=1"
+            "url": "https://www.tiktok.com/@_milpeso"
           },
           {
             "platform": "instagram",
-            "url": "https://www.instagram.com/sorteo.ojeda/"
-          },
-          {
-            "platform": "youtube",
-            "url": "https://youtube.com/@ojedapreparacion4412?feature=shared"
+            "url": "https://www.instagram.com/__elpelaaa/"
           },
           {
             "platform": "facebook",
-            "url": "https://www.facebook.com/share/16oeL7Rejs/?mibextid=wwXIfr"
+            "url": "https://www.facebook.com/elesantax/"
           },
           {
             "platform": "whatsapp",
-            "url": "https://whatsapp.com/channel/0029Vb5dDFT0bIdhfmabL11s"
+            "url": "https://whatsapp.com/channel/0029VbBolV5A2pL9zNnhfT0n "
           }
         ]
       },

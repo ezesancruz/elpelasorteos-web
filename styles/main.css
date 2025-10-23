@@ -7,6 +7,7 @@
   --font-heading: "Fredoka One", sans-serif;
   --font-body: "Poppins", sans-serif;
   --max-width: 960px;
+  --card-radius: 28px;
 }
 
 * {
@@ -113,23 +114,28 @@ main {
   max-width: var(--max-width);
   margin: 0 auto 3rem;
   padding: 2.5rem;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: rgba(17, 17, 17, 0.68);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
 }
 
+.section--hero {
+  padding: clamp(1.75rem, 5vw, 2.5rem) clamp(1.5rem, 4vw, 2rem) clamp(2.25rem, 6vw, 3rem);
+}
+
 .hero__title {
   font-family: var(--font-heading);
-  font-size: clamp(2.6rem, 4vw, 3.4rem);
-  margin: 0 0 0.75rem;
+  font-size: clamp(1.75rem, 5vw, 2.625rem);
+  line-height: 1.15;
+  margin: 0;
 }
 
 .hero__subtitle {
   font-size: 1.2rem;
-  margin: 0 0 1.75rem;
-  line-height: 1.6;
+  margin: clamp(0.5rem, 2vw, 0.75rem) 0 0;
+  line-height: 1.45;
   color: rgba(255, 255, 255, 0.82);
 }
 
@@ -584,58 +590,71 @@ main {
     width: 100vw;
   }
 }
-/* === HERO PRO (grid) === */
+/* === HERO === */
 .hero {
-  display: grid;
-  grid-template-areas:
-    "banner banner"
-    "body   profile";
-  grid-template-columns: 1fr auto;
-  gap: 18px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.25rem);
+}
+
+.hero__media {
+  width: 100%;
 }
 
 .hero-banner {
-  grid-area: banner;
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: var(--card-radius);
   display: block;
   box-shadow: 0 16px 36px rgba(0,0,0,0.35);
 }
 
 .hero-body {
-  grid-area: body;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.hero__profile-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
 }
 
 .hero-profile {
-  grid-area: profile;
-  position: static;
-  width: clamp(72px, 10vw, 120px);
-  height: clamp(72px, 10vw, 120px);
+  width: clamp(4rem, 12vw, 5rem);
+  height: clamp(4rem, 12vw, 5rem);
   border-radius: 999px;
   object-fit: cover;
   border: 3px solid #111;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  justify-self: end;
+}
+
+.hero-body .button-row {
+  justify-content: flex-start;
+  margin: clamp(1rem, 3vw, 1.25rem) 0 clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.hero-body .social-list {
+  margin-top: clamp(0.75rem, 2vw, 1rem);
+  justify-content: flex-start;
 }
 
 @media (max-width: 720px) {
   .hero {
-    grid-template-areas:
-      "banner"
-      "profile"
-      "body";
-    grid-template-columns: 1fr;
-    justify-items: center;
+    gap: 1.25rem;
   }
-  .hero-profile {
-    width: clamp(64px, 12vw, 96px);
-    height: clamp(64px, 12vw, 96px);
-    justify-self: center;
+
+  .hero__profile-wrapper {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-body {
+    align-items: flex-start;
   }
 }
 .social-list {
