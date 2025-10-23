@@ -258,10 +258,12 @@
           "id": "tenes-dudas",
           "type": "textoInformativo",
           "data": {
-            "title": "Tenes dudas?",
+            "title": "¿Tenés alguna duda?",
             "alignment": "center",
             "lines": [
-              "Mi nombre es Fernando Ojeda. Arriba tenes mis aplicaciones oficiales"
+              "Soy Lucas Santa Cruz, organizador del sorteo.",
+              "Encontrá arriba mis redes oficiales para participar, consultar tus chances o seguir los sorteos en vivo y novedades.",
+              "Si necesitás algo, estoy para ayudarte 👋"
             ]
           }
         },
