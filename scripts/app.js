@@ -245,12 +245,18 @@ function resolveImageSrc(input, preferThumb = false) {
 function createImg(srcOrObj, alt = '', opts = {}) {
   const preferThumb = !!opts.preferThumb;
   const resolved = resolveImageSrc(srcOrObj, preferThumb);
+  const full = resolveImageSrc(srcOrObj, false);
   const img = document.createElement('img');
   img.src = resolved;
   img.alt = alt || '';
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.style.objectFit = 'cover';
+  // Datos para lightbox (src completo y caption opcional)
+  try {
+    if (full) img.dataset.fullsrc = full;
+    const title = (typeof srcOrObj === 'object' && srcOrObj && (srcOrObj.title || srcOrObj.caption)) || '';
+    if (!img.title && title) img.title = String(title);
+  } catch (_) {}
   return img;
 }
 

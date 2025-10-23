@@ -218,6 +218,8 @@ main {
 
 .link-card img {
   width: 100%;
+  aspect-ratio: 4 / 3; /* Cards – 4:3 cover */
+  object-fit: cover;
   border-radius: 16px;
   margin-bottom: 1rem;
 }
@@ -233,16 +235,24 @@ main {
   color: rgba(255, 255, 255, 0.75);
 }
 
-.section--imageGrid img {
-  width: 100%;
-  border-radius: 18px;
-  display: block;
-}
-
 .section--imageGrid .image-grid {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Miniaturas (grid) – 1:1 cover */
+.section--imageGrid .image-grid a {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.section--imageGrid .image-grid a img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .carousel {
@@ -256,6 +266,8 @@ main {
 .carousel img {
   border-radius: 18px;
   width: clamp(230px, 40vw, 360px);
+  aspect-ratio: 16 / 9; /* Galería – 16:9 cover */
+  object-fit: cover;
   scroll-snap-align: center;
 }
 
@@ -268,6 +280,8 @@ main {
 
 .imageHighlight__media img {
   width: 100%;
+  aspect-ratio: 5 / 6; /* Portada – 5:6 cover */
+  object-fit: cover;
   border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.12);
 }
@@ -290,6 +304,8 @@ main {
 .section--cta img {
   width: 100%;
   max-width: 320px;
+  aspect-ratio: 1 / 1; /* Logos/elementos sensibles – contener */
+  object-fit: contain;
   border-radius: 18px;
   margin: 0 auto 1.5rem;
   display: block;
@@ -313,6 +329,8 @@ main {
 
 .winner-card img {
   width: 100%;
+  aspect-ratio: 1 / 1; /* Miniaturas ganadores – 1:1 cover */
+  object-fit: cover;
   border-radius: 16px;
 }
 
@@ -580,7 +598,7 @@ main {
 .hero-banner {
   grid-area: banner;
   width: 100%;
-  aspect-ratio: 21 / 9;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: 16px;
   display: block;
@@ -658,4 +676,54 @@ main {
 }
 @media (prefers-reduced-motion: reduce) {
   video { animation: none; }
+}
+/* Lightbox minimal */
+.lightbox[hidden] { display: none !important; }
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+}
+.lightbox__stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 6vh 4vw;
+}
+.lightbox__img {
+  max-width: 92vw;
+  max-height: 82vh;
+  transition: transform 0.08s ease-out;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.lightbox__caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 14px;
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+  padding: 0 16px;
+}
+.lightbox__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
 }

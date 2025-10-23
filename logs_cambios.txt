@@ -89,3 +89,73 @@ Entregado: Se confirmó scripts/prerender.js y el script npm 'prerender'. Se añad
 SessionID: 9094f225-bd29-4cae-868d-f834280ede0b
 ---
 
+### Git add + commit + push
+Timestamp: 2025-10-22 18:57:05
+Pedido: Agregar todos los cambios al control de versiones, crear un commit con resumen de las fases 1-7 y hacer push a la rama main del remoto configurado.
+Entregado: git add -A; commit con mensaje de Fases 1-7; push a origin/main exitoso (upstream configurado).
+SessionID: 2a4459f5-3d1e-405f-976a-4f3f873c75fe
+---
+
+### Actualizar .gitignore (sensibles) + push
+Timestamp: 2025-10-22 19:00:43
+Pedido: Revisar proyecto y ampliar .gitignore para cubrir archivos sensibles: variantes .env, .npmrc, claves/certificados, metadatos de IDE/hosting, etc.; luego hacer add+commit+push.
+Entregado: Amplié .gitignore para ignorar .env.local/.development/.production/.test, .npmrc, *.pem/*.key/*.crt/*.pfx, .vs/, .history/, .vercel/, .netlify/. Se hizo commit y push en main.
+SessionID: 151d4887-f22a-476d-b3c9-ab3aa330f328
+---
+
+### Actualizar favicon a PNG + generador
+Timestamp: 2025-10-22 20:05:27
+Pedido: Usar favicon.png proporcionado como fuente y ajustar el proyecto para servirlo como favicon; generar derivados (16x16, 32x32, apple-touch) y actualizar index.html; hacer commit y push.
+Entregado: index.html ahora referencia favicon.png y variantes; añadí scripts/generate-favicons.js (sharp) y script npm 'favicons'. Pendiente: subir favicon.png y ejecutar 'npm run favicons' para generar los tamaños.
+SessionID: f710c88a-e165-493d-b9b1-eefacb617ac8
+---
+
+### Publicar favicon.png y derivados
+Timestamp: 2025-10-22 20:07:54
+Pedido: Confirmar generación de favicon-16x16.png, favicon-32x32.png y apple-touch-icon.png desde favicon.png; commitear y pushear los archivos generados.
+Entregado: Verifiqué presencia de los cuatro archivos PNG; hice git add, commit y push a main con los favicons generados.
+SessionID: 28e13b60-1058-4737-a729-0f89d2cce113
+---
+
+=== Aplicar solución editor con token ===
+Fecha: 2025-10-22 22:13:58 -03:00
+Pedido: Leer web/solucion.txt y aplicar correctamente la solución.
+Entregado: Modifiqué web/scripts/editor.js para:
+- Leer ADMIN_TOKEN desde localStorage.
+- Agregar header x-admin-token en /api/upload y /api/content.
+Según indicaciones de web/Solucion.txt.
+Sesión: 22bf217c-f29d-4d97-86d8-1c6d56ca234d
+=== Fix token dinámico en editor ===
+Fecha: 2025-10-22 22:23:09 -03:00
+Pedido: 401 en /api/upload desde el editor; que funcione.
+Entregado: Hice que el token se lea dinámicamente desde localStorage en cada request (withAdmin ahora usa getAdminToken). Evita tener que recargar la página tras setear el token.
+Sesión: bd278289-56b6-4be7-82c6-99742cc8c2f8
+=== Agrego token por query en fetch ===
+Fecha: 2025-10-22 22:25:44 -03:00
+Pedido: 401 persistente en /api/upload desde Chrome.
+Entregado: Además del header x-admin-token, ahora agrego ?token=... en las URLs de /api/upload y /api/content (helper withAdminUrl). Mayor compatibilidad ante headers filtrados.
+Sesión: c09c3bcd-b563-4e2b-97bf-0a0d987b12e5
+[Título] Diagnóstico editor y subida (no guarda cambios)
+[Timestamp] 2025-10-23T14:00:00Z
+[Pedido] Detectar por qué no se puede subir imágenes ni guardar cambios desde el navegador y documentar problema y plan en ""Solucion.txt"".
+[Entregado] Análisis del backend (flags, auth, límites), frontend (token en localStorage, editor iniciando sin backend) y despliegue (Docker/Caddy). Se dejó diagnóstico detallado y plan de acción en ""Solucion.txt"".
+[ID] c5e4b3b8-3f1c-4a8a-9e56-7b0f1d8f8b4a
+[Título] Implementación de plan Solucion.txt
+[Timestamp] 2025-10-23T01:42:11Z
+[Pedido] Aplicar mejoras de Solucion.txt: (1) subir límite JSON backend, (2) editor no inicia sin backend y controles de token, (3) volumen data en docker-compose para persistir site-content.json.
+[Entregado] Actualicé server/editor-server.js (10mb), scripts/editor.js (control de backend, UI de token, etiqueta botón), docker-compose.yml (montaje ./data).
+[ID] 6179ef85-48c8-495c-bc9c-e8668d6357ce
+=== EliminaciÃ³n de archivo ===
+Timestamp: 2025-10-22 23:52:56
+Pedido: Eliminar archivo "Solucion.txt"
+Entregado: Archivo "Solucion.txt" eliminado correctamente.
+ID de sesiÃ³n: ee40af36-1035-4b28-b375-3afce9f33c47
+=== EdiciÃ³n local sin token + Fix Guardar ===
+Timestamp: 2025-10-23 00:03:47
+Pedido: Eliminar necesidad de token al editar localmente y reparar botÃ³n Guardar cambios
+Entregado: Backend permite ediciÃ³n local sin token (bypass en localhost) y editor frontend reparado: se agregÃ³ createToggle(), contenedor de acciones y lÃ³gica para no pedir token en local. BotÃ³n Guardar ahora persiste vÃ­a /api/content sin token en entorno local.
+ID de sesiÃ³n: f048ab91-f93c-4276-9507-63024b6f76f8
+[#] Visor/lightbox minimalista con zoom | 2025-10-23 00:29:39 | SessionID=ce9abb8f-8b0e-4ca1-be91-f8be9502f4eb
+- Pedido: Envolver imágenes clickeables con enlace a versión completa y activar un visor (lightbox) con soporte de zoom, teclado, móvil y captions (alt o título).
+- Entregado: Se agregó scripts/lightbox.js con overlay, navegación por teclado (Esc, ?/?), zoom (rueda, doble click/tap, pinch), arrastre/pan en zoom, gestos táctiles y captions desde alt/title. Se envuelven automáticamente imágenes dentro de .section en enlaces a su versión completa (respetando enlaces externos). Se actualizó scripts/app.js para aportar data-fullsrc y title desde los datos de imagen, y se añadió CSS minimal en styles/main.css. Se referencia el módulo en index.html.
+
