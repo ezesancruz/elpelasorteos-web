@@ -61,6 +61,12 @@ function initEditor() {
 
 let panelRenderScheduled = false;
 
+const PRESET_THEME_COLORS = [
+  '#fe9200', '#f5a623', '#ff6f61', '#ff4d4f', '#f8e71c',
+  '#7ed321', '#417505', '#50e3c2', '#4a90e2', '#9013fe',
+  '#bd10e0', '#b8e986', '#4a4a4a', '#000000', '#ffffff'
+];
+
 function debounce(fn, ms = 200) {
   let timeout;
   return (...args) => {
@@ -730,9 +736,9 @@ function renderThemeEditor() {
   legend.textContent = 'Tema y fondos';
   fieldset.appendChild(legend);
 
-  fieldset.appendChild(createInput('Color primario', theme.colors?.primary || '#fe9200', value => updateTheme(themeDraft => themeDraft.colors.primary = value)));
-  fieldset.appendChild(createInput('Color secundario', theme.colors?.accent || '#000000', value => updateTheme(themeDraft => themeDraft.colors.accent = value)));
-  fieldset.appendChild(createInput('Color texto', theme.colors?.text || '#ffffff', value => updateTheme(themeDraft => themeDraft.colors.text = value)));
+  fieldset.appendChild(createColorField('Color primario', theme.colors?.primary || '#fe9200', value => updateTheme(themeDraft => themeDraft.colors.primary = value)));
+  fieldset.appendChild(createColorField('Color secundario', theme.colors?.accent || '#000000', value => updateTheme(themeDraft => themeDraft.colors.accent = value)));
+  fieldset.appendChild(createColorField('Color texto', theme.colors?.text || '#ffffff', value => updateTheme(themeDraft => themeDraft.colors.text = value)));
 
   fieldset.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
   const posterPath = ['theme', 'background', 'poster'];
@@ -755,6 +761,158 @@ function createInput(labelText, value, onChange) {
   });
   label.appendChild(input);
   return label;
+}
+
+function createColorField(labelText, value, onChange) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'editor-color-field';
+
+  const controls = document.createElement('div');
+  controls.className = 'editor-color-field__controls';
+
+  const label = document.createElement('label');
+  label.className = 'editor-color-field__label';
+
+  const title = document.createElement('span');
+  title.textContent = labelText;
+  label.appendChild(title);
+
+  const textInput = document.createElement('input');
+  textInput.type = 'text';
+  textInput.value = value || '';
+  label.appendChild(textInput);
+
+  controls.appendChild(label);
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.type = 'button';
+  toggleBtn.className = 'editor-color-field__toggle';
+  toggleBtn.setAttribute('aria-expanded', 'false');
+  toggleBtn.textContent = 'Elegir color';
+
+  const preview = document.createElement('span');
+  preview.className = 'editor-color-field__preview';
+  toggleBtn.prepend(preview);
+
+  controls.appendChild(toggleBtn);
+  wrapper.appendChild(controls);
+
+  const palette = document.createElement('div');
+  palette.className = 'editor-color-field__palette';
+  palette.hidden = true;
+
+  const swatchList = document.createElement('div');
+  swatchList.className = 'editor-color-field__swatches';
+  PRESET_THEME_COLORS.forEach(color => {
+    const swatch = document.createElement('button');
+    swatch.type = 'button';
+    swatch.className = 'editor-color-field__swatch';
+    swatch.style.setProperty('--swatch-color', color);
+    swatch.setAttribute('aria-label', `Usar ${color}`);
+    swatch.addEventListener('click', () => updateColor(color));
+    swatchList.appendChild(swatch);
+  });
+  palette.appendChild(swatchList);
+
+  const customRow = document.createElement('div');
+  customRow.className = 'editor-color-field__custom';
+
+  const colorInput = document.createElement('input');
+  colorInput.type = 'color';
+  colorInput.value = expandHexToSix(value) || '#ffffff';
+  customRow.appendChild(colorInput);
+
+  const codeLabel = document.createElement('label');
+  codeLabel.className = 'editor-color-field__code';
+  codeLabel.textContent = 'Código';
+  const codeInput = document.createElement('input');
+  codeInput.type = 'text';
+  codeInput.placeholder = '#rrggbb';
+  codeInput.value = value || '';
+  codeLabel.appendChild(codeInput);
+  customRow.appendChild(codeLabel);
+
+  palette.appendChild(customRow);
+  wrapper.appendChild(palette);
+
+  toggleBtn.addEventListener('click', () => {
+    const isHidden = palette.hidden;
+    palette.hidden = !isHidden;
+    toggleBtn.setAttribute('aria-expanded', String(isHidden));
+  });
+
+  let syncing = false;
+
+  function updateColor(rawValue, { silent = false } = {}) {
+    if (syncing) return;
+    syncing = true;
+
+    const normalized = normalizeColorValue(rawValue);
+    const expanded = expandHexToSix(normalized);
+
+    if (textInput.value !== normalized) textInput.value = normalized;
+    if (codeInput.value !== normalized) codeInput.value = normalized;
+
+    if (expanded) {
+      colorInput.value = expanded;
+      preview.style.backgroundColor = expanded;
+      preview.classList.remove('is-empty');
+    } else {
+      preview.style.backgroundColor = normalized || 'transparent';
+      preview.classList.toggle('is-empty', !normalized);
+    }
+
+    if (!silent) {
+      onChange(normalized);
+      onFieldInput();
+    }
+
+    syncing = false;
+  }
+
+  textInput.addEventListener('input', event => updateColor(event.target.value));
+  colorInput.addEventListener('input', event => updateColor(event.target.value));
+  codeInput.addEventListener('input', event => updateColor(event.target.value));
+
+  updateColor(value || '', { silent: true });
+
+  return wrapper;
+}
+
+function normalizeColorValue(value) {
+  if (typeof value !== 'string') return '';
+  let hex = value.trim();
+  if (!hex) return '';
+  if (!hex.startsWith('#') && /^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex)) {
+    hex = `#${hex}`;
+  }
+  const matchShort = /^#([0-9a-fA-F]{3})$/.exec(hex);
+  if (matchShort) {
+    return `#${matchShort[1].toLowerCase()}`;
+  }
+  const matchLong = /^#([0-9a-fA-F]{6})$/.exec(hex);
+  if (matchLong) {
+    return `#${matchLong[1].toLowerCase()}`;
+  }
+  if (hex.startsWith('#')) {
+    return `#${hex.slice(1).toLowerCase()}`;
+  }
+  return hex;
+}
+
+function expandHexToSix(value) {
+  if (typeof value !== 'string') return null;
+  const hex = value.trim();
+  if (!hex) return null;
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    return hex.toLowerCase();
+  }
+  const short = /^#([0-9a-fA-F]{3})$/.exec(hex);
+  if (short) {
+    const [r, g, b] = short[1].split('');
+    return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+  }
+  return null;
 }
 
 function normalizeImageValue(value) {
