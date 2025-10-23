@@ -163,3 +163,11 @@ ID de sesiÃ³n: f048ab91-f93c-4276-9507-63024b6f76f8
 - Pedido: Normalizar contenedores por slot con relación de aspecto (Portada 5:6, Banner 16:9, Miniatura 1:1, Galería 16:9, Cards 4:3), modo por defecto: Cubrir para Portada/Banner/etc. y Contener para logos; sin reexportar imágenes.
 - Entregado: Se quitaron inline object-fit en createImg para delegar al CSS. Se definieron ratios y fit por slot: .hero-banner (16:9 cover), .imageHighlight__media img (5:6 cover), grid de imágenes 1:1 cover, carousel 16:9 cover, link-card 4:3 cover, winner-card 1:1 cover, CTA 1:1 contain. Se añadieron utilidades .image--cover/.image--contain. Esto permite auto-resize en desktop y mobile sin procesar archivos.
 
+[#] Editor: Posición de recorte (foco) | 2025-10-23 00:50:54 | SessionID=38053652-4f0d-462f-9ce2-916705421be4
+- Pedido: Exponer en el editor campos para Ajuste (Cubrir/Contener), Alineación (9 presets) y Foco XY (%) y persistir junto con la URL; que el sitio respete ese foco/ajuste al recortar.
+- Entregado: Se amplió createImageField para manejar objeto de imagen {src, fit, align, focusX, focusY}. Se agregaron controles: Ajuste cover/contain, Alineación 3x3, Foco X/Y en %. Las rutas que antes eran string ahora soportan objetos; se convirtió hero.banner a createImg para aceptar objeto. En runtime, createImg aplica object-fit y object-position según el foco/alineación. Se mantienen valores por defecto del slot si no se define ajuste. Compatibilidad con strings intacta.
+
+[#] Reemplazo de dominio en referencias | 2025-10-23 01:06:31 | SessionID=dfeab9a3-afd4-465e-8ae2-509c32369d33
+- Pedido: Revisar la carpeta y sustituir 'Ojedapreparacion.com' por 'elpelasorteos.shop' donde se haga referencia al link/dominio.
+- Entregado: Se actualizó data/site-content.json (meta.title) y los títulos de ganadoresanteriores/index.html y sorteo/index.html para usar 'elpelasorteos.shop'. No se modificaron handles de redes sociales (tiktok/youtube) al no ser el dominio del sitio.
+

@@ -1,4 +1,5 @@
-﻿const express = require('express');
+﻿require('dotenv').config();
+const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
@@ -8,19 +9,38 @@ const { randomUUID } = require('crypto');
 const app = express();
 
 // === SECURITY FLAGS ===
-const EDITOR_ENABLED = process.env.EDITOR_ENABLED === 'true';
+// Habilitar el editor por defecto (solo deshabilitar si EDITOR_ENABLED='false')
+const EDITOR_ENABLED = process.env.EDITOR_ENABLED !== 'false';
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 
 // Exponer flag al frontend
-app.get('/api/config', (_req, res) => {
-  res.json({ editorEnabled: EDITOR_ENABLED });
+app.get('/api/config', (req, res) => {
+  const tokenRequired = !isLocalRequest(req) && !!ADMIN_TOKEN;
+  res.json({ editorEnabled: EDITOR_ENABLED, tokenRequired });
 });
 
 function requireEditorEnabled(_req, res, next) {
   if (!EDITOR_ENABLED) return res.status(403).json({ error: 'editor disabled' });
   next();
 }
+function isLocalRequest(req) {
+  try {
+    const host = (req.hostname || '').toLowerCase();
+    const ip = (req.ip || '').toLowerCase();
+    const fwd = String(req.headers['x-forwarded-for'] || '').toLowerCase();
+    const isHostLocal = host === 'localhost' || host === '127.0.0.1';
+    const isIpLocal = ip === '127.0.0.1' || ip === '::1' || ip.startsWith('::ffff:127.0.0.1');
+    const forwardedLocals = fwd.split(',').map(s => s.trim());
+    const isFwdLocal = forwardedLocals.some(x => x === '127.0.0.1' || x === '::1' || x.startsWith('::ffff:127.0.0.1'));
+    return isHostLocal || isIpLocal || isFwdLocal;
+  } catch (_) {
+    return false;
+  }
+}
+
 function requireAdmin(req, res, next) {
+  // En local, no exigir token para facilitar edición
+  if (isLocalRequest(req)) return next();
   const token = req.get('x-admin-token') || req.query.token || '';
   if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'unauthorized' });
   next();
@@ -38,7 +58,8 @@ if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // middlewares
-app.use(express.json({ limit: '2mb' }));
+// Aumentar límite para contenidos más grandes
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(ROOT_DIR));
 app.use('/uploads', express.static(UPLOAD_DIR));
 

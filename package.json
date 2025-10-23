@@ -1,17 +1,18 @@
 {
-    "name":  "ojeda-web",
-    "version":  "1.0.0",
-    "private":  true,
-    "scripts":  {
-                    "start":  "node server/editor-server.js",
-                    "dev":  "node server/editor-server.js",
-                    "prerender":  "node scripts/prerender.js",
-                    "favicons": "node scripts/generate-favicons.js"
-                },
-    "dependencies":  {
-                         "express":  "^4.19.2",
-                         "multer":  "^1.4.5-lts.1",
-                         "puppeteer":  "^24.26.0",
-                         "sharp":  "^0.34.4"
-                     }
+    "name": "ojeda-web",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node server/editor-server.js",
+        "dev": "node server/editor-server.js",
+        "prerender": "node scripts/prerender.js",
+        "favicons": "node scripts/generate-favicons.js"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "express": "^4.19.2",
+        "multer": "^1.4.5-lts.1",
+        "puppeteer": "^24.26.0",
+        "sharp": "^0.34.4"
+    }
 }

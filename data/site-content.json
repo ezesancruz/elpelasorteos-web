@@ -45,9 +45,10 @@
           "src": "/uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp"
         },
         "bannerImage": {
-          "src": "/uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp",
+          "src": "/uploads/9cbb3b73-03c0-4504-8d96-2db0f8adaa1c_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp",
           "fit": "cover",
-          "align": "center"
+          "align": "bottom-center",
+          "focusY": 30
         },
         "buttons": [
           {
