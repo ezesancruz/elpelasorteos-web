@@ -116,8 +116,11 @@ async function uploadImage(file) {
     body: fd
   });
   if (!res.ok) throw new Error('No se pudo subir la imagen');
-  const { url } = await res.json();
-  return url;
+  const payload = await res.json();
+  if (!payload || typeof payload.url !== 'string') {
+    throw new Error('Respuesta de subida invalida');
+  }
+  return payload;
 }
 
 function setValueByPath(obj, pathArr, value) {
@@ -138,10 +141,16 @@ async function onPickImage(event, pathArr) {
   const file = event.target.files?.[0];
   if (!file) return;
   try {
-    const url = await uploadImage(file);
-    setValueByPath(editorState.site, pathArr, url);
+    const uploaded = await uploadImage(file);
+    const payload = { src: uploaded.url };
+    if (uploaded.thumb) payload.thumb = uploaded.thumb;
+    if (String(pathArr[pathArr.length - 1]) === 'src') {
+      setValueByPath(editorState.site, pathArr.slice(0, -1), payload);
+    } else {
+      setValueByPath(editorState.site, pathArr, payload);
+    }
     const textInput = event.target.previousElementSibling?.querySelector('input');
-    if (textInput) textInput.value = url;
+    if (textInput) textInput.value = uploaded.url;
     debouncedPreview();
   } catch (error) {
     console.error('onPickImage', error);
@@ -748,67 +757,412 @@ function createInput(labelText, value, onChange) {
   return label;
 }
 
+function normalizeImageValue(value) {
+  if (!value) return { src: '' };
+  if (typeof value === 'string') return { src: value };
+  if (typeof value !== 'object') return { src: '' };
+  const copy = { ...value };
+  if (!copy.src && copy.url) copy.src = copy.url;
+  if (copy.focusX != null || copy.focusY != null || copy.align) {
+    const legacy = convertLegacyCrop(copy);
+    if (legacy) {
+      copy.crop = legacy;
+    }
+  }
+  return copy;
+}
+
+function convertLegacyCrop(obj) {
+  try {
+    if (!obj) return null;
+    const crop = { zoom: 1, offsetX: 0.5, offsetY: 0.5 };
+    if (typeof obj.focusX === 'number') {
+      crop.offsetX = Math.max(0, Math.min(100, obj.focusX)) / 100;
+    } else if (typeof obj.align === 'string') {
+      const mapX = { 'left': 0.1, 'center': 0.5, 'right': 0.9 };
+      const mapY = { 'top': 0.1, 'center': 0.5, 'bottom': 0.9 };
+      const [y, x] = obj.align.split('-');
+      crop.offsetX = mapX[x] ?? mapX[y] ?? 0.5;
+      crop.offsetY = mapY[y] ?? mapY[x] ?? 0.5;
+    }
+    if (typeof obj.focusY === 'number') {
+      crop.offsetY = Math.max(0, Math.min(100, obj.focusY)) / 100;
+    }
+    return crop;
+  } catch (_) {
+    return null;
+  }
+}
+
+function guessAspectFromPath(pathArr = []) {
+  const joined = pathArr.map(String).join('.').toLowerCase();
+  if (joined.includes('banner') || joined.includes('background') || joined.includes('carousel')) return 16 / 9;
+  if (joined.includes('profile')) return 1;
+  if (joined.includes('winner')) return 3 / 4;
+  if (joined.includes('card')) return 4 / 3;
+  return 4 / 3;
+}
+
+let cropperOverlay;
+
+function ensureCropperOverlay() {
+  if (cropperOverlay) return cropperOverlay;
+  const overlay = document.createElement('div');
+  overlay.className = 'editor-cropper-overlay';
+
+  const panel = document.createElement('div');
+  panel.className = 'editor-cropper';
+  overlay.appendChild(panel);
+
+  const title = document.createElement('div');
+  title.className = 'editor-cropper__title';
+  title.textContent = 'Ajustar recorte';
+  panel.appendChild(title);
+
+  const body = document.createElement('div');
+  body.className = 'editor-cropper__body';
+  panel.appendChild(body);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 600;
+  canvas.height = 400;
+  canvas.className = 'editor-cropper__canvas';
+  body.appendChild(canvas);
+
+  const aside = document.createElement('div');
+  aside.className = 'editor-cropper__aside';
+  body.appendChild(aside);
+
+  const previewLabel = document.createElement('div');
+  previewLabel.className = 'editor-cropper__label';
+  previewLabel.textContent = 'Miniatura';
+  aside.appendChild(previewLabel);
+
+  const previewCanvas = document.createElement('canvas');
+  previewCanvas.width = 200;
+  previewCanvas.height = 200;
+  previewCanvas.className = 'editor-cropper__preview';
+  aside.appendChild(previewCanvas);
+
+  const zoomWrapper = document.createElement('label');
+  zoomWrapper.className = 'editor-cropper__zoom';
+  zoomWrapper.textContent = 'Zoom';
+  const zoomInput = document.createElement('input');
+  zoomInput.type = 'range';
+  zoomInput.min = '1';
+  zoomInput.max = '4';
+  zoomInput.step = '0.01';
+  zoomWrapper.appendChild(zoomInput);
+  aside.appendChild(zoomWrapper);
+
+  const actions = document.createElement('div');
+  actions.className = 'editor-cropper__actions';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'editor-cropper__cancel';
+  cancelBtn.textContent = 'Cancelar';
+  const confirmBtn = document.createElement('button');
+  confirmBtn.type = 'button';
+  confirmBtn.className = 'editor-cropper__confirm';
+  confirmBtn.textContent = 'Aplicar';
+  actions.appendChild(cancelBtn);
+  actions.appendChild(confirmBtn);
+  panel.appendChild(actions);
+
+  cropperOverlay = { overlay, panel, canvas, previewCanvas, zoomInput, cancelBtn, confirmBtn };
+  document.body.appendChild(overlay);
+  return cropperOverlay;
+}
+
+function openImageCropper({ src, aspect = 1, initialCrop }) {
+  return new Promise((resolve, reject) => {
+    const { overlay, canvas, previewCanvas, zoomInput, cancelBtn, confirmBtn } = ensureCropperOverlay();
+    overlay.classList.add('is-open');
+
+    let active = true;
+    const ctx = canvas.getContext('2d');
+    const previewCtx = previewCanvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    const state = {
+      aspect,
+      baseScale: 1,
+      zoom: 1,
+      centerX: 0.5,
+      centerY: 0.5
+    };
+
+    let pointerId = null;
+    let lastX = 0;
+    let lastY = 0;
+
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+    function updateCanvasSize() {
+      const width = 600;
+      const height = Math.round(width / state.aspect);
+      canvas.width = width;
+      canvas.height = height;
+      previewCanvas.width = 200;
+      previewCanvas.height = Math.round(previewCanvas.width / state.aspect);
+    }
+
+    function updateBaseScale() {
+      const vw = canvas.width;
+      const vh = canvas.height;
+      const scaleX = vw / img.width;
+      const scaleY = vh / img.height;
+      state.baseScale = Math.max(scaleX, scaleY);
+    }
+
+    function clampCenter() {
+      const scale = state.baseScale * state.zoom;
+      const halfWidth = canvas.width / (2 * scale);
+      const halfHeight = canvas.height / (2 * scale);
+      state.centerX = clamp(state.centerX, halfWidth / img.width, 1 - halfWidth / img.width);
+      state.centerY = clamp(state.centerY, halfHeight / img.height, 1 - halfHeight / img.height);
+    }
+
+    function draw() {
+      if (!active) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const scale = state.baseScale * state.zoom;
+      const drawWidth = img.width * scale;
+      const drawHeight = img.height * scale;
+      const dx = canvas.width / 2 - state.centerX * drawWidth;
+      const dy = canvas.height / 2 - state.centerY * drawHeight;
+      ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+
+      previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      previewCtx.fillStyle = '#000';
+      previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+      const scalePreview = previewCanvas.width / canvas.width;
+      previewCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, previewCanvas.width, previewCanvas.height);
+    }
+
+    function close(result) {
+      if (!active) return;
+      active = false;
+      overlay.classList.remove('is-open');
+      canvas.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      canvas.removeEventListener('wheel', onWheel);
+      zoomInput.removeEventListener('input', onZoomChange);
+      window.removeEventListener('keydown', onKeyDown);
+      cancelBtn.removeEventListener('click', onCancel);
+      confirmBtn.removeEventListener('click', onConfirm);
+      if (result) {
+        resolve(result);
+      } else {
+        reject(new Error('cancelled'));
+      }
+    }
+
+    function onPointerDown(event) {
+      pointerId = event.pointerId;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      canvas.setPointerCapture(pointerId);
+    }
+
+    function onPointerMove(event) {
+      if (pointerId !== event.pointerId) return;
+      const dx = event.clientX - lastX;
+      const dy = event.clientY - lastY;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      const scale = state.baseScale * state.zoom;
+      state.centerX -= dx / (img.width * scale);
+      state.centerY -= dy / (img.height * scale);
+      clampCenter();
+      draw();
+    }
+
+    function onPointerUp(event) {
+      if (pointerId !== event.pointerId) return;
+      canvas.releasePointerCapture(pointerId);
+      pointerId = null;
+    }
+
+    function setZoom(z) {
+      const newZoom = clamp(z, 1, 4);
+      if (newZoom === state.zoom) return;
+      state.zoom = newZoom;
+      zoomInput.value = String(state.zoom);
+      clampCenter();
+      draw();
+    }
+
+    function onZoomChange(event) {
+      setZoom(Number(event.target.value));
+    }
+
+    function onWheel(event) {
+      event.preventDefault();
+      const delta = -event.deltaY / 500;
+      setZoom(state.zoom + delta);
+    }
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCancel();
+      }
+    }
+
+    function onCancel() {
+      close(null);
+    }
+
+    function onConfirm() {
+      const scale = state.baseScale * state.zoom;
+      const drawWidth = img.width * scale;
+      const drawHeight = img.height * scale;
+      const dx = canvas.width / 2 - state.centerX * drawWidth;
+      const dy = canvas.height / 2 - state.centerY * drawHeight;
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
+      exportCtx.fillStyle = '#000';
+      exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      exportCtx.drawImage(img, dx, dy, drawWidth, drawHeight);
+      const thumb = exportCanvas.toDataURL('image/webp', 0.85);
+      close({
+        crop: {
+          zoom: state.zoom,
+          offsetX: state.centerX,
+          offsetY: state.centerY,
+          aspect: state.aspect
+        },
+        thumb
+      });
+    }
+
+    canvas.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+    zoomInput.addEventListener('input', onZoomChange);
+    window.addEventListener('keydown', onKeyDown);
+    cancelBtn.addEventListener('click', onCancel);
+    confirmBtn.addEventListener('click', onConfirm);
+
+    function initCrop() {
+      if (initialCrop) {
+        state.zoom = initialCrop.zoom ? Math.max(1, Number(initialCrop.zoom)) : 1;
+        state.centerX = typeof initialCrop.offsetX === 'number' ? initialCrop.offsetX : 0.5;
+        state.centerY = typeof initialCrop.offsetY === 'number' ? initialCrop.offsetY : 0.5;
+        state.aspect = initialCrop.aspect ? Number(initialCrop.aspect) : aspect;
+      }
+      updateCanvasSize();
+      updateBaseScale();
+      clampCenter();
+      zoomInput.value = String(state.zoom);
+      draw();
+    }
+
+    img.onload = () => {
+      updateCanvasSize();
+      updateBaseScale();
+      initCrop();
+    };
+    img.onerror = () => {
+      overlay.classList.remove('is-open');
+      cancelBtn.removeEventListener('click', onCancel);
+      confirmBtn.removeEventListener('click', onConfirm);
+      reject(new Error('No se pudo cargar la imagen para recortar'));
+    };
+    img.src = src;
+  });
+}
+
+function renderImagePreview(previewEl, imageObj) {
+  if (!previewEl) return;
+  const thumb = imageObj?.thumb;
+  if (thumb) {
+    previewEl.style.backgroundImage = `url(${thumb})`;
+    previewEl.classList.remove('is-empty');
+    return;
+  }
+  if (imageObj?.src) {
+    previewEl.style.backgroundImage = `url(${imageObj.src})`;
+    previewEl.classList.remove('is-empty');
+  } else {
+    previewEl.style.backgroundImage = '';
+    previewEl.classList.add('is-empty');
+  }
+}
+
+function cleanupLegacyImageFields(obj) {
+  if (!obj || typeof obj !== 'object') return;
+  delete obj.fit;
+  delete obj.align;
+  delete obj.focusX;
+  delete obj.focusY;
+}
+
 function createImageField(labelText, value, pathArr, onChange) {
   const container = document.createElement('div');
   container.className = 'editor-image-field';
 
-  // Helpers
   const isSrcPath = String(pathArr[pathArr.length - 1]) === 'src';
-  const objPath = isSrcPath ? pathArr.slice(0, -1) : pathArr.slice();
+  const basePath = isSrcPath ? pathArr.slice(0, -1) : pathArr.slice();
 
-  function getValueByPath(obj, p) {
-    return p.reduce((acc, key) => (acc != null ? acc[key] : undefined), obj);
-  }
-  function ensureImageObjectAtPath(p) {
-    const parent = p.slice(0, -1).reduce((acc, key) => (acc[key] == null ? (acc[key] = (typeof key === 'number' ? [] : {})) : acc[key]), editorState.site);
-    const last = p[p.length - 1];
-    const curr = parent[last];
+  function ensureImageObject() {
+    const parent = basePath.slice(0, -1).reduce((acc, key) => {
+      if (acc[key] == null) acc[key] = typeof key === 'number' ? [] : {};
+      return acc[key];
+    }, editorState.site);
+    const last = basePath[basePath.length - 1];
+    let curr = parent[last];
     if (typeof curr === 'string') {
-      parent[last] = { src: curr };
-    } else if (curr == null) {
-      parent[last] = { src: '' };
+      curr = { src: curr };
+    } else if (!curr || typeof curr !== 'object') {
+      curr = { src: '' };
     }
-    return parent[last];
-  }
-  function setObjField(field, val) {
-    if (isSrcPath) {
-      // parent object is at objPath
-      const base = getValueByPath(editorState.site, objPath) || ensureImageObjectAtPath(pathArr);
-      base[field] = val;
-    } else {
-      const base = ensureImageObjectAtPath(pathArr);
-      base[field] = val;
-    }
-    debouncedPreview();
+    parent[last] = curr;
+    return curr;
   }
 
-  // Valor actual normalizado
-  const current = (() => {
-    if (typeof value === 'string') return { src: value };
-    if (value && typeof value === 'object') return { ...value };
-    return { src: '' };
-  })();
+  let imageObj = normalizeImageValue(value);
+  if (!imageObj || typeof imageObj !== 'object') imageObj = { src: '' };
+  const stateObj = ensureImageObject();
+  Object.assign(stateObj, imageObj);
+  imageObj = stateObj;
+  cleanupLegacyImageFields(imageObj);
 
-  // URL
+  let aspectHint = imageObj.crop?.aspect || guessAspectFromPath(basePath);
+
   const textLabel = document.createElement('label');
   textLabel.textContent = labelText;
   const textInput = document.createElement('input');
   textInput.type = 'text';
-  textInput.value = current.src || '';
+  textInput.value = imageObj.src || '';
   textInput.addEventListener('input', event => {
-    const url = event.target.value;
-    if (isSrcPath) {
-      onChange(url);
-    } else {
-      ensureImageObjectAtPath(pathArr).src = url;
-      debouncedPreview();
-    }
+   imageObj.src = event.target.value.trim();
+    cleanupLegacyImageFields(imageObj);
+    renderImagePreview(preview, imageObj);
+    debouncedPreview();
     onFieldInput(event);
   });
   textLabel.appendChild(textInput);
   container.appendChild(textLabel);
 
-  // Subir archivo
+  const preview = document.createElement('div');
+  preview.className = 'editor-image-preview';
+  renderImagePreview(preview, imageObj);
+  container.appendChild(preview);
+
+  const controls = document.createElement('div');
+  controls.className = 'editor-image-controls';
+
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
@@ -816,14 +1170,32 @@ function createImageField(labelText, value, pathArr, onChange) {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      const url = await uploadImage(file);
-      if (isSrcPath) {
-        onChange(url);
-      } else {
-        ensureImageObjectAtPath(pathArr).src = url;
-        debouncedPreview();
+      const uploaded = await uploadImage(file);
+      imageObj.src = uploaded.url;
+      if (uploaded.thumb) imageObj.thumb = uploaded.thumb;
+      cleanupLegacyImageFields(imageObj);
+      textInput.value = imageObj.src || '';
+      renderImagePreview(preview, imageObj);
+      debouncedPreview();
+      try {
+        const result = await openImageCropper({
+          src: imageObj.src,
+          aspect: aspectHint,
+          initialCrop: imageObj.crop
+        });
+        if (result?.crop) {
+          imageObj.crop = result.crop;
+          if (result.crop.aspect) aspectHint = result.crop.aspect;
+          if (result.thumb) imageObj.thumb = result.thumb;
+          cleanupLegacyImageFields(imageObj);
+          renderImagePreview(preview, imageObj);
+          debouncedPreview();
+        }
+      } catch (cropError) {
+        if (cropError && cropError.message !== 'cancelled') {
+          console.error('openImageCropper', cropError);
+        }
       }
-      if (textInput) textInput.value = url;
     } catch (e) {
       console.error('uploadImage', e);
       alert('No se pudo subir la imagen');
@@ -831,95 +1203,39 @@ function createImageField(labelText, value, pathArr, onChange) {
       event.target.value = '';
     }
   });
-  container.appendChild(fileInput);
+  controls.appendChild(fileInput);
 
-  // Ajuste: cover/contain
-  const fitLabel = document.createElement('label');
-  fitLabel.textContent = 'Ajuste';
-  const fitSelect = document.createElement('select');
-  ;[
-    { v: '', l: 'Por defecto (slot)' },
-    { v: 'cover', l: 'Cubrir' },
-    { v: 'contain', l: 'Contener' }
-  ].forEach(opt => {
-    const o = document.createElement('option');
-    o.value = opt.v; o.textContent = opt.l;
-    if (opt.v === (current.fit || '')) o.selected = true;
-    fitSelect.appendChild(o);
+  const cropButton = document.createElement('button');
+  cropButton.type = 'button';
+  cropButton.textContent = 'Editar recorte';
+  cropButton.addEventListener('click', async () => {
+    if (!imageObj.src) {
+      alert('Cargá o ingresa una imagen primero');
+      return;
+    }
+    try {
+      const result = await openImageCropper({
+        src: imageObj.src,
+        aspect: imageObj.crop?.aspect || aspectHint,
+        initialCrop: imageObj.crop
+      });
+      if (result?.crop) {
+        imageObj.crop = result.crop;
+        if (result.crop.aspect) aspectHint = result.crop.aspect;
+        if (result.thumb) imageObj.thumb = result.thumb;
+        cleanupLegacyImageFields(imageObj);
+        renderImagePreview(preview, imageObj);
+        debouncedPreview();
+      }
+    } catch (err) {
+      if (err && err.message !== 'cancelled') {
+        console.error('openImageCropper', err);
+      }
+    }
   });
-  fitSelect.addEventListener('change', (e) => {
-    const val = e.target.value || undefined;
-    setObjField('fit', val);
-    onFieldInput(e);
-  });
-  fitLabel.appendChild(fitSelect);
-  container.appendChild(fitLabel);
+  controls.appendChild(cropButton);
 
-  // Alineación 3x3
-  const alignLabel = document.createElement('label');
-  alignLabel.textContent = 'Alineación';
-  const alignSelect = document.createElement('select');
-  const alignOpts = [
-    { v: '', l: 'Por defecto (centro)' },
-    { v: 'top-left', l: 'Arriba Izquierda' },
-    { v: 'top-center', l: 'Arriba Centro' },
-    { v: 'top-right', l: 'Arriba Derecha' },
-    { v: 'center-left', l: 'Centro Izquierda' },
-    { v: 'center', l: 'Centro' },
-    { v: 'center-right', l: 'Centro Derecha' },
-    { v: 'bottom-left', l: 'Abajo Izquierda' },
-    { v: 'bottom-center', l: 'Abajo Centro' },
-    { v: 'bottom-right', l: 'Abajo Derecha' }
-  ];
-  alignOpts.forEach(opt => {
-    const o = document.createElement('option');
-    o.value = opt.v; o.textContent = opt.l;
-    if (opt.v === (current.align || '')) o.selected = true;
-    alignSelect.appendChild(o);
-  });
-  alignSelect.addEventListener('change', (e) => {
-    const val = e.target.value || undefined;
-    setObjField('align', val);
-    onFieldInput(e);
-  });
-  alignLabel.appendChild(alignSelect);
-  container.appendChild(alignLabel);
-
-  // Foco fino XY
-  const xyWrapper = document.createElement('div');
-  const fxLabel = document.createElement('label');
-  fxLabel.textContent = 'Foco X (%)';
-  const fxInput = document.createElement('input');
-  fxInput.type = 'number';
-  fxInput.min = '0'; fxInput.max = '100'; fxInput.step = '1';
-  fxInput.value = (typeof current.focusX === 'number') ? String(current.focusX) : '';
-  fxInput.placeholder = '0–100';
-  fxInput.addEventListener('input', (e) => {
-    const val = e.target.value.trim();
-    const num = val === '' ? undefined : Math.max(0, Math.min(100, Number(val)));
-    setObjField('focusX', num);
-    onFieldInput(e);
-  });
-  fxLabel.appendChild(fxInput);
-
-  const fyLabel = document.createElement('label');
-  fyLabel.textContent = 'Foco Y (%)';
-  const fyInput = document.createElement('input');
-  fyInput.type = 'number';
-  fyInput.min = '0'; fyInput.max = '100'; fyInput.step = '1';
-  fyInput.value = (typeof current.focusY === 'number') ? String(current.focusY) : '';
-  fyInput.placeholder = '0–100';
-  fyInput.addEventListener('input', (e) => {
-    const val = e.target.value.trim();
-    const num = val === '' ? undefined : Math.max(0, Math.min(100, Number(val)));
-    setObjField('focusY', num);
-    onFieldInput(e);
-  });
-  fyLabel.appendChild(fyInput);
-
-  xyWrapper.appendChild(fxLabel);
-  xyWrapper.appendChild(fyLabel);
-  container.appendChild(xyWrapper);
+  container.appendChild(controls);
 
   return container;
 }

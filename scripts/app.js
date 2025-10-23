@@ -245,47 +245,66 @@ function resolveImageSrc(input, preferThumb = false) {
 function createImg(srcOrObj, alt = '', opts = {}) {
   const preferThumb = !!opts.preferThumb;
   const resolved = resolveImageSrc(srcOrObj, preferThumb);
+  const frame = document.createElement('div');
+  frame.setAttribute('data-img-frame', '');
   const full = resolveImageSrc(srcOrObj, false);
   const img = document.createElement('img');
   img.src = resolved;
   img.alt = alt || '';
   img.loading = 'lazy';
   img.decoding = 'async';
-  // Datos para lightbox (src completo y caption opcional)
+  frame.appendChild(img);
+
   try {
     if (full) img.dataset.fullsrc = full;
     const title = (typeof srcOrObj === 'object' && srcOrObj && (srcOrObj.title || srcOrObj.caption)) || '';
     if (!img.title && title) img.title = String(title);
   } catch (_) {}
-  // Ajuste de recorte/posición (fit + align/focus)
-  try {
-    if (srcOrObj && typeof srcOrObj === 'object') {
-      if (srcOrObj.fit && (srcOrObj.fit === 'cover' || srcOrObj.fit === 'contain')) {
-        img.style.objectFit = srcOrObj.fit;
-      }
-      let pos = '';
-      if (typeof srcOrObj.focusX === 'number' && typeof srcOrObj.focusY === 'number') {
-        const fx = Math.max(0, Math.min(100, srcOrObj.focusX));
-        const fy = Math.max(0, Math.min(100, srcOrObj.focusY));
-        pos = `${fx}% ${fy}%`;
-      } else if (typeof srcOrObj.align === 'string') {
-        const map = {
-          'top-left': 'left top',
-          'top-center': 'center top',
-          'top-right': 'right top',
-          'center-left': 'left center',
-          'center': 'center center',
-          'center-right': 'right center',
-          'bottom-left': 'left bottom',
-          'bottom-center': 'center bottom',
-          'bottom-right': 'right bottom'
-        };
-        pos = map[srcOrObj.align] || '';
-      }
-      if (pos) img.style.objectPosition = pos;
-    }
-  } catch (_) {}
-  return img;
+
+  applyImageCrop(frame, srcOrObj);
+
+  return frame;
+}
+
+function applyImageCrop(frame, srcOrObj) {
+  frame.removeAttribute('data-has-crop');
+  frame.style.removeProperty('--crop-zoom');
+  frame.style.removeProperty('--crop-inv-zoom');
+  frame.style.removeProperty('--crop-offset-x');
+  frame.style.removeProperty('--crop-offset-y');
+  if (!srcOrObj || typeof srcOrObj !== 'object') return;
+  let crop = srcOrObj.crop;
+  if (!crop && (srcOrObj.focusX != null || srcOrObj.focusY != null || srcOrObj.align)) {
+    crop = legacyAlignToCrop(srcOrObj);
+  }
+  if (!crop) return;
+  const zoom = Math.max(1, Number(crop.zoom) || 1);
+  const offsetX = typeof crop.offsetX === 'number' ? Math.min(Math.max(crop.offsetX, 0), 1) : 0.5;
+  const offsetY = typeof crop.offsetY === 'number' ? Math.min(Math.max(crop.offsetY, 0), 1) : 0.5;
+  frame.setAttribute('data-has-crop', 'true');
+  frame.style.setProperty('--crop-zoom', String(zoom));
+  frame.style.setProperty('--crop-inv-zoom', String(1 / zoom));
+  frame.style.setProperty('--crop-offset-x', String(offsetX));
+  frame.style.setProperty('--crop-offset-y', String(offsetY));
+}
+
+function legacyAlignToCrop(data) {
+  const clamp01 = (val) => Math.min(Math.max(val, 0), 1);
+  const crop = { zoom: 1, offsetX: 0.5, offsetY: 0.5 };
+  if (typeof data.focusX === 'number') {
+    crop.offsetX = clamp01(data.focusX / 100);
+  } else if (typeof data.align === 'string') {
+    const mapX = { left: 0.0, center: 0.5, right: 1.0 };
+    const mapY = { top: 0.0, center: 0.5, bottom: 1.0 };
+    const parts = data.align.split('-');
+    const [first, second] = parts;
+    crop.offsetX = clamp01(mapX[second] ?? mapX[first] ?? 0.5);
+    crop.offsetY = clamp01(mapY[first] ?? mapY[second] ?? 0.5);
+  }
+  if (typeof data.focusY === 'number') {
+    crop.offsetY = clamp01(data.focusY / 100);
+  }
+  return crop;
 }
 
 function renderHero(hero = {}) {
