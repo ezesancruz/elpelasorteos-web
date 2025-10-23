@@ -757,20 +757,54 @@ function renderLinkCardsSection(section) {
 }
 
 function renderImageGridSection(section) {
-  const container = baseSection('carruselImagenes');
+  const container = baseSection('galeriaImagenes');
   const grid = document.createElement('div');
   grid.className = 'image-grid';
-  section.data?.images?.forEach(image => {
-    if (!image || !image.src) return;
-    const wrapper = document.createElement('a');
-    wrapper.href = image.href || image.src;
+  (section.data?.images || []).forEach(entry => {
+    if (!entry) return;
+    const image = typeof entry === 'object' && entry ? entry : { src: entry };
+    const src = image.src || image.image;
+    if (!src) return;
+
+    const card = document.createElement('div');
+    card.className = 'image-card';
+
+    const altText = image.alt || image.title || section.data?.title || 'Imagen';
+    const media = document.createElement('a');
+    media.className = 'image-card__media';
+    media.href = image.href || src;
     if (image.href) {
-      wrapper.target = '_blank';
-      wrapper.rel = 'noopener';
+      media.target = '_blank';
+      media.rel = 'noopener';
+    } else {
+      media.removeAttribute('target');
+      media.removeAttribute('rel');
     }
-    const img = createImg(image, section.data?.title || 'Imagen');
-    wrapper.appendChild(img);
-    grid.appendChild(wrapper);
+    const frame = createImg(image, altText, { preferThumb: true });
+    media.appendChild(frame);
+    card.appendChild(media);
+
+    const hasTitle = Boolean(image.title && image.title.trim());
+    const hasSubtitle = Boolean(image.subtitle && image.subtitle.trim());
+    if (hasTitle || hasSubtitle) {
+      const body = document.createElement('div');
+      body.className = 'image-card__body';
+      if (hasTitle) {
+        const title = document.createElement('div');
+        title.className = 'image-card__title';
+        title.textContent = image.title || '';
+        body.appendChild(title);
+      }
+      if (hasSubtitle) {
+        const subtitle = document.createElement('div');
+        subtitle.className = 'image-card__subtitle';
+        subtitle.textContent = image.subtitle || '';
+        body.appendChild(subtitle);
+      }
+      card.appendChild(body);
+    }
+
+    grid.appendChild(card);
   });
   container.appendChild(grid);
   return container;
@@ -790,10 +824,15 @@ function renderImageCarouselSection(section) {
   }
   const track = document.createElement('div');
   track.className = 'carousel';
-  section.data?.images?.forEach(src => {
-    if (!src) return;
-    const img = createImg(src, section.data?.title || 'Galeria');
-    track.appendChild(img);
+  (section.data?.images || []).forEach(entry => {
+    if (!entry) return;
+    const image = typeof entry === 'object' && entry ? entry : { src: entry };
+    if (!image.src) return;
+    const item = document.createElement('div');
+    item.className = 'carousel__item';
+    const frame = createImg(image, image.alt || image.title || section.data?.title || 'Galeria', { preferThumb: true });
+    item.appendChild(frame);
+    track.appendChild(item);
   });
   container.appendChild(track);
   return container;

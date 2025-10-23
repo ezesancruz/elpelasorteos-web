@@ -568,8 +568,19 @@ const sectionEditors = {
     const list = document.createElement('div');
     const pageIndex = currentPageIndex();
     list.className = 'editor-inline-list';
-    section.data?.images?.forEach((card, cardIndex) => {
-      const item = document.createElement('div');
+    const mutateImage = (cardIndex, mutator) => {
+      updateSection(index, s => {
+        s.data.images = s.data.images || [];
+        let current = s.data.images[cardIndex];
+        if (!current || typeof current !== 'object') {
+          current = normalizeImageValue(current);
+          s.data.images[cardIndex] = current;
+        }
+        mutator(current);
+      });
+    };
+    (section.data?.images || []).forEach((card, cardIndex) => {
+      const image = normalizeImageValue(card);      const item = document.createElement('div');
       item.className = 'editor-inline-item';
       const header = document.createElement('div');
       header.className = 'editor-inline-item__header';
@@ -580,9 +591,17 @@ const sectionEditors = {
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
-      const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', cardIndex, 'src'];
-      item.appendChild(createImageField('Imagen', card.src || '', imagePath, value => updateSection(index, s => s.data.images[cardIndex].src = value)));
-      item.appendChild(createInput('Link opcional', card.href || '', value => updateSection(index, s => s.data.images[cardIndex].href = value)));
+      const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', cardIndex];
+      item.appendChild(createImageField('Imagen', image, imagePath, value => mutateImage(cardIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 3 / 4 }));
+      item.appendChild(createInput('Link opcional', image.href || '', value => mutateImage(cardIndex, img => {
+        img.href = value;
+      })));
+      item.appendChild(createInput('Título (opcional)', image.title || '', value => mutateImage(cardIndex, img => {
+        img.title = value;
+      })));
+      item.appendChild(createInput('Subtítulo (opcional)', image.subtitle || '', value => mutateImage(cardIndex, img => {
+        img.subtitle = value;
+      })));
       list.appendChild(item);
     });
     const addBtn = document.createElement('button');
@@ -590,7 +609,7 @@ const sectionEditors = {
     addBtn.textContent = 'Agregar imagen';
     addBtn.addEventListener('click', () => updateSection(index, s => {
       s.data.images = s.data.images || [];
-      s.data.images.push({ src: '', href: '' });
+      s.data.images.push({ src: '', href: '', title: '', subtitle: '' });
     }, { rerenderPanel: true }));
     const wrapper = document.createElement('div');
     wrapper.appendChild(list);
@@ -604,7 +623,19 @@ const sectionEditors = {
     wrapper.appendChild(createInput('Descripcion', section.data?.description || '', value => updateSection(index, s => s.data.description = value)));
     const list = document.createElement('div');
     list.className = 'editor-inline-list';
-    section.data?.images?.forEach((src, imgIndex) => {
+    const ensureImage = (imgIndex, mutator) => {
+      updateSection(index, s => {
+        s.data.images = s.data.images || [];
+        let current = s.data.images[imgIndex];
+        if (!current || typeof current !== 'object') {
+          current = normalizeImageValue(current);
+          s.data.images[imgIndex] = current;
+        }
+        mutator(current);
+      });
+    };
+    (section.data?.images || []).forEach((src, imgIndex) => {
+      const image = normalizeImageValue(src);
       const item = document.createElement('div');
       item.className = 'editor-inline-item';
       const header = document.createElement('div');
@@ -617,7 +648,7 @@ const sectionEditors = {
       header.appendChild(remove);
       item.appendChild(header);
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
-      item.appendChild(createImageField('Imagen', src || '', imagePath, value => updateSection(index, s => s.data.images[imgIndex] = value)));
+      item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 3 / 4 }));
       list.appendChild(item);
     });
     const addBtn = document.createElement('button');
@@ -625,7 +656,7 @@ const sectionEditors = {
     addBtn.textContent = 'Agregar imagen';
     addBtn.addEventListener('click', () => updateSection(index, s => {
       s.data.images = s.data.images || [];
-      s.data.images.push('');
+      s.data.images.push({ src: '' });
     }, { rerenderPanel: true }));
     wrapper.appendChild(list);
     wrapper.appendChild(addBtn);
@@ -705,12 +736,12 @@ const defaultSections = {
   galeriaImagenes: {
     id: 'galeriaImagenes-new',
     type: 'galeriaImagenes',
-    data: { images: [{ src: '', href: '' }] }
+    data: { images: [{ src: '', href: '', title: '', subtitle: '' }] }
   },
   carruselImagenes: {
     id: 'carruselImagenes-new',
     type: 'carruselImagenes',
-    data: { title: 'Galeria', description: '', images: [''] }
+    data: { title: 'Galeria', description: '', images: [{ src: '' }] }
   },
   detalleVisual: {
     id: 'detalleVisual-new',
@@ -954,9 +985,11 @@ function convertLegacyCrop(obj) {
 
 function guessAspectFromPath(pathArr = []) {
   const joined = pathArr.map(String).join('.').toLowerCase();
-  if (joined.includes('banner') || joined.includes('background') || joined.includes('carousel')) return 16 / 9;
+  if (joined.includes('banner') || joined.includes('background')) return 16 / 9;
   if (joined.includes('profile')) return 1;
   if (joined.includes('winner')) return 3 / 4;
+  if (joined.includes('galeria') || joined.includes('gallery')) return 3 / 4;
+  if (joined.includes('carousel') || joined.includes('carrusel')) return 3 / 4;
   if (joined.includes('card')) return 4 / 3;
   return 4 / 3;
 }
@@ -1266,7 +1299,7 @@ function cleanupLegacyImageFields(obj) {
   delete obj.focusY;
 }
 
-function createImageField(labelText, value, pathArr, onChange) {
+function createImageField(labelText, value, pathArr, onChange, options = {}) {
   const container = document.createElement('div');
   container.className = 'editor-image-field';
 
