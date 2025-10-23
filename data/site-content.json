@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Ojedapreparacion.com",
+    "title": "elpelasorteos.shop",
     "description": "Bienvenidos a mi pagina oficial"
   },
   "theme": {
@@ -39,10 +39,16 @@
       "slug": "",
       "title": "Sorteo",
       "hero": {
-        "title": "Ojeda preparacion",
+        "title": "EL PELA | 1er Sorteo - Honda Wave S 110cc 0km.",
         "subtitle": "Reserva tu lugar y gana un premio este 31/10",
-        "profileImage": "/uploads/1761115174201_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.png",
-        "bannerImage": "/uploads/hero-banner-home.webp",
+        "profileImage": {
+          "src": "/uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp"
+        },
+        "bannerImage": {
+          "src": "/uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp",
+          "fit": "cover",
+          "align": "center"
+        },
         "buttons": [
           {
             "label": "Participar ahora",
@@ -110,7 +116,7 @@
               {
                 "id": "232014ac-a705-4ec2-b38e-ef3479fc9eba",
                 "title": "5 chances $5999",
-                "subtitle": "Participás con número de operación x10",
+                "subtitle": "Particip�s con n�mero de operaci�n x10",
                 "href": "https://mpago.la/2mAXs7h",
                 "image": "/uploads/home-comprar-chances-card-232014ac-a705-4ec2-b38e-ef3479fc9eba.jpg",
                 "animation": "tada"
@@ -118,7 +124,7 @@
               {
                 "id": "128dc007-ff02-4757-8239-06a4cd0e27e6",
                 "title": "Promo 15 chances $9.999 ",
-                "subtitle": "Pagás $9.999 te multiplico x15 el número de operación",
+                "subtitle": "Pag�s $9.999 te multiplico x15 el n�mero de operaci�n",
                 "href": "https://mpago.la/2XsjSFe",
                 "image": "/uploads/home-comprar-chances-card-128dc007-ff02-4757-8239-06a4cd0e27e6.webp",
                 "animation": "shake"
@@ -126,7 +132,7 @@
               {
                 "id": "53e891a9-182f-4e40-8118-d72eb2e2a22c",
                 "title": "Promo 50 chances $19.999",
-                "subtitle": "Pagás $19.999 te multiplico x50 el número de operación",
+                "subtitle": "Pag�s $19.999 te multiplico x50 el n�mero de operaci�n",
                 "href": "https://mpago.la/1ajBq2p",
                 "image": "/uploads/home-comprar-chances-card-53e891a9-182f-4e40-8118-d72eb2e2a22c.webp",
                 "animation": "none"
@@ -146,8 +152,8 @@
           "id": "numero-comprobante",
           "type": "imageHighlight",
           "data": {
-            "title": "Número de comprobante",
-            "body": "Así es como te llega a vos y a mí el mismo número de comprobante. Es el que utilizo para la urna de participantes; si pagaste varias chances este número de operación se repite tantas veces como compraste.",
+            "title": "N�mero de comprobante",
+            "body": "As� es como te llega a vos y a m� el mismo n�mero de comprobante. Es el que utilizo para la urna de participantes; si pagaste varias chances este n�mero de operaci�n se repite tantas veces como compraste.",
             "image": "/uploads/home-numero-comprobante-highlight.jpg"
           }
         },
@@ -186,7 +192,7 @@
           "type": "imageCarousel",
           "data": {
             "title": "Fotos Del Premio",
-            "description": "Deslizá para ver más",
+            "description": "Desliz� para ver m�s",
             "images": [
               "/uploads/home-fotos-premio-carousel-0.jpg",
               "/uploads/home-fotos-premio-carousel-1.jpg",
@@ -200,7 +206,7 @@
           "id": "informacion",
           "type": "richText",
           "data": {
-            "title": "Información",
+            "title": "Informaci�n",
             "alignment": "center",
             "lines": [
               "Sorteo en vivo el viernes 31 de octubre. Seguinos en @SORTEO.OJEDA para enterarte de todo."
@@ -220,10 +226,10 @@
           "id": "tienda-online",
           "type": "cta",
           "data": {
-            "title": "Hacé click para conocer mi tienda online",
-            "body": "Soy mecánico de motos; empecé a vender repuestos en Instagram y ahora implementé la tienda donde vas a encontrar productos variados.",
+            "title": "Hac� click para conocer mi tienda online",
+            "body": "Soy mec�nico de motos; empec� a vender repuestos en Instagram y ahora implement� la tienda donde vas a encontrar productos variados.",
             "href": "https://tiendaojeda.mitiendanube.com/",
-            "buttonLabel": "Click acá",
+            "buttonLabel": "Click ac�",
             "image": "/uploads/home-tienda-online-cta.png"
           }
         },
@@ -231,8 +237,8 @@
           "id": "como-participar-seccion",
           "type": "richText",
           "data": {
-            "title": "Cómo participar",
-            "html": "<ol><li>Elegí tu pack.</li><li>Pagá por Mercado Pago.</li><li>Guardá el comprobante (número de operación).</li><li>Mirá el sorteo en vivo.</li></ol>"
+            "title": "C�mo participar",
+            "html": "<ol><li>Eleg� tu pack.</li><li>Pag� por Mercado Pago.</li><li>Guard� el comprobante (n�mero de operaci�n).</li><li>Mir� el sorteo en vivo.</li></ol>"
           }
         },
         {
@@ -249,10 +255,16 @@
           "id": "proximo-sorteo",
           "type": "keyValue",
           "data": {
-            "title": "Próximo sorteo",
+            "title": "Pr�ximo sorteo",
             "items": [
-              { "k": "Fecha", "v": "31 de octubre, 20:00" },
-              { "k": "Transmisión", "v": "Instagram @sorteo.ojeda" }
+              {
+                "k": "Fecha",
+                "v": "31 de octubre, 20:00"
+              },
+              {
+                "k": "Transmisi�n",
+                "v": "Instagram @sorteo.ojeda"
+              }
             ]
           }
         },
@@ -262,8 +274,14 @@
           "data": {
             "title": "Preguntas frecuentes",
             "items": [
-              { "q": "¿Cómo sé si gané?", "a": "Lo publicamos en la web y redes; además te contactamos." },
-              { "q": "¿Qué pasa si pierdo el comprobante?", "a": "Podés validarlo con tu e‑mail y hora de pago." }
+              {
+                "q": "�C�mo s� si gan�?",
+                "a": "Lo publicamos en la web y redes; adem�s te contactamos."
+              },
+              {
+                "q": "�Qu� pasa si pierdo el comprobante?",
+                "a": "Pod�s validarlo con tu e-mail y hora de pago."
+              }
             ]
           }
         },
@@ -272,7 +290,7 @@
           "type": "richText",
           "data": {
             "title": "Bases",
-            "html": "<small>Este sorteo no está patrocinado por Mercado Pago ni por redes. Premios sujetos a condiciones publicadas.</small>"
+            "html": "<small>Este sorteo no est� patrocinado por Mercado Pago ni por redes. Premios sujetos a condiciones publicadas.</small>"
           }
         }
       ]
