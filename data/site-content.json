@@ -141,8 +141,8 @@
                 "subtitle": "Todo empieza con una… a veces la suerte solo necesita una oportunidad. 🌟",
                 "href": "https://mpago.li/1CYuRKR",
                 "image": {
-                  "src": "/uploads/345aede9-cc6e-44aa-a2f0-8839fc1d69f3_1.webp",
-                  "thumb": "/uploads/345aede9-cc6e-44aa-a2f0-8839fc1d69f3_1-thumb.webp"
+                  "src": "/uploads/bb702e3e-d8c5-4b49-b4ae-6bde2acffb4c_gemini_generated_image_9cqdi09cqdi09cqd.webp",
+                  "thumb": "/uploads/bb702e3e-d8c5-4b49-b4ae-6bde2acffb4c_gemini_generated_image_9cqdi09cqdi09cqd-thumb.webp"
                 }
               },
               {
@@ -150,8 +150,8 @@
                 "subtitle": "Tres intentos para tentar al destino… ¿quién dice que la tercera no es la vencida? 🎲",
                 "href": "https://mpago.li/24R141W",
                 "image": {
-                  "src": "/uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2.webp",
-                  "thumb": "/uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2-thumb.webp"
+                  "src": "/uploads/23a7c705-c7e5-4158-ae42-b0536c8bc8f1_gemini_generated_image_hddszzhddszzhdds.webp",
+                  "thumb": "/uploads/23a7c705-c7e5-4158-ae42-b0536c8bc8f1_gemini_generated_image_hddszzhddszzhdds-thumb.webp"
                 }
               },
               {
@@ -214,13 +214,11 @@
             "images": [
               {
                 "id": "8ababa72-380d-4853-b277-c1928254fc05",
-                "src": "/uploads/home-galeria-premio-img-0.jpg",
-                "href": ""
-              },
-              {
-                "id": "8b3b6a43-0aac-48fe-bb97-492f0cb93123",
-                "src": "/uploads/home-galeria-premio-img-1.jpg",
-                "href": ""
+                "src": "/uploads/d163de3d-f1a2-42e0-b1e8-fed9e833df51_captura_de_pantalla_2025-10-23_195209.webp",
+                "href": "",
+                "thumb": "/uploads/d163de3d-f1a2-42e0-b1e8-fed9e833df51_captura_de_pantalla_2025-10-23_195209-thumb.webp",
+                "subtitle": "Este comprobante lo reciben por correo al finalizar la compra. Las flechas rojas indican los puntos clave que confirman la participación en el sorteo:  📅 Fecha y hora: “Jueves, 23 de octubre 2025, 15:20:50” → indica exactamente cuándo se realizó el pago.  🏷️ Título: “Promo para los primeros 10 - 3 x 1” → nombre de la promoción o combo elegido.  👤 Para: “LUCASSANTACR” → destinatario (organizador del sorteo).  🔢 Número de transacción: “131036314838” → este número es el número de tu participación en el sorteo. Es único y sirve como comprobante oficial.",
+                "title": "🧾 1️⃣ Comprobante de pago (correo de Mercado Pago)"
               }
             ]
           }
