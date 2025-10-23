@@ -261,7 +261,7 @@ main {
 
 .link-card [data-img-frame] {
   width: 100%;
-  aspect-ratio: 4 / 3; /* Cards – 4:3 cover */
+  aspect-ratio: auto;
   border-radius: 16px;
   margin-bottom: 1rem;
 }
@@ -283,16 +283,16 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-/* Miniaturas (grid) – 1:1 cover */
+/* Miniaturas (grid) – ratio flexible */
 .section--galeriaImagenes .image-grid a {
   display: block;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: auto;
   overflow: hidden;
   border-radius: 18px;
 }
 .section--galeriaImagenes .image-grid a [data-img-frame] {
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .carousel {
@@ -306,7 +306,7 @@ main {
 .carousel [data-img-frame] {
   border-radius: 18px;
   width: clamp(230px, 40vw, 360px);
-  aspect-ratio: 16 / 9; /* Galería – 16:9 cover */
+  aspect-ratio: auto;
   scroll-snap-align: center;
 }
 

@@ -619,9 +619,11 @@ function renderSection(section) {
 const sectionRenderers = {
   textoInformativo: renderRichTextSection,
   opcionesCompra: renderLinkCardsSection,
+  linkCards: renderLinkCardsSection,
   galeriaImagenes: renderImageGridSection,
   carruselImagenes: renderImageCarouselSection,
   detalleVisual: renderImageHighlightSection,
+  imageHighlight: renderImageHighlightSection,
   botonAccion: renderCTASection,
   muroGanadores: renderWinnerCardsSection,
   keyValue: renderKeyValueSection,
@@ -737,7 +739,7 @@ function renderLinkCardsSection(section) {
       track('pack_click', { amount, title: card.title || '' });
     });
     if (card.image) {
-      const imageEl = createImg(card.image, card.title || 'Link', { preferThumb: true });
+      const imageEl = createImg(card.image, card.title || 'Link');
       anchor.appendChild(imageEl);
     }
     const title = document.createElement('div');
@@ -766,7 +768,7 @@ function renderImageGridSection(section) {
       wrapper.target = '_blank';
       wrapper.rel = 'noopener';
     }
-    const img = createImg(image, section.data?.title || 'Imagen', { preferThumb: true });
+    const img = createImg(image, section.data?.title || 'Imagen');
     wrapper.appendChild(img);
     grid.appendChild(wrapper);
   });
@@ -790,7 +792,7 @@ function renderImageCarouselSection(section) {
   track.className = 'carousel';
   section.data?.images?.forEach(src => {
     if (!src) return;
-    const img = createImg(src, section.data?.title || 'Galeria', { preferThumb: true });
+    const img = createImg(src, section.data?.title || 'Galeria');
     track.appendChild(img);
   });
   container.appendChild(track);
@@ -866,7 +868,7 @@ function renderWinnerCardsSection(section) {
       track('ganador_click', { name: card.winner || '', prize: card.prize || '' });
     });
     if (card.image) {
-      const img = createImg(card.image, card.prize || 'Ganador', { preferThumb: true });
+      const img = createImg(card.image, card.prize || 'Ganador');
       cardEl.appendChild(img);
     }
     const title = document.createElement('div');
