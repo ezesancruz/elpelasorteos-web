@@ -59,10 +59,6 @@ body {
   position: relative;
   overflow: hidden;
   display: block;
-  --crop-zoom: 1;
-  --crop-inv-zoom: 1;
-  --crop-offset-x: 0.5;
-  --crop-offset-y: 0.5;
 }
 
 [data-img-frame] > img {
@@ -70,14 +66,29 @@ body {
   height: 100%;
   max-width: none;
   object-fit: cover;
+  object-position: center;
+  display: block;
   transform-origin: center center;
-  transform: translate(
-    calc((0.5 - var(--crop-offset-x, 0.5)) * var(--crop-inv-zoom, 1) * 100%),
-    calc((0.5 - var(--crop-offset-y, 0.5)) * var(--crop-inv-zoom, 1) * 100%)
-  ) scale(var(--crop-zoom, 1));
 }
 
-[data-img-frame][data-has-crop] > img {
+[data-img-frame][data-fit="contain"] > img {
+  object-fit: contain;
+}
+
+[data-img-frame][data-fit="cover"] > img {
+  object-fit: cover;
+}
+
+[data-img-frame][data-fit="fill"] > img {
+  object-fit: fill;
+}
+
+[data-img-frame][data-fit="scale-down"] > img {
+  object-fit: scale-down;
+}
+
+[data-img-frame][data-crop-mode="legacy-transform"] > img,
+[data-img-frame][data-crop-mode="custom-transform"] > img {
   will-change: transform;
 }
 

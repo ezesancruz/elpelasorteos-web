@@ -117,9 +117,9 @@
             "cards": [
               {
                 "id": "6ae0c669-d5bf-4d43-9f46-77e466d0fd1d",
-                "title": "1 chance ",
-                "subtitle": "Pagas $1999 tenes 1 chance",
-                "href": "https://mpago.la/2qmCYbg",
+                "title": "🍀 La chance de la suerte – 1 Chance ($1.999)",
+                "subtitle": "Todo empieza con una… a veces la suerte solo necesita una oportunidad. 🌟",
+                "href": "https://mpago.li/1CYuRKR",
                 "image": {
                   "src": "/uploads/home-comprar-chances-card-6ae0c669-d5bf-4d43-9f46-77e466d0fd1d.jpg"
                 },
@@ -127,9 +127,9 @@
               },
               {
                 "id": "232014ac-a705-4ec2-b38e-ef3479fc9eba",
-                "title": "5 chances $5999",
-                "subtitle": "Particip�s con n�mero de operaci�n x10",
-                "href": "https://mpago.la/2mAXs7h",
+                "title": "🎯 Triplete ganador – 3 Chances ($4.999)",
+                "subtitle": "Tres intentos para tentar al destino… ¿quién dice que la tercera no es la vencida? 🎲",
+                "href": "https://mpago.li/24R141W",
                 "image": {
                   "src": "/uploads/home-comprar-chances-card-232014ac-a705-4ec2-b38e-ef3479fc9eba.jpg"
                 },
@@ -137,9 +137,9 @@
               },
               {
                 "id": "128dc007-ff02-4757-8239-06a4cd0e27e6",
-                "title": "Promo 15 chances $9.999 ",
-                "subtitle": "Pag�s $9.999 te multiplico x15 el n�mero de operaci�n",
-                "href": "https://mpago.la/2XsjSFe",
+                "title": "🗓️ La semanera – 7 Chances ($8.999)",
+                "subtitle": "Una para cada día: que la suerte te acompañe toda la semana. 🍀",
+                "href": "https://mpago.li/2cCM53g",
                 "image": {
                   "src": "/uploads/home-comprar-chances-card-128dc007-ff02-4757-8239-06a4cd0e27e6.webp"
                 },
@@ -147,9 +147,9 @@
               },
               {
                 "id": "53e891a9-182f-4e40-8118-d72eb2e2a22c",
-                "title": "Promo 50 chances $19.999",
-                "subtitle": "Pag�s $19.999 te multiplico x50 el n�mero de operaci�n",
-                "href": "https://mpago.la/1ajBq2p",
+                "title": "🔥 Veinte ganador – 20 chances ($17.999)",
+                "subtitle": "Más chances, más adrenalina… ¡acá la suerte se empieza a poner seria! 💪",
+                "href": "https://mpago.li/2H1Gm3f",
                 "image": {
                   "src": "/uploads/home-comprar-chances-card-53e891a9-182f-4e40-8118-d72eb2e2a22c.webp"
                 },
@@ -157,13 +157,21 @@
               },
               {
                 "id": "a93d97f6-dd06-4952-9bf4-9c10f3f4aa05",
-                "title": "300 chances $59.999",
-                "subtitle": "X300 chances",
-                "href": "https://mpago.la/1wd76Rr",
+                "title": "💥 La mega chance – 70 chances ($29.999)",
+                "subtitle": "70 tiros al destino, imposible que la suerte no te mire. 🚀",
+                "href": "https://mpago.li/1RNuWMs",
                 "image": {
                   "src": "/uploads/home-comprar-chances-card-a93d97f6-dd06-4952-9bf4-9c10f3f4aa05.png"
                 },
                 "animation": "none"
+              },
+              {
+                "title": "👑 La leyenda del suertudo – 200 chances ($49.999))",
+                "subtitle": "El pack de los que no esperan milagros… los provocan. 🍀👊",
+                "href": "https://mpago.li/2hYDQBP",
+                "image": {
+                  "src": ""
+                }
               }
             ]
           }

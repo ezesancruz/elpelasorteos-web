@@ -238,8 +238,79 @@ function renderSocial(links = []) {
 function resolveImageSrc(input, preferThumb = false) {
   if (!input) return '';
   if (typeof input === 'string') return input;
-  if (preferThumb && input.thumb) return input.thumb;
-  return input.src || input.url || '';
+  const thumbFirst = preferThumb ? resolveVariantFrom(input, THUMB_VARIANT_KEYS) : '';
+  if (thumbFirst) return thumbFirst;
+  const primary = resolveVariantFrom(input, PRIMARY_VARIANT_KEYS);
+  if (primary) return primary;
+  const fallbackFull = resolveVariantFrom(input, FULL_VARIANT_KEYS);
+  if (fallbackFull) return fallbackFull;
+  if (!preferThumb) {
+    const thumbFallback = resolveVariantFrom(input, THUMB_VARIANT_KEYS);
+    if (thumbFallback) return thumbFallback;
+  }
+  return '';
+}
+
+function resolveFullImageSrc(input) {
+  if (!input) return '';
+  if (typeof input === 'string') return input;
+  const full = resolveVariantFrom(input, FULL_VARIANT_KEYS);
+  if (full) return full;
+  return resolveVariantFrom(input, PRIMARY_VARIANT_KEYS) || '';
+}
+
+const THUMB_VARIANT_KEYS = ['thumb', 'thumbnail', 'preview', 'small'];
+const PRIMARY_VARIANT_KEYS = ['src', 'image', 'url', 'path'];
+const FULL_VARIANT_KEYS = ['full', 'original', 'raw', 'large', 'hd', 'source'];
+
+function resolveVariantFrom(input, keys, visited = new Set()) {
+  if (!input) return '';
+  if (typeof input === 'string') return input;
+  if (visited.has(input)) return '';
+  if (Array.isArray(input)) {
+    visited.add(input);
+    for (const item of input) {
+      const resolved = resolveVariantFrom(item, keys, visited);
+      if (resolved) return resolved;
+    }
+    return '';
+  }
+  if (typeof input !== 'object') return '';
+  visited.add(input);
+  for (const key of keys) {
+    if (!Object.prototype.hasOwnProperty.call(input, key)) continue;
+    const value = input[key];
+    const direct = resolveVariantValue(value);
+    if (direct) return direct;
+  }
+  const nestedKeys = ['variants', 'sources', 'images', 'files', 'sizes', 'crop'];
+  for (const nestedKey of nestedKeys) {
+    if (!Object.prototype.hasOwnProperty.call(input, nestedKey)) continue;
+    const nested = input[nestedKey];
+    const resolved = resolveVariantFrom(nested, keys, visited);
+    if (resolved) return resolved;
+  }
+  return '';
+}
+
+function resolveVariantValue(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const resolved = resolveVariantValue(item);
+      if (resolved) return resolved;
+    }
+    return '';
+  }
+  if (typeof value === 'object') {
+    for (const key of ['src', 'url', 'href', 'path', 'value', 'data']) {
+      if (typeof value[key] === 'string' && value[key]) {
+        return value[key];
+      }
+    }
+  }
+  return '';
 }
 
 function createImg(srcOrObj, alt = '', opts = {}) {
@@ -247,7 +318,7 @@ function createImg(srcOrObj, alt = '', opts = {}) {
   const resolved = resolveImageSrc(srcOrObj, preferThumb);
   const frame = document.createElement('div');
   frame.setAttribute('data-img-frame', '');
-  const full = resolveImageSrc(srcOrObj, false);
+  const full = resolveFullImageSrc(srcOrObj);
   const img = document.createElement('img');
   img.src = resolved;
   img.alt = alt || '';
@@ -261,35 +332,185 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     if (!img.title && title) img.title = String(title);
   } catch (_) {}
 
-  applyImageCrop(frame, srcOrObj);
+  applyImageDisplay(frame, img, srcOrObj);
 
   return frame;
 }
 
-function applyImageCrop(frame, srcOrObj) {
-  frame.removeAttribute('data-has-crop');
+function applyImageDisplay(frame, img, srcOrObj) {
   frame.style.removeProperty('--crop-zoom');
   frame.style.removeProperty('--crop-inv-zoom');
   frame.style.removeProperty('--crop-offset-x');
   frame.style.removeProperty('--crop-offset-y');
+  frame.style.removeProperty('aspect-ratio');
+  delete frame.dataset.hasCrop;
+  delete frame.dataset.fit;
+  delete frame.dataset.cropMode;
+
+  img.style.removeProperty('object-fit');
+  img.style.removeProperty('object-position');
+  img.style.removeProperty('transform');
+  img.style.removeProperty('transform-origin');
+  img.style.removeProperty('clip-path');
+  img.style.removeProperty('will-change');
+
   if (!srcOrObj || typeof srcOrObj !== 'object') return;
+
   let crop = srcOrObj.crop;
+  if (!crop && srcOrObj.display && typeof srcOrObj.display === 'object') {
+    crop = srcOrObj.display;
+  }  
   if (!crop && (srcOrObj.focusX != null || srcOrObj.focusY != null || srcOrObj.align)) {
     crop = legacyAlignToCrop(srcOrObj);
   }
+  crop = normalizeCropDescriptor(crop);
   if (!crop) return;
-  const zoom = Math.max(1, Number(crop.zoom) || 1);
-  const offsetX = typeof crop.offsetX === 'number' ? Math.min(Math.max(crop.offsetX, 0), 1) : 0.5;
-  const offsetY = typeof crop.offsetY === 'number' ? Math.min(Math.max(crop.offsetY, 0), 1) : 0.5;
-  frame.setAttribute('data-has-crop', 'true');
-  frame.style.setProperty('--crop-zoom', String(zoom));
-  frame.style.setProperty('--crop-inv-zoom', String(1 / zoom));
-  frame.style.setProperty('--crop-offset-x', String(offsetX));
-  frame.style.setProperty('--crop-offset-y', String(offsetY));
+
+  const aspect = toPositiveNumber(crop.aspect, null);
+  if (aspect) {
+    frame.style.aspectRatio = String(aspect);
+  }
+
+  let fit = typeof crop.objectFit === 'string' ? crop.objectFit : (typeof crop.fit === 'string' ? crop.fit : '');
+  if (!fit && typeof crop.mode === 'string') {
+    const candidate = crop.mode.trim().toLowerCase();
+    if (candidate === 'cover' || candidate === 'contain' || candidate === 'fill' || candidate === 'scale-down' || candidate === 'none') {
+      fit = candidate;
+    }
+  }
+  if (fit) {
+    frame.dataset.fit = fit;
+    img.style.objectFit = fit;
+  }
+
+  const objectPosition = resolveObjectPosition(crop);
+  if (objectPosition) {
+    img.style.objectPosition = objectPosition;
+  }
+
+  if (typeof crop.clipPath === 'string' && crop.clipPath) {
+    img.style.clipPath = crop.clipPath;
+    frame.dataset.cropMode = 'clip-path';
+  }
+
+  const transform = resolveCropTransform(crop);
+  if (transform) {
+    img.style.transform = transform.value;
+    if (transform.origin) {
+      img.style.transformOrigin = transform.origin;
+    }
+    if (transform.willChange) {
+      img.style.willChange = transform.willChange;
+    }
+    if (transform.mode) {
+      frame.dataset.cropMode = transform.mode;
+    }
+  }
+}
+
+function normalizeCropDescriptor(rawCrop) {
+  if (!rawCrop || typeof rawCrop !== 'object') return null;
+  const descriptor = { ...rawCrop };
+  if (rawCrop.css && typeof rawCrop.css === 'object') {
+    Object.assign(descriptor, rawCrop.css);
+  }
+  if (rawCrop.display && typeof rawCrop.display === 'object') {
+    Object.assign(descriptor, rawCrop.display);
+  }
+  if (descriptor.mode == null && typeof descriptor.type === 'string') {
+    descriptor.mode = descriptor.type;
+  }
+  if (descriptor.objectPosition == null && typeof rawCrop.focus === 'object') {
+    descriptor.objectPosition = rawCrop.focus;
+  }
+  if (descriptor.objectPosition == null && typeof rawCrop.position === 'object') {
+    descriptor.objectPosition = rawCrop.position;
+  }
+  return descriptor;
+}
+
+function resolveObjectPosition(crop) {
+  if (!crop) return '';
+  if (typeof crop.objectPosition === 'string' && crop.objectPosition.trim()) {
+    return crop.objectPosition.trim();
+  }
+  const source = crop.objectPosition || crop.position || crop.focus;
+  let x;
+  let y;
+  if (source && typeof source === 'object') {
+    x = source.x ?? source.cx ?? source.left ?? source.right;
+    y = source.y ?? source.cy ?? source.top ?? source.bottom;
+  }
+  if (x == null && crop.offsetX != null) x = crop.offsetX;
+  if (y == null && crop.offsetY != null) y = crop.offsetY;
+  const nx = toClamped01(x, null);
+  const ny = toClamped01(y, null);
+  if (nx == null && ny == null) return '';
+  if (nx != null && ny != null) {
+    return `${formatPercent(nx)} ${formatPercent(ny)}`;
+  }
+  if (nx != null) return `${formatPercent(nx)} center`;
+  return `center ${formatPercent(ny)}`;
+}
+
+function resolveCropTransform(crop) {
+  if (!crop) return null;
+  if (typeof crop.transform === 'string' && crop.transform.trim()) {
+    return { value: crop.transform.trim(), origin: crop.transformOrigin || crop.origin || '', mode: 'custom-transform' };
+  }
+  if (crop.transform && typeof crop.transform === 'object') {
+    const candidate = crop.transform.value || crop.transform.css || '';
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return { value: candidate.trim(), origin: crop.transform.origin || crop.transformOrigin || '', mode: 'custom-transform' };
+    }
+  }
+  return resolveLegacyTransform(crop);
+}
+
+function resolveLegacyTransform(crop) {
+  const zoom = toPositiveNumber(crop.zoom, 1) || 1;
+  const offsetX = toClamped01(crop.offsetX, 0.5);
+  const offsetY = toClamped01(crop.offsetY, 0.5);
+  if (zoom === 1 && offsetX === 0.5 && offsetY === 0.5) {
+    return null;
+  }
+  const invZoom = 1 / zoom;
+  const translateX = (0.5 - offsetX) * invZoom * 100;
+  const translateY = (0.5 - offsetY) * invZoom * 100;
+  const value = `translate(${translateX}%, ${translateY}%) scale(${zoom})`;
+  return { value, origin: 'center center', willChange: 'transform', mode: 'legacy-transform' };
+}
+
+function toPositiveNumber(value, fallback) {
+  if (value == null) return fallback;
+  if (typeof value === 'string' && value.includes('/')) {
+    const [numPart, denPart] = value.split('/');
+    const numerator = Number(numPart.trim());
+    const denominator = Number(denPart.trim());
+    if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0) {
+      const ratio = numerator / denominator;
+      if (ratio > 0) return ratio;
+    }
+  }
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return fallback;
+  return num;
+}
+
+function toClamped01(value, fallback) {
+  if (value == null) return fallback;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  if (num <= 0) return 0;
+  if (num >= 1) return 1;
+  return num;
+}
+
+function formatPercent(value) {
+  return `${(value * 100).toFixed(4).replace(/\.0+$/, '').replace(/(\.[0-9]*[1-9])0+$/, '$1')}%`;
 }
 
 function legacyAlignToCrop(data) {
-  const clamp01 = (val) => Math.min(Math.max(val, 0), 1);
   const crop = { zoom: 1, offsetX: 0.5, offsetY: 0.5 };
   if (typeof data.focusX === 'number') {
     crop.offsetX = clamp01(data.focusX / 100);
@@ -305,6 +526,15 @@ function legacyAlignToCrop(data) {
     crop.offsetY = clamp01(data.focusY / 100);
   }
   return crop;
+}
+
+function clamp01(value) {
+  if (value == null) return 0;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 0;
+  if (num <= 0) return 0;
+  if (num >= 1) return 1;
+  return num;
 }
 
 function renderHero(hero = {}) {
