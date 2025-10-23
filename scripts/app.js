@@ -555,10 +555,11 @@ function renderHero(hero = {}) {
   }
 
   const body = document.createElement('div');
-  body.className = 'hero-body';
+  const hasProfileImage = Boolean(hero.profileImage);
+  body.className = `hero-body${hasProfileImage ? ' hero-body--with-profile' : ''}`;
   heroEl.appendChild(body);
 
-    if (hero.profileImage) {
+  if (hero.profileImage) {
     const profileWrapper = document.createElement('div');
     profileWrapper.className = 'hero__profile-wrapper';
     const profile = createImg(hero.profileImage, hero.title || 'Perfil');

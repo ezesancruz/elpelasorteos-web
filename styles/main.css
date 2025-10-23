@@ -159,7 +159,7 @@ main {
 }
 
 .section--hero {
-  padding: clamp(1.75rem, 5vw, 2.5rem) clamp(1.5rem, 4vw, 2rem) clamp(2.25rem, 6vw, 3rem);
+  padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem);
 }
 
 .hero__title {
@@ -171,7 +171,7 @@ main {
 
 .hero__subtitle {
   font-size: 1.2rem;
-  margin: clamp(0.5rem, 2vw, 0.75rem) 0 0;
+  margin: clamp(0.35rem, 2vw, 0.55rem) 0 0;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.82);
 }
@@ -927,24 +927,44 @@ main {
 }
 
 .hero__profile-wrapper {
-  width: 100%;
+  width: clamp(4.25rem, 12vw, 5.5rem);
+  height: clamp(4.25rem, 12vw, 5.5rem);
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
 }
 
 .hero-profile {
-  width: clamp(4rem, 12vw, 5rem);
-  height: clamp(4rem, 12vw, 5rem);
+  width: 100%;
+  height: 100%;
   border-radius: 999px;
   overflow: hidden;
   border: 3px solid #111;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  object-fit: cover;
+  display: block;
+}
+
+.hero-body--with-profile {
+  position: relative;
+  padding-left: clamp(4.75rem, 12vw, 6rem);
+  padding-top: clamp(0.25rem, 1.5vw, 0.75rem);
+}
+
+.hero-body--with-profile .hero__profile-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  width: clamp(4.25rem, 11vw, 5.5rem);
+  height: clamp(4.25rem, 11vw, 5.5rem);
+  margin-bottom: 0;
 }
 
 .hero-body .button-row {
   justify-content: flex-start;
-  margin: clamp(1rem, 3vw, 1.25rem) 0 clamp(1.25rem, 3vw, 1.75rem);
+  margin: clamp(1rem, 3vw, 1.25rem) 0 clamp(1rem, 3vw, 1.25rem)
 }
 
 .hero-body .social-list {
@@ -957,13 +977,22 @@ main {
     gap: 1.25rem;
   }
 
-  .hero__profile-wrapper {
-    justify-content: center;
-    margin-bottom: 0.75rem;
-  }
-
   .hero-body {
     align-items: flex-start;
+  }
+
+  .hero-body--with-profile {
+    padding-left: 0;
+    padding-top: 0;
+  }
+
+  .hero-body--with-profile .hero__profile-wrapper {
+    position: static;
+    width: clamp(4.5rem, 32vw, 5.75rem);
+    height: clamp(4.5rem, 32vw, 5.75rem);
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem;
   }
 }
 .social-list {
