@@ -357,9 +357,15 @@ function renderHeroEditor() {
   fieldset.appendChild(createInput('Titulo', page.hero?.title || '', value => updateHero(hero => hero.title = value)));
   fieldset.appendChild(createInput('Subtitulo', page.hero?.subtitle || '', value => updateHero(hero => hero.subtitle = value)));
   const heroProfilePath = ['pages', pageIndex, 'hero', 'profileImage'];
-  fieldset.appendChild(createImageField('Imagen de perfil', page.hero?.profileImage || '', heroProfilePath, value => updateHero(hero => hero.profileImage = value)));
+  fieldset.appendChild(createImageField('Imagen de perfil', page.hero?.profileImage || '', heroProfilePath, value => updateHero(hero => hero.profileImage = value), { aspect: 1 }));
   const heroBannerPath = ['pages', pageIndex, 'hero', 'bannerImage'];
-  fieldset.appendChild(createImageField('Banner', page.hero?.bannerImage || '', heroBannerPath, value => updateHero(hero => hero.bannerImage = value)));
+  fieldset.appendChild(createImageField(
+    'Banner',
+    page.hero?.bannerImage || '',
+    heroBannerPath,
+    value => updateHero(hero => hero.bannerImage = value),
+    { aspect: 16 / 9 }
+  ));
 
   const buttonsWrapper = document.createElement('div');
   buttonsWrapper.className = 'editor-inline-list';
@@ -667,7 +673,13 @@ const sectionEditors = {
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
     const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'image'];
-    wrapper.appendChild(createImageField('Imagen', section.data?.image || '', imagePath, value => updateSection(index, s => s.data.image = value)));
+    wrapper.appendChild(createImageField(
+      'Imagen',
+      section.data?.image || '',
+      imagePath,
+      value => updateSection(index, s => s.data.image = value),
+      { aspect: 5 / 6 }
+    ));
     return wrapper;
   },
   botonAccion(section, index) {
@@ -1330,13 +1342,35 @@ function createImageField(labelText, value, pathArr, onChange, options = {}) {
 
   let aspectHint = imageObj.crop?.aspect || guessAspectFromPath(basePath);
 
+  const parseAspectOption = (value) => {
+    if (value == null) return null;
+    if (typeof value === 'string' && value.includes('/')) {
+      const [numPart, denPart] = value.split('/');
+      const numerator = Number(numPart.trim());
+      const denominator = Number(denPart.trim());
+      if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0) {
+        const ratio = numerator / denominator;
+        return ratio > 0 ? ratio : null;
+      }
+      return null;
+    }
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric) || numeric <= 0) return null;
+    return numeric;
+  };
+
+  const optionAspect = parseAspectOption(options.aspect ?? options.aspectRatio);
+  if (optionAspect) {
+    aspectHint = optionAspect;
+  }
+
   const textLabel = document.createElement('label');
   textLabel.textContent = labelText;
   const textInput = document.createElement('input');
   textInput.type = 'text';
   textInput.value = imageObj.src || '';
   textInput.addEventListener('input', event => {
-   imageObj.src = event.target.value.trim();
+    imageObj.src = event.target.value.trim();
     cleanupLegacyImageFields(imageObj);
     renderImagePreview(preview, imageObj);
     debouncedPreview();

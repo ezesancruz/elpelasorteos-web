@@ -334,6 +334,16 @@ function createImg(srcOrObj, alt = '', opts = {}) {
 
   applyImageDisplay(frame, img, srcOrObj);
 
+    const fallbackAspect = toPositiveNumber(opts.aspect ?? opts.aspectRatio, null);
+  if (fallbackAspect && !frame.style.aspectRatio) {
+    frame.style.aspectRatio = String(fallbackAspect);
+  }
+
+  if (opts.objectFit && !img.style.objectFit) {
+    frame.dataset.fit = opts.objectFit;
+    img.style.objectFit = opts.objectFit;
+  }
+
   return frame;
 }
 
@@ -562,7 +572,7 @@ function renderHero(hero = {}) {
   if (hero.profileImage) {
     const profileWrapper = document.createElement('div');
     profileWrapper.className = 'hero__profile-wrapper';
-    const profile = createImg(hero.profileImage, hero.title || 'Perfil');
+    const profile = createImg(hero.profileImage, hero.title || 'Perfil', { aspect: 1, objectFit: 'cover' });
     profile.className = 'hero-profile';
     profileWrapper.appendChild(profile);
     body.appendChild(profileWrapper);
@@ -773,13 +783,6 @@ function renderImageGridSection(section) {
     const titleText = (image.title || '').trim();
     const descriptionText = (image.subtitle || image.description || '').trim();
 
-    if (titleText) {
-      const header = document.createElement('div');
-      header.className = 'image-card__title';
-      header.textContent = titleText;
-      card.appendChild(header);
-    }
-
     const media = document.createElement('a');
     media.className = 'image-card__media';
     media.href = image.href || src;
@@ -790,20 +793,29 @@ function renderImageGridSection(section) {
       media.removeAttribute('target');
       media.removeAttribute('rel');
     }
-    const frame = createImg(image, altText, { preferThumb: true });
+    const frame = createImg(image, altText, { preferThumb: true, aspect: 3 / 4, objectFit: 'cover' });
     media.appendChild(frame);
     card.appendChild(media);
 
-    if (descriptionText) {
-      const body = document.createElement('div');
-      body.className = 'image-card__body';
+    if (titleText || descriptionText) {
+      const content = document.createElement('div');
+      content.className = 'image-card__content';
 
-      const subtitle = document.createElement('div');
-      subtitle.className = 'image-card__subtitle';
-      subtitle.textContent = descriptionText;
-      body.appendChild(subtitle);
+      if (titleText) {
+        const heading = document.createElement('h3');
+        heading.className = 'image-card__heading';
+        heading.textContent = titleText;
+        content.appendChild(heading);
+      }
 
-      card.appendChild(body);
+      if (descriptionText) {
+        const bodyText = document.createElement('p');
+        bodyText.className = 'image-card__description';
+        bodyText.textContent = descriptionText;
+        content.appendChild(bodyText);
+      }
+
+      card.appendChild(content);
     }
 
     grid.appendChild(card);
@@ -845,7 +857,7 @@ function renderImageHighlightSection(section) {
   const media = document.createElement('div');
   media.className = 'imageHighlight__media';
   if (section.data?.image) {
-    const img = createImg(section.data.image, section.data?.title || 'Destacado');
+    const img = createImg(section.data.image, section.data?.title || 'Destacado', { aspect: 5 / 6, objectFit: 'cover' });
     media.appendChild(img);
   }
   const body = document.createElement('div');
