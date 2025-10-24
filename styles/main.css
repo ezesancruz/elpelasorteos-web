@@ -882,6 +882,12 @@ main {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
+  cursor: pointer;
+  list-style: none; /* For Firefox */
+}
+
+.section-editor__heading::-webkit-details-marker {
+  display: none;
 }
 
 .section-editor__controls {

@@ -444,11 +444,13 @@ function renderSectionsEditor() {
   container.appendChild(heading);
 
   page.sections?.forEach((section, index) => {
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement('details');
     wrapper.className = 'section-editor';
+    wrapper.open = true;
 
-    const header = document.createElement('div');
-    header.className = 'section-editor__heading';
+    const summary = document.createElement('summary');
+    summary.className = 'section-editor__heading';
+
     const title = document.createElement('strong');
     title.textContent = `${index + 1}. ${section.type}`;
     const controls = document.createElement('div');
@@ -475,9 +477,9 @@ function renderSectionsEditor() {
     controls.appendChild(down);
     controls.appendChild(remove);
 
-    header.appendChild(title);
-    header.appendChild(controls);
-    wrapper.appendChild(header);
+    summary.appendChild(title);
+    summary.appendChild(controls);
+    wrapper.appendChild(summary);
 
     const body = document.createElement('div');
     body.className = 'section-editor__grid';
@@ -530,7 +532,7 @@ const sectionEditors = {
     wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     const textarea = createTextarea('Lineas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
       s.data.lines = value.split('\n').map(line => line.trim()).filter(Boolean);
-    }, { rerenderPanel: true }));
+    }));
     wrapper.appendChild(textarea);
     return wrapper;
   },
