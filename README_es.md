@@ -42,7 +42,7 @@ web/
 2. Haz clic en el botón flotante `?` para mostrar el panel.
 3. Alterna entre las páginas "Sorteo" y "Ganadores", ajusta textos, secciones y tema.
 4. Usa **Guardar cambios** para escribir en `data/site-content.json` (requiere el servidor encendido) o **Descargar JSON** para exportar el contenido.
-5. Las imágenes subidas quedan en `server/public/uploads/` y devuelven una URL relativa reutilizable.
+5. Las imágenes subidas desde el panel se guardan en `server/public/uploads/` y devuelven una URL relativa (`/uploads/...`) que puedes reutilizar en el JSON.
 
 ### Edición manual
 1. Abre `data/site-content.json` con tu editor preferido.
@@ -50,8 +50,8 @@ web/
 3. Valida el archivo (por ejemplo con https://jsonlint.com) antes de guardar para evitar errores.
 
 ## Despliegue
-- **Hosting estático**: sube la carpeta `web/` (puedes omitir `server/` si no necesitas edición en vivo).
-- **Hosting dinámico**: despliega el servidor Node.js (Render, Railway, Fly.io, VPS, etc.) y publica `/api/content` y `/api/upload` detrás de HTTPS.
+- **Hosting estático**: Para un hosting estático (Netlify, Vercel, GitHub Pages, S3, etc.) basta con subir el contenido de la carpeta `web` sin el directorio `server/`. El sitio funciona como SPA.
+- **Hosting dinámico**: Si se necesita permitir guardado en producción, despliega también el servidor Express en la infraestructura elegida y expón las rutas `/api/content` y `/api/upload` (HTTPS recomendado).
 - Realiza respaldos frecuentes de `data/site-content.json` y mantén `server/public/uploads/` fuera del control de versiones (ver `.gitignore`).
 
 ## Pre-render (opcional, mejora SEO)
@@ -69,6 +69,12 @@ npm run prerender
 - `README.md`: versión en inglés para colaboradores internacionales.
 - `INSTRUCTIVO.txt`: manual extendido para operadores.
 - `LICENCE`: términos de la licencia MIT.
+
+## Solución de problemas frecuentes
+- **El botón "Guardar cambios" falla**: confirma que `npm run dev` está activo y que el JSON es válido.
+- **No se ven nuevas imágenes**: verifica que la subida terminó sin error y que el archivo exista en `server/public/uploads/`.
+- **El sitio muestra pantalla en blanco**: abre la consola del navegador (F12 -> Console) y revisa errores de JSON o rutas inexistentes.
+- **Error de permisos al guardar**: revisa que la carpeta `data/` tenga permisos de escritura.
 
 ## Licencia
 Distribuido bajo la licencia MIT. Consulta `LICENCE` para más detalles.

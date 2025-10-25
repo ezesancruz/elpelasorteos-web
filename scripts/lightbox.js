@@ -315,11 +315,11 @@ function observeMutations() {
   mo.observe(root, { subtree: true, childList: true });
 }
 
-ready(() => {
+function initLightbox() {
   createOverlay();
   enhanceImages();
   observeMutations();
-});
+}
 
-export {};
+export { enhanceImages, initLightbox };
 

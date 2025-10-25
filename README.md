@@ -50,8 +50,8 @@ web/
 3. Validate the file (for example with https://jsonlint.com) before saving to avoid broken builds.
 
 ## Deploying
-- **Static hosting**: build assets manually (no bundler required) and upload the `web/` directory, excluding `server/` if you do not need runtime editing.
-- **Dynamic hosting**: deploy the Node.js server (e.g., on Render, Railway, Fly.io, VPS). Keep `/api/content` and `/api/upload` behind HTTPS if exposed publicly.
+- **Static hosting**: For static hosting (Netlify, Vercel, GitHub Pages, S3, etc.), simply upload the contents of the `web` folder without the `server/` directory. The site functions as a SPA.
+- **Dynamic hosting**: If runtime saving is required in production, deploy the Express server to your chosen infrastructure and expose the `/api/content` and `/api/upload` routes (HTTPS recommended).
 - Backup `data/site-content.json` regularly and keep `server/public/uploads/` outside of version control (see `.gitignore`).
 
 ## Pre-render (optional, SEO-friendly)
@@ -69,6 +69,12 @@ npm run prerender
 - `README_es.md`: localized quick start in Spanish.
 - `INSTRUCTIVO.txt`: extended operator manual for editors and stakeholders.
 - `LICENCE`: licensing terms (MIT).
+
+## Troubleshooting
+- **"Save changes" button fails**: confirm `npm run dev` is active and the JSON is valid.
+- **New images are not visible**: verify the upload finished without error and the file exists in `server/public/uploads/`.
+- **Site shows a blank screen**: open the browser console (F12 -> Console) and check for JSON errors or non-existent paths.
+- **Permission error when saving**: check that the `data/` folder has write permissions.
 
 ## License
 Distributed under the MIT License. See `LICENCE` for full details.
