@@ -1,4 +1,6 @@
-﻿const appState = {
+﻿import { initLightbox } from './lightbox.js';
+
+const appState = {
   site: null,
   pageId: null,
   root: null
@@ -11,6 +13,7 @@
   const root = document.getElementById('app') || document.body;
   initAppState(site, pageId, root);
   render();
+  initLightbox();
 })();
 
 // Analytics helper (GA4 compatible)
