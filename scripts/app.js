@@ -758,7 +758,7 @@ function renderLinkCardsSection(section) {
       track('pack_click', { amount, title: card.title || '' });
     });
     if (card.image) {
-      const imageEl = createImg(card.image, card.title || 'Link');
+      const imageEl = createImg(card.image, card.title || 'Link', { preferThumb: true });
       anchor.appendChild(imageEl);
     }
     const title = document.createElement('div');
@@ -867,7 +867,7 @@ function renderImageHighlightSection(section) {
   media.className = 'imageHighlight__media';
   if (section.data?.image) {
     const imageObj = typeof section.data.image === 'object' && section.data.image ? section.data.image : { src: section.data.image };
-    const img = createImg(imageObj, section.data?.title || 'Destacado', { aspect: 5 / 6 });
+    const img = createImg(imageObj, section.data?.title || 'Destacado', { aspect: 3 / 2, preferThumb: true });
     media.appendChild(img);
   }
   const body = document.createElement('div');
