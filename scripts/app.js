@@ -1,4 +1,4 @@
-﻿import { initLightbox } from './lightbox.js';
+﻿import { newLightbox } from './new-lightbox.js';
 
 const appState = {
   site: null,
@@ -13,7 +13,7 @@ const appState = {
   const root = document.getElementById('app') || document.body;
   initAppState(site, pageId, root);
   render();
-  initLightbox();
+  newLightbox.init();
 })();
 
 // Analytics helper (GA4 compatible)
@@ -334,7 +334,13 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     img.loading = 'lazy';
     img.decoding = 'async';
     frame.appendChild(img);
-    if (full) img.dataset.fullsrc = full;
+    if (full) {
+      img.dataset.fullsrc = full;
+      frame.style.cursor = 'pointer'; // Add a pointer cursor to indicate clickability
+      frame.addEventListener('click', () => {
+        newLightbox.open(full);
+      });
+    }
     applyImageDisplay(frame, img, srcOrObj);
   }
 
