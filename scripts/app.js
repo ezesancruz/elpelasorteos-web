@@ -110,7 +110,7 @@ function applyTheme(theme) {
 }
 
 function renderBackground(background) {
-  console.log('renderBackground called with:', background);
+  console.log('renderBackground called with:', JSON.stringify(background, null, 2));
   let media = document.getElementById('background-media');
   if (!media) {
     media = document.createElement('div');
@@ -119,7 +119,9 @@ function renderBackground(background) {
   }
   media.innerHTML = '';
 
-  const backgroundMode = background?.backgroundMode || 'none';
+  const backgroundMode =
+    background?.backgroundMode ||
+    (background?.video ? 'video' : (background?.image ? 'image' : 'none'));
   console.log('backgroundMode:', backgroundMode);
 
   if (backgroundMode === 'video' && background?.video) {
