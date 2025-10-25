@@ -71,8 +71,8 @@
             "href": "https://mpago.li/1CYuRKR"
           },
           {
-            "label": "Más novedades proximamente 🚀",
-            "href": "#premios"
+            "label": "¡Botón sorpresa!  😉",
+            "href": ""
           }
         ],
         "social": [
@@ -369,12 +369,88 @@
             "title": "Preguntas frecuentes",
             "items": [
               {
-                "q": "�C�mo s� si gan�?",
-                "a": "Lo publicamos en la web y redes; adem�s te contactamos."
+                "q": "¿Cómo participo del sorteo?",
+                "a": "Podés participar desde cualquiera de nuestras redes oficiales: Facebook, Instagram, TikTok o el canal de WhatsApp.\nSolo tenés que entrar al link de pago oficial de Mercado Pago, elegir la promo o combo disponible y realizar el pago."
               },
               {
-                "q": "�Qu� pasa si pierdo el comprobante?",
-                "a": "Pod�s validarlo con tu e-mail y hora de pago."
+                "q": "¿Qué número uso para el sorteo?",
+                "a": "El número de operación de Mercado Pago es tu número de la suerte. Ese número se usa como identificación oficial en el sorteo."
+              },
+              {
+                "q": "¿Puedo comprar más de una chance?",
+                "a": "Cada link de pago puede usarse una sola vez por comprador, pero podés participar con otros combos o con links de diferentes billeteras cuando se habiliten nuevas opciones."
+              },
+              {
+                "q": "¿Qué pasa con las promos “3x1” o similares?",
+                "a": "Las promos como “3x1” te dan más oportunidades con un solo pago. Por ejemplo, si tu número de operación es 131036314838, se cargan tres papelitos en la urna: 131036314838-1, -2 y -3."
+              },
+              {
+                "q": "¿Es obligatorio seguir las redes para participar?",
+                "a": "No, pero se recomienda hacerlo, porque en cada red se publican ofertas y promos exclusivas que duran poco tiempo."
+              },
+              {
+                "q": "¿Qué premios hay?",
+                "a": "El primer premio es una Honda Wave 110cc 0 km.\nAdemás, puede haber hasta 4 premios adicionales, que se anunciarán antes del sorteo principal.\nTambién se realizan sorteos semanales de $10.000 con tres ganadores cada semana."
+              },
+              {
+                "q": "¿Cuándo se hacen los sorteos?",
+                "a": "Los sorteos semanales arrancan la tercera semana de noviembre.\nEl gran sorteo final se hace el 24 de diciembre a las 20:00 hs, en vivo."
+              },
+              {
+                "q": "¿Dónde puedo ver el sorteo?",
+                "a": "Los sorteos se transmiten en vivo por TikTok (@_milpeso), y también pueden salir por Facebook e Instagram."
+              },
+              {
+                "q": "¿Tengo que estar presente en el vivo para ganar?",
+                "a": "Sí. Es obligatorio estar conectado durante el sorteo para reclamar el premio.\nSi el nombre sorteado no está presente, el premio pasa al siguiente sorteado."
+              },
+              {
+                "q": "¿Cómo se entregan los premios?",
+                "a": "El primer premio se entrega en persona.\nLos demás premios pueden coordinarse para entrega presencial o envío, según su valor o tamaño."
+              },
+              {
+                "q": "¿Qué tengo que presentar si gano?",
+                "a": "El comprobante original de Mercado Pago con el número de operación y una versión impresa del mismo.\nNo se aceptan capturas de pantalla."
+              },
+              {
+                "q": "¿Puedo mandar a otra persona a retirar por mí?",
+                "a": "No. El premio solo lo puede reclamar el titular que realizó la compra."
+              },
+              {
+                "q": "¿Puedo pedir dinero en vez del premio?",
+                "a": "No, salvo que el premio del sorteo sea justamente dinero."
+              },
+              {
+                "q": "¿Cómo garantizan que todo sea real?",
+                "a": "Los sorteos se hacen con papelitos físicos que se colocan en una bolsa sellada con cinta y fecha.\nCada recarga o apertura se graba en video, y todo el proceso se muestra en vivo."
+              },
+              {
+                "q": "¿Dónde publican los ganadores?",
+                "a": "Los resultados se publican en todas nuestras redes sociales oficiales y en la web."
+              },
+              {
+                "q": "¿Suben fotos de las entregas?",
+                "a": "Sí, siempre se suben fotos con los ganadores en redes y en la página, para que todos puedan ver que los premios se entregan."
+              },
+              {
+                "q": "¿Quién organiza el sorteo?",
+                "a": "El sorteo está organizado por Lucas Santa Cruz (El Pela Sorteos), desde Claypole, Buenos Aires."
+              },
+              {
+                "q": "¿Puedo participar desde cualquier parte del país?",
+                "a": "Sí, el sorteo es válido para todo el territorio argentino."
+              },
+              {
+                "q": "¿Pueden participar menores de edad?",
+                "a": "No, solo mayores de 18 años."
+              },
+              {
+                "q": "¿Está asociado con Mercado Pago o las redes sociales?",
+                "a": "No. El Pela Sorteos es una iniciativa independiente, sin relación con Mercado Pago, TikTok, Meta o cualquier otra plataforma."
+              },
+              {
+                "q": "¿Qué pasa si se cambia una fecha o un premio?",
+                "a": "El organizador puede modificar fechas o premios si fuera necesario, pero siempre lo informará públicamente por sus redes oficiales."
               }
             ]
           }

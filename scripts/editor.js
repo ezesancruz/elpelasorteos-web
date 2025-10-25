@@ -473,9 +473,19 @@ function renderSectionsEditor() {
     remove.textContent = 'x';
     remove.addEventListener('click', () => removeSection(index));
 
+    const toggleCollapse = document.createElement('button');
+    toggleCollapse.type = 'button';
+    toggleCollapse.textContent = wrapper.open ? '▼' : '▲';
+    toggleCollapse.addEventListener('click', (event) => {
+      event.stopPropagation(); // Prevent the summary from toggling
+      wrapper.open = !wrapper.open;
+      toggleCollapse.textContent = wrapper.open ? '▼' : '▲';
+    });
+
     controls.appendChild(up);
     controls.appendChild(down);
     controls.appendChild(remove);
+    controls.appendChild(toggleCollapse); // Add the new button
 
     summary.appendChild(title);
     summary.appendChild(controls);
@@ -823,9 +833,10 @@ function renderThemeEditor() {
   legend.textContent = 'Tema y fondos';
   fieldset.appendChild(legend);
 
-  fieldset.appendChild(createColorField('Color primario', theme.colors?.primary || '#fe9200', value => updateTheme(themeDraft => themeDraft.colors.primary = value)));
-  fieldset.appendChild(createColorField('Color secundario', theme.colors?.accent || '#000000', value => updateTheme(themeDraft => themeDraft.colors.accent = value)));
+  fieldset.appendChild(createColorField('Color de botón', theme.colors?.primary || '#fe9200', value => updateTheme(themeDraft => themeDraft.colors.primary = value)));
+  fieldset.appendChild(createColorField('Color de fondo', theme.colors?.accent || '#000000', value => updateTheme(themeDraft => themeDraft.colors.accent = value)));
   fieldset.appendChild(createColorField('Color texto', theme.colors?.text || '#ffffff', value => updateTheme(themeDraft => themeDraft.colors.text = value)));
+
 
   fieldset.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
   const posterPath = ['theme', 'background', 'poster'];
@@ -864,18 +875,13 @@ function createColorField(labelText, value, onChange) {
   title.textContent = labelText;
   label.appendChild(title);
 
-  const textInput = document.createElement('input');
-  textInput.type = 'text';
-  textInput.value = value || '';
-  label.appendChild(textInput);
-
   controls.appendChild(label);
 
   const toggleBtn = document.createElement('button');
   toggleBtn.type = 'button';
   toggleBtn.className = 'editor-color-field__toggle';
   toggleBtn.setAttribute('aria-expanded', 'false');
-  toggleBtn.textContent = 'Elegir color';
+  toggleBtn.textContent = 'Mostrar/Ocultar colores';
 
   const preview = document.createElement('span');
   preview.className = 'editor-color-field__preview';
@@ -890,7 +896,7 @@ function createColorField(labelText, value, onChange) {
 
   const swatchList = document.createElement('div');
   swatchList.className = 'editor-color-field__swatches';
-  PRESET_THEME_COLORS.forEach(color => {
+  PRESET_THEME_COLORS.slice(0, 6).forEach(color => {
     const swatch = document.createElement('button');
     swatch.type = 'button';
     swatch.className = 'editor-color-field__swatch';
@@ -900,6 +906,13 @@ function createColorField(labelText, value, onChange) {
     swatchList.appendChild(swatch);
   });
   palette.appendChild(swatchList);
+
+  const pickColorBtn = document.createElement('button');
+  pickColorBtn.type = 'button';
+  pickColorBtn.className = 'editor-color-field__pick-btn';
+  pickColorBtn.textContent = 'Elegir de paleta';
+  pickColorBtn.addEventListener('click', () => colorInput.click());
+  palette.appendChild(pickColorBtn);
 
   const customRow = document.createElement('div');
   customRow.className = 'editor-color-field__custom';
@@ -928,6 +941,8 @@ function createColorField(labelText, value, onChange) {
     toggleBtn.setAttribute('aria-expanded', String(isHidden));
   });
 
+
+
   let syncing = false;
 
   function updateColor(rawValue, { silent = false } = {}) {
@@ -937,7 +952,6 @@ function createColorField(labelText, value, onChange) {
     const normalized = normalizeColorValue(rawValue);
     const expanded = expandHexToSix(normalized);
 
-    if (textInput.value !== normalized) textInput.value = normalized;
     if (codeInput.value !== normalized) codeInput.value = normalized;
 
     if (expanded) {
@@ -957,7 +971,6 @@ function createColorField(labelText, value, onChange) {
     syncing = false;
   }
 
-  textInput.addEventListener('input', event => updateColor(event.target.value));
   colorInput.addEventListener('input', event => updateColor(event.target.value));
   codeInput.addEventListener('input', event => updateColor(event.target.value));
 

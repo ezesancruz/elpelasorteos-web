@@ -916,6 +916,22 @@ main {
   font-weight: 400;
 }
 
+.editor-color-field__pick-btn {
+  padding: 0.55rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  width: 100%; /* Make it take full width */
+}
+
+.editor-color-field__pick-btn:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+
 .section-editor {
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 16px;
