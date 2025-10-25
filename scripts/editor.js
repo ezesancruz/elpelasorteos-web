@@ -514,7 +514,7 @@ function renderSectionsEditor() {
   Object.keys(defaultSections).forEach(type => {
     const option = document.createElement('option');
     option.value = type;
-    option.textContent = type;
+    option.textContent = sectionAliases[type] || type;
     select.appendChild(option);
   });
   const addBtn = document.createElement('button');
@@ -826,6 +826,17 @@ const defaultSections = {
   }
 };
 
+const sectionAliases = {
+  textoinformativo: 'Tarjeta texto',
+  opcionesCompra: 'Tarjeta productos',
+  galeriaImagenes: 'Tarjeta galería de imágenes',
+  carruselImagenes: 'Tarjeta carrusel de imágenes',
+  detalleVisual: 'Tarjeta detalle visual',
+  botonAccion: 'Tarjeta tienda',
+  muroGanadores: 'Tarjeta muro de ganadores',
+  faq: 'Tarjeta FAQ'
+};
+
 function renderThemeEditor() {
   const theme = editorState.site.theme || {};
   const fieldset = document.createElement('fieldset');
@@ -839,11 +850,19 @@ function renderThemeEditor() {
 
 
   fieldset.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
-  const posterPath = ['theme', 'background', 'poster'];
-  fieldset.appendChild(createImageField('Poster video', theme.background?.poster || '', posterPath, value => updateTheme(themeDraft => themeDraft.background.poster = value)));
-  const backgroundImagePath = ['theme', 'background', 'image'];
-  fieldset.appendChild(createImageField('Imagen de fondo', theme.background?.image || '', backgroundImagePath, value => updateTheme(themeDraft => themeDraft.background.image = value)));
-
+      fieldset.appendChild(createToggleSwitch('Ver video', theme.background?.videoEnabled, value => updateTheme(themeDraft => {
+        themeDraft.background.videoEnabled = value;
+        if (value) themeDraft.background.imageEnabled = false; // Deactivate image if video is activated
+      }, { rerenderPanel: true })));  
+    const posterPath = ['theme', 'background', 'poster'];
+    fieldset.appendChild(createImageField('Poster video', theme.background?.poster || '', posterPath, value => updateTheme(themeDraft => themeDraft.background.poster = value)));
+    const backgroundImagePath = ['theme', 'background', 'image'];
+    fieldset.appendChild(createImageField('Imagen de fondo', theme.background?.image || '', backgroundImagePath, value => updateTheme(themeDraft => themeDraft.background.image = value)));
+  
+      fieldset.appendChild(createToggleSwitch('Ver imagen', theme.background?.imageEnabled, value => updateTheme(themeDraft => {
+        themeDraft.background.imageEnabled = value;
+        if (value) themeDraft.background.videoEnabled = false; // Deactivate video if image is activated
+      }, { rerenderPanel: true })));
   return fieldset;
 }
 
@@ -1458,6 +1477,7 @@ function createImageField(labelText, value, pathArr, onChange, options = {}) {
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
   fileInput.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -1496,6 +1516,13 @@ function createImageField(labelText, value, pathArr, onChange, options = {}) {
     }
   });
   controls.appendChild(fileInput);
+
+  const customFileButton = document.createElement('button');
+  customFileButton.type = 'button';
+  customFileButton.textContent = 'Archivo';
+  customFileButton.className = 'editor-file-button'; // Add a class for styling if needed
+  customFileButton.addEventListener('click', () => fileInput.click());
+  controls.appendChild(customFileButton);
 
   const cropButton = document.createElement('button');
   cropButton.type = 'button';
@@ -1606,6 +1633,30 @@ function createRichTextInput(labelText, value, onChange) {
   return container;
 }
 
+function createToggleSwitch(labelText, value, onChange) {
+  const label = document.createElement('label');
+  label.className = 'editor-toggle-switch';
+
+  const span = document.createElement('span');
+  span.textContent = labelText;
+  label.appendChild(span);
+
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = !!value;
+  input.addEventListener('change', event => {
+    onChange(event.target.checked);
+    onFieldInput(event);
+  });
+
+  const slider = document.createElement('span');
+  slider.className = 'slider round';
+  label.appendChild(input);
+  label.appendChild(slider);
+
+  return label;
+}
+
 function updateSite(mutator, { rerenderPanel = false } = {}) {
   if (!editorState.site) return;
   mutator(editorState.site);
@@ -1649,6 +1700,12 @@ function updateTheme(mutator, options = {}) {
     site.theme = site.theme || { colors: {}, fonts: {}, background: {} };
     site.theme.colors = site.theme.colors || {};
     site.theme.background = site.theme.background || {};
+    if (site.theme.background.videoEnabled === undefined) {
+      site.theme.background.videoEnabled = true; // Default to enabled
+    }
+    if (site.theme.background.imageEnabled === undefined) {
+      site.theme.background.imageEnabled = false; // Default to disabled
+    }
     mutator(site.theme);
   }, options);
 }

@@ -128,7 +128,7 @@ function renderBackground(background) {
     source.src = background.video;
     video.appendChild(source);
     media.appendChild(video);
-  } else if (background?.image) {
+  } else if (background?.image && background?.imageEnabled) {
     const img = createImg(background.image, '');
     media.appendChild(img);
   }

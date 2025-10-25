@@ -618,6 +618,9 @@ main {
   gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
+  width: 80%; /* Match the width of the preview */
+  margin: 0 auto; /* Center the controls */
+  justify-content: center;
 }
 
 .editor-image-controls input[type="file"] {
@@ -1223,4 +1226,77 @@ main {
 /* Prevents "double cropping" when using legacy transform crop mode */
 .carousel [data-img-frame][data-crop-mode="legacy-transform"] > img {
   object-fit: fill;
+}
+
+/* Toggle Switch Styles */
+.editor-toggle-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between text and switch */
+  height: 22px; /* Adjust height to match the smaller switch */
+  margin-bottom: 0.9rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+  width: fit-content; /* Allow the label to shrink to fit its content */
+}
+
+.editor-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.editor-toggle-switch span:first-of-type {
+  margin-right: 10px;
+}
+
+.slider {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  top: 0;
+  left: auto;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  width: 40px;
+  height: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--color-primary);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--color-primary);
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(18px);
+  -ms-transform: translateX(18px);
+  transform: translateX(18px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }

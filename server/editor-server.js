@@ -120,14 +120,14 @@ app.post('/api/upload', requireEditorEnabled, requireAdmin, upload.single('image
     const pipeline = sharp(req.file.path)
       .rotate()
       .resize({ width: isBanner ? 1600 : 1000, withoutEnlargement: true })
-      .webp({ quality: 80 });
+      .webp({ quality: 100 });
 
     await pipeline.toFile(outMain);
 
     await sharp(req.file.path)
       .rotate()
       .resize({ width: 500, withoutEnlargement: true })
-      .webp({ quality: 78 })
+      .webp({ quality: 100 })
       .toFile(outThumb);
 
     try { fs.unlinkSync(req.file.path); } catch {}
