@@ -655,17 +655,17 @@ const sectionEditors = {
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(imgIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
-      const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
-      item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 9 / 16 }));      list.appendChild(item);
-    });
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.textContent = 'Agregar imagen';
-    addBtn.addEventListener('click', () => updateSection(index, s => {
-      s.data.images = s.data.images || [];
-      s.data.images.push({ src: '' });
-    }, { rerenderPanel: true }));
-    wrapper.appendChild(list);
+                  const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
+                  item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 9 / 16 }));
+                  list.appendChild(item);
+                });
+                const addBtn = document.createElement('button');
+                addBtn.type = 'button';
+                addBtn.textContent = 'Agregar imagen';
+                addBtn.addEventListener('click', () => updateSection(index, s => {
+                  s.data.images = s.data.images || [];
+                  s.data.images.push({ src: '' });
+                }, { rerenderPanel: true }));    wrapper.appendChild(list);
     wrapper.appendChild(addBtn);
     return wrapper;
   },
@@ -1106,12 +1106,22 @@ function openImageCropper({ src, aspect = 1, initialCrop }) {
     }
 
     function updateCanvasSize() {
-      const width = 600;
-      const height = Math.round(width / state.aspect);
+      const maxWidth = 600;
+      const maxHeight = 450;
+      const aspect = state.aspect;
+
+      let width = maxWidth;
+      let height = width / aspect;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * aspect;
+      }
+
       canvas.width = width;
       canvas.height = height;
       previewCanvas.width = 200;
-      previewCanvas.height = Math.round(previewCanvas.width / state.aspect);
+      previewCanvas.height = Math.round(previewCanvas.width / aspect);
     }
 
     function updateBaseScale() {

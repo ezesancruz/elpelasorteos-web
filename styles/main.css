@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   color-scheme: dark;
   --color-primary: #fe9200;
   --color-accent: #000000;
@@ -1160,4 +1160,9 @@ main {
   border-radius: 4px;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
+}
+
+/* Prevents "double cropping" when using legacy transform crop mode */
+[data-img-frame][data-crop-mode="legacy-transform"] > img {
+  object-fit: fill;
 }
