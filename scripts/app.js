@@ -484,9 +484,8 @@ function resolveLegacyTransform(crop) {
   if (zoom === 1 && offsetX === 0.5 && offsetY === 0.5) {
     return null;
   }
-  const invZoom = 1 / zoom;
-  const translateX = (0.5 - offsetX) * invZoom * 100;
-  const translateY = (0.5 - offsetY) * invZoom * 100;
+  const translateX = (0.5 - offsetX) * 100;
+  const translateY = (0.5 - offsetY) * 100;
   const value = `translate(${translateX}%, ${translateY}%) scale(${zoom})`;
   return { value, origin: 'center center', willChange: 'transform', mode: 'legacy-transform' };
 }
