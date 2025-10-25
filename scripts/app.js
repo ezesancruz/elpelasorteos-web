@@ -339,32 +339,33 @@ function createImg(srcOrObj, alt = '', opts = {}) {
   const resolved = resolveImageSrc(srcOrObj, preferThumb);
   const frame = document.createElement('div');
   frame.setAttribute('data-img-frame', '');
-  const full = resolveFullImageSrc(srcOrObj);
+
+  // FULL para el visor (priorizar original si existe)
+  const full = resolveFullImageSrc(srcOrObj) || resolved;
 
   if (preferThumb && srcOrObj && srcOrObj.thumb) {
+    // Tu rama “recortes perfectos” via background
     frame.style.backgroundImage = `url(${srcOrObj.thumb})`;
     frame.style.backgroundSize = 'cover';
     frame.style.backgroundPosition = 'center';
+    frame.style.backgroundRepeat = 'no-repeat';
+    // Importante si el contenedor usa aspect-ratio
+    if (opts.aspect) frame.style.aspectRatio = String(opts.aspect);
+    // <- antes aquí NO había click; ahora lo agregamos:
+    attachLightbox(frame, full);
   } else {
+    // Rama <img> tradicional (ya te funcionaba)
     const img = document.createElement('img');
     img.src = resolved;
     img.alt = alt || '';
     img.loading = 'lazy';
     img.decoding = 'async';
     frame.appendChild(img);
-    if (full) {
-      img.dataset.fullsrc = full;
-      frame.style.cursor = 'pointer'; // Add a pointer cursor to indicate clickability
-      frame.addEventListener('click', (e) => {
-        // Check if the frame is inside an <a> tag
-        const parentAnchor = frame.closest('a');
-        if (parentAnchor) {
-          e.preventDefault(); // Prevent the <a> tag's default navigation
-        }
-        newLightbox.open(full);
-      });
-    }
-    applyImageDisplay(frame, img, srcOrObj);
+
+    if (opts.objectFit) img.style.objectFit = opts.objectFit;
+    if (opts.aspect) frame.style.aspectRatio = String(opts.aspect);
+
+    attachLightbox(frame, full);
   }
 
   try {
@@ -1002,5 +1003,31 @@ function deepClone(value) {
     return structuredClone(value);
   }
   return JSON.parse(JSON.stringify(value));
+}
+
+function attachLightbox(frame, full) {
+  if (!full || !frame) return;
+  frame.dataset.fullsrc = full;
+  frame.style.cursor = 'pointer';
+
+  const open = (e) => {
+    // Si está dentro de un <a>, evitamos navegar
+    const anchor = frame.closest('a');
+    if (anchor) e.preventDefault();
+    e.stopPropagation();
+    newLightbox.open(full);
+  };
+
+  frame.addEventListener('click', open);
+
+  // Accesibilidad: Enter/Espacio
+  frame.setAttribute('role', 'button');
+  frame.setAttribute('tabindex', '0');
+  frame.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      open(e);
+    }
+  });
 }
 

@@ -1211,6 +1211,11 @@ main {
   padding: 0.25rem 0.5rem;
 }
 
+[data-img-frame] {
+  position: relative;            /* para hit area consistente */
+  touch-action: manipulation;    /* mejora tap en mobile */
+}
+
 /* Prevents "double cropping" when using legacy transform crop mode */
 .carousel [data-img-frame][data-crop-mode="legacy-transform"] > img {
   object-fit: fill;
