@@ -479,14 +479,10 @@ function resolveCropTransform(crop) {
 
 function resolveLegacyTransform(crop) {
   const zoom = toPositiveNumber(crop.zoom, 1) || 1;
-  const offsetX = toClamped01(crop.offsetX, 0.5);
-  const offsetY = toClamped01(crop.offsetY, 0.5);
-  if (zoom === 1 && offsetX === 0.5 && offsetY === 0.5) {
+  if (zoom === 1) {
     return null;
   }
-  const translateX = (0.5 - offsetX) * 100;
-  const translateY = (0.5 - offsetY) * 100;
-  const value = `translate(${translateX}%, ${translateY}%) scale(${zoom})`;
+  const value = `scale(${zoom})`;
   return { value, origin: 'center center', willChange: 'transform', mode: 'legacy-transform' };
 }
 

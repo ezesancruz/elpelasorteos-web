@@ -1172,6 +1172,6 @@ main {
 }
 
 /* Prevents "double cropping" when using legacy transform crop mode */
-[data-img-frame][data-crop-mode="legacy-transform"] > img {
+.carousel [data-img-frame][data-crop-mode="legacy-transform"] > img {
   object-fit: fill;
 }
