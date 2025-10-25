@@ -532,6 +532,7 @@ main {
   z-index: 60;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden; /* Prevent horizontal scrollbar on the panel itself */
 }
 
 .editor-panel.is-open {
@@ -580,6 +581,7 @@ main {
   display: grid;
   gap: 0.35rem;
   margin-bottom: 0.9rem;
+  padding: 0 1.1rem; /* Added for consistent internal spacing */
 }
 
 .editor-image-field label {
@@ -592,7 +594,8 @@ main {
 }
 
 .editor-image-preview {
-  width: 100%;
+  width: 80%; /* Reduced width as per user suggestion */
+  margin: 0 auto; /* Center the image preview */
   aspect-ratio: 1 / 1;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.12);
@@ -618,7 +621,7 @@ main {
 }
 
 .editor-image-controls input[type="file"] {
-  flex: 1 1 220px;
+  flex: 1;
 }
 
 .editor-image-controls button {
@@ -629,6 +632,7 @@ main {
   color: #fff;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  min-width: 0; /* Allow to shrink below content size */
 }
 
 .editor-image-controls button:hover {
@@ -777,6 +781,10 @@ main {
   background: rgba(0,0,0,0.55);
   color: #fff;
   font-family: inherit;
+  word-break: break-word; /* Ensure long words break */
+  overflow-wrap: break-word; /* Ensure long words wrap */
+  width: 100%; /* Make them take full available width */
+  min-width: 0; /* Allow them to shrink below content size */
 }
 
 .editor-panel textarea {
@@ -900,10 +908,11 @@ main {
   flex-direction: column;
   gap: 0.35rem;
   font-weight: 500;
+  flex: 1; /* Allow to grow and shrink */
+  min-width: 0; /* Allow to shrink below content size */
 }
 
 .editor-color-field__code input {
-  width: 160px;
   font-weight: 400;
 }
 
