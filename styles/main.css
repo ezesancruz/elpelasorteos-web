@@ -1007,17 +1007,18 @@ main {
 
 .hero-body--with-profile {
   position: relative;
-  /* No padding-left needed as profile image is now absolutely positioned to the bottom right */
+  padding-top: clamp(0.25rem, 1.5vw, 0.75rem);
 }
 
 .hero-body--with-profile .hero__profile-wrapper {
   position: absolute;
   bottom: 0;
   right: 0;
-  justify-content: center;
-  width: clamp(4.25rem, 11vw, 5.5rem);
-  height: clamp(4.25rem, 11vw, 5.5rem);
+  /* Desktop size (>= 1024px) */
+  width: 10rem;
+  height: 10rem; /* Explicit height */
   margin-bottom: 0;
+  z-index: 1; /* Lift avatar above parent's clipping path */
 }
 
 .hero-body .button-row {
@@ -1030,7 +1031,15 @@ main {
   justify-content: flex-start;
 }
 
-@media (max-width: 720px) {
+/* Tablet size */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-body--with-profile .hero__profile-wrapper {
+    width: 9rem;
+    height: 9rem; /* Explicit height */
+  }
+}
+
+@media (max-width: 767px) {
   .hero {
     gap: 1.25rem;
   }
@@ -1045,8 +1054,9 @@ main {
   }
 
   .hero-body--with-profile .hero__profile-wrapper {
-    width: clamp(4.25rem, 14vw, 4.75rem);
-    height: clamp(4.25rem, 14vw, 4.75rem);
+    /* Mobile size */
+    width: 7.5rem;
+    height: 7.5rem; /* Explicit height */
   }
 }
 .social-list {
