@@ -342,6 +342,10 @@ main {
   text-align: center;
 }
 
+.section--imageCarousel p {
+  text-align: center;
+}
+
 .carousel {
   display: flex;
   gap: 1.25rem;
@@ -1003,14 +1007,13 @@ main {
 
 .hero-body--with-profile {
   position: relative;
-  padding-left: clamp(4.75rem, 12vw, 6rem);
-  padding-top: clamp(0.25rem, 1.5vw, 0.75rem);
+  /* No padding-left needed as profile image is now absolutely positioned to the bottom right */
 }
 
 .hero-body--with-profile .hero__profile-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
+  bottom: 0;
+  right: 0;
   justify-content: center;
   width: clamp(4.25rem, 11vw, 5.5rem);
   height: clamp(4.25rem, 11vw, 5.5rem);
@@ -1042,12 +1045,8 @@ main {
   }
 
   .hero-body--with-profile .hero__profile-wrapper {
-    position: static;
-    width: clamp(4.5rem, 32vw, 5.75rem);
-    height: clamp(4.5rem, 32vw, 5.75rem);
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0.75rem;
+    width: clamp(4.25rem, 14vw, 4.75rem);
+    height: clamp(4.25rem, 14vw, 4.75rem);
   }
 }
 .social-list {
