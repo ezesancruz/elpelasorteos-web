@@ -460,6 +460,13 @@ main {
 .faq-list summary { cursor: pointer; font-weight: 600; }
 .faq-list .answer { margin-top: 8px; color: #ddd; line-height: 1.6; }
 
+.section--faq h3 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
 .site-footer {
   padding: 2rem 1.5rem 3rem;
   text-align: center;

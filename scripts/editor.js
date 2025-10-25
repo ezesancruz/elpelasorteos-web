@@ -732,6 +732,38 @@ const sectionEditors = {
     wrapper.appendChild(list);
     wrapper.appendChild(addBtn);
     return wrapper;
+  },
+  faq(section, index) {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    const list = document.createElement('div');
+    list.className = 'editor-inline-list';
+    (section.data?.items || []).forEach((item, itemIndex) => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'editor-inline-item';
+      const header = document.createElement('div');
+      header.className = 'editor-inline-item__header';
+      header.textContent = `Pregunta ${itemIndex + 1}`;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Eliminar';
+      remove.addEventListener('click', () => updateSection(index, s => s.data.items.splice(itemIndex, 1), { rerenderPanel: true }));
+      header.appendChild(remove);
+      itemEl.appendChild(header);
+      itemEl.appendChild(createRichTextInput('Pregunta', item.q || '', value => updateSection(index, s => s.data.items[itemIndex].q = value)));
+      itemEl.appendChild(createRichTextInput('Respuesta', item.a || '', value => updateSection(index, s => s.data.items[itemIndex].a = value)));
+      list.appendChild(itemEl);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.textContent = 'Agregar pregunta';
+    addBtn.addEventListener('click', () => updateSection(index, s => {
+      s.data.items = s.data.items || [];
+      s.data.items.push({ q: 'Nueva pregunta', a: 'Nueva respuesta' });
+    }, { rerenderPanel: true }));
+    wrapper.appendChild(list);
+    wrapper.appendChild(addBtn);
+    return wrapper;
   }
 };
 
@@ -770,6 +802,17 @@ const defaultSections = {
     id: 'muroGanadores-new',
     type: 'muroGanadores',
     data: { title: 'Ganadores', cards: [{ winner: 'Nombre', prize: 'Premio', ticket: '', date: '', location: '', image: '' }] }
+  },
+  faq: {
+    id: 'faq-new',
+    type: 'faq',
+    data: {
+        title: 'Preguntas frecuentes',
+        items: [{
+            q: '¿Cómo sé si gané?',
+            a: 'Lo publicamos en la web y redes; además te contactamos.'
+        }]
+    }
   }
 };
 
