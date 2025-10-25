@@ -6,7 +6,7 @@
   "theme": {
     "colors": {
       "primary": "#fe9200",
-      "accent": "#fe9200",
+      "accent": "#000000",
       "text": "#ffffff",
       "muted": "#111111"
     },
@@ -44,7 +44,7 @@
       "title": "Sorteo",
       "hero": {
         "title": "EL PELA | 1er Sorteo - <em>Honda Wave S 110cc 0km.</em>",
-        "subtitle": "🚀 Primer sorteo oficial del Pela Una Honda Wave S 110cc 0 km lista para estrenar. 🏍️ Hecho con transparencia, buena onda y para que cualquiera tenga su chance real de ganarla. 💪🍀 Seguí las novedades, participá y viví este sorteo único desde el primer día.",
+        "subtitle": "🚀 Primer sorteo oficial del Pela Una Honda Wave S 110cc 0 km lista para estrenar 🏍️ Hecho con transparencia, buena onda y para que cualquiera tenga la oportunidad de ganarla 💪🍀 Seguí las novedades, participá y viví este sorteo único desde el primer día.",
         "profileImage": {
           "src": "/uploads/21f9f57f-25ac-43a1-9a24-d894ae558680_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp",
           "crop": {

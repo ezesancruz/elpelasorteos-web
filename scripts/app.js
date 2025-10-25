@@ -581,7 +581,7 @@ function renderHero(hero = {}) {
   if (hero.profileImage) {
     const profileWrapper = document.createElement('div');
     profileWrapper.className = 'hero__profile-wrapper';
-    const profile = createImg(hero.profileImage, hero.title || 'Perfil', { aspect: 1, objectFit: 'cover' });
+    const profile = createImg(hero.profileImage, hero.title || 'Perfil', { aspect: 1, objectFit: 'cover', preferThumb: true });
     profile.className = 'hero-profile';
     profileWrapper.appendChild(profile);
     body.appendChild(profileWrapper);
