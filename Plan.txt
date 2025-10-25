@@ -1,281 +1,83 @@
-🛠️ Plan por fases (instrucciones + resultado esperado)
-Fase 1 — Seguridad del editor (imprescindible)
+(1) 🧩 Cita / resumen de tu pedido (según la imagen)
 
-Objetivo: en producción, ocultar el botón y bloquear las rutas de edición salvo con token.
+“Agregar una nueva sección debajo de las líneas (una por fila), donde haya botones de formato (B, I, S, U).
+Que esta sección afecte al texto ingresado en las líneas, permitiendo aplicar negrita, cursiva, subrayado o tachado sobre texto seleccionado o sobre lo que se escriba luego.”
 
-1.1 Backend (Express)
+🧠 Explicación del punto (lo que querés lograr)
 
-Añadí al inicio de server/editor-server.js (debajo de los require):
+En la tarjeta textoinformativo, actualmente tenés tres secciones de edición:
 
-// === SECURITY FLAGS ===
-const EDITOR_ENABLED = process.env.EDITOR_ENABLED === 'true';
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+Identificador
 
-app.get('/api/config', (_req, res) => {
-  res.json({ editorEnabled: EDITOR_ENABLED });
-});
+Título
 
-function requireEditorEnabled(_req, res, next) {
-  if (!EDITOR_ENABLED) return res.status(403).json({ error: 'editor disabled' });
-  next();
-}
-function requireAdmin(req, res, next) {
-  const token = req.get('x-admin-token') || req.query.token || '';
-  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'unauthorized' });
-  next();
-}
+Líneas (una por fila)
 
+Querés agregar una cuarta sección nueva llamada “Formato”, ubicada debajo de “Líneas”, que incluya los botones:
 
-Luego, envolvé solo endpoints de escritura:
+B → Negrita
 
-app.put('/api/content', requireEditorEnabled, requireAdmin, /* handler actual */);
-app.post('/api/upload', requireEditorEnabled, requireAdmin, upload.single('image'), /* handler actual */);
+I → Cursiva
 
+S → Tachado
 
-(Dejá GET /api/content libre para el front.)
+U → Subrayado
 
-1.2 Frontend (editor)
+Estos botones deben funcionar igual que en un editor de texto básico:
 
-En scripts/editor.js, reemplazá el listener inicial por esto (para no renderizar el editor si está deshabilitado):
+Si seleccionás texto y hacés clic en un botón, se aplica solo a la selección.
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const cfg = await fetch('/api/config').then(r => r.json());
-    if (!cfg?.editorEnabled) return; // no mostramos el editor en prod
-  } catch (_) {}
-  waitForApp().then(initEditor).catch(err => console.error(err));
-});
+Si hacés clic antes de escribir, afecta al texto que se escriba después, hasta desactivar el botón.
 
+El formato aplicado debe verse reflejado en la tarjeta en tiempo real (en la vista previa).
 
-Variables en producción: EDITOR_ENABLED=false y ADMIN_TOKEN (largo).
-Resultado esperado: el botón del editor no aparece en prod; los POST/PUT devuelven 403/401 si no mandás x-admin-token.
+Además, habías aclarado que esta funcionalidad se aplicaría solo a la tarjeta textoinformativo (por ahora), para evitar los saltos de posición al tipear y mejorar la experiencia al editar texto largo.
 
-Fase 2 — Personalización SEO & Open Graph
+🎯 En resumen
 
-Objetivo: metas correctas para marca, redes y previsualización.
+👉 El punto de esta imagen es:
+Incorporar una nueva sección de botones de formato (B, I, S, U) debajo del campo “Líneas” en la tarjeta textoinformativo, para dar formato al texto directamente desde el editor, sin perder posición ni desplazamiento.
 
-En index.html (en <head>):
+(2) 🧾 Cita textual de tu mensaje anterior
 
-<title>elpelasorteos.shop — Sorteos en vivo y transparentes</title>
-<meta name="description" content="Participá fácil, en vivo y con ganadores verificados. Sumate al próximo sorteo.">
-<link rel="canonical" href="https://elpelasorteos.shop/">
+“Que todas las tarjetas que contengan ‘subtítulo (incluso opcionales)’, ‘descripción’, ‘líneas’, tengan todas las mismas facultades:
+que se puedan hacer saltos de línea, casillas de texto expandibles (dentro de los límites, solo para ver mejor, no es fijo),
+que siempre debajo de estas secciones esté la de formato (B, I, S, U) en forma de botón (que activa y desactiva),
+que se pueda seleccionar texto y que al apretar estos botones se aplique solo a la selección,
+se apliquen a esa sección y que se vea en la tarjeta.”
 
-<meta property="og:title" content="elpelasorteos.shop — Sorteos en vivo y transparentes">
-<meta property="og:description" content="Participá fácil, en vivo y con ganadores verificados.">
-<meta property="og:image" content="https://elpelasorteos.shop/og-image.jpg">
-<meta property="og:url" content="https://elpelasorteos.shop/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+🧠 Explicación (qué querías decir con eso)
 
-<link rel="icon" href="/favicon.ico">
+No era solo para “Líneas” (como en textoinformativo), sino una regla general para todos los campos de texto editables del sistema, es decir:
 
+Deben tener formato:
 
-Creá estos archivos en la raíz del sitio (carpeta web/):
+subtítulo
 
-robots.txt
+descripción
 
-User-agent: *
-Allow: /
-Sitemap: https://elpelasorteos.shop/sitemap.xml
+líneas
 
+(y cualquier otro campo de texto libre que se vea reflejado en las tarjetas)
 
-sitemap.xml
+Debajo de cada uno debe aparecer:
 
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://elpelasorteos.shop/</loc></url>
-  <url><loc>https://elpelasorteos.shop/ganadoresanteriores/</loc></url>
-</urlset>
+Una mini sección con los botones de formato B, I, S, U,
 
+Que funcionen de forma interactiva:
 
-Resultado esperado: snippets correctos en WhatsApp/FB/Twitter, canonical único, y bots con acceso completo.
+aplican sobre selección,
 
-Fase 3 — Analytics (GA4 real + eventos clave)
+o sobre el texto siguiente hasta que se desactiva el botón.
 
-Objetivo: medir CTA, packs y redes sin tocar mucho el markup.
+el formato debe verse reflejado en la vista previa de la tarjeta.
 
-Reemplazá G-XXXXXXXXXX por tu Measurement ID en index.html.
+Además:
 
-Al final de scripts/app.js, agregá delegación de eventos:
+los campos deben permitir saltos de línea y ser expandibles dinámicamente (sin que el editor se desplace hacia arriba).
 
-// Eventos mínimos sin cambiar HTML
-document.addEventListener('click', (e) => {
-  const a = e.target.closest('a');
-  if (!a) return;
-
-  // Click en redes (lista de íconos)
-  if (a.closest('.social-list')) {
-    track('social_click', { platform: a.getAttribute('aria-label') || a.href });
-  }
-
-  // Click en packs de compra (links a mpago.la)
-  if (/mpago\.la|mercadopago/i.test(a.href)) {
-    const label = (a.textContent || '').trim();
-    track('pack_click', { label });
-  }
-
-  // CTA principal (heurística por texto)
-  if (/mpago\.la|mercadopago/i.test(a.href) && /participar|comprar/i.test(a.textContent)) {
-    track('cta_participar_click', { location: 'hero' });
-  }
-});
+🎯 En resumen
 
-
-Resultado esperado: ves social_click, pack_click, cta_participar_click llegar a GA4 → luego los marcás como conversiones.
-
-Fase 4 — Docker + Caddy (HTTPS, reverse proxy y persistencia)
-
-Objetivo: despliegue reproducible en Lightsail con volumen persistente para /uploads.
-
-Colocá estos tres archivos en la raíz del repo (al lado de la carpeta web/):
-
-Dockerfile
-
-# syntax=docker/dockerfile:1
-FROM node:20-alpine
-WORKDIR /app
-# Sharp en Alpine
-RUN apk add --no-cache libc6-compat
-# Instalar deps en /app/web
-COPY web/package*.json ./web/
-RUN cd web && npm ci --only=production
-# Copiar el proyecto
-COPY web ./web
-ENV NODE_ENV=production
-ENV PORT=8080
-WORKDIR /app/web
-EXPOSE 8080
-CMD ["npm", "start"]
-
-
-docker-compose.yml
-
-services:
-  web:
-    build: .
-    container_name: web
-    env_file: .env
-    environment:
-      - PORT=8080
-    volumes:
-      - uploads:/app/web/server/public/uploads
-    restart: always
-
-  caddy:
-    image: caddy:2
-    container_name: caddy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - web
-    restart: always
-
-volumes:
-  uploads:
-  caddy_data:
-  caddy_config:
-
-
-Caddyfile
-
-elpelasorteos.shop, www.elpelasorteos.shop {
-  encode zstd gzip
-  tls tu@correo.com
-  reverse_proxy web:8080
-}
-
-
-.env (crear en la raíz, no subir a Git)
-
-EDITOR_ENABLED=false
-ADMIN_TOKEN=poné-un-token-largo-y-unico
-PORT=8080
-
-
-Resultado esperado: Caddy emite SSL automático y proxy a Express. Las imágenes subidas sobreviven reinicios por el volumen uploads:.
-
-Fase 5 — AWS Lightsail (deploy real)
-
-En tu instancia (Ubuntu):
-
-# 1) Docker y compose plugin
-sudo apt-get update -y
-sudo apt-get install -y docker.io docker-compose-plugin
-sudo systemctl enable --now docker
-
-# 2) Traer el repo
-git clone https://github.com/tu-usuario/tu-repo.git
-cd tu-repo
-
-# 3) Variables de entorno
-cp .env.example .env   # si no tenés, creá .env con el contenido de arriba
-nano .env              # completa ADMIN_TOKEN
-
-# 4) Build & up
-sudo docker compose up -d --build
-
-# 5) Logs (opcional)
-sudo docker compose logs -f
-
-
-Abrí puertos en Lightsail (80/443) y asigná Static IP.
-
-Resultado esperado: https://elpelasorteos.shop responde con tu sitio (HTTP → HTTPS).
-curl -I https://elpelasorteos.shop devuelve HTTP/2 200.
-
-Fase 6 — DNS (Namecheap → Lightsail)
-
-A (@) → IP estática de tu instancia Lightsail
-
-CNAME (www) → elpelasorteos.shop
-
-Resultado esperado: www y raíz apuntan al mismo sitio; Caddy genera certificados para ambos.
-
-Fase 7 — Pre-render (opcional, mejora SEO técnico)
-
-Si querés publicar snapshots:
-
-# Local o en CI
-cd web
-npm run prerender   # genera /dist
-
-
-Opciones:
-
-Modo actual (dinámico): seguís sirviendo Express (ya indexable).
-
-Modo estático para bots: servir /dist a user-agents de buscadores (requiere pequeña lógica adicional).
-
-Hosting estático: publicar solo dist/ (si prescindís del editor en prod).
-
-Resultado esperado: contenido HTML “plano” por ruta (/ y /ganadoresanteriores/), mejorando la vista previa de bots.
-
-Fase 8 — Pruebas de humo (checklist final)
-
-🔒 Editor oculto en prod: botón ausente y PUT/POST devuelven 403/401 sin token.
-
-🖼️ Subidas persisten tras docker compose restart.
-
-🌐 HTTPS válido en raíz y www.
-
-🧭 SEO: <title>, description, canonical, OG/Twitter OK; robots.txt y sitemap.xml accesibles.
-
-📊 GA4 recibiendo social_click, pack_click, cta_participar_click.
-
-🕸️ Links de pago (mpago.la) funcionales.
-
-🧱 Backups: git actualizado; volumen uploads persistente (snapshot en Lightsail opcional).
-
-Qué vas a ver al terminar
-
-Sitio en producción en https://elpelasorteos.shop con SSL y performance estable.
-
-Editor blindado (solo habilitable con env y token).
-
-Métricas GA4 listas para tomar decisiones (qué pack/CTA funciona mejor).
-
-SEO prolijo (metas + sitemap + canonical) y opcionalmente pre-render.
+✅ Confirmado:
+No era solo para la tarjeta textoinformativo → “líneas”.
+Vos pediste que todas las secciones de texto (subtítulo, descripción, líneas, etc.) tengan la misma funcionalidad de formato (B, I, S, U) y el mismo comportamiento visual y de edición.

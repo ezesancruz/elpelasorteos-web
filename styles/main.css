@@ -1137,3 +1137,18 @@ main {
 }
 .image--cover { object-fit: cover !important; }
 .image--contain { object-fit: contain !important; }
+
+.editor-rich-text-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.format-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}

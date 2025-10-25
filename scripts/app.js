@@ -580,13 +580,13 @@ function renderHero(hero = {}) {
 
   const title = document.createElement('h1');
   title.className = 'hero__title';
-  title.textContent = hero.title || '';
+  title.innerHTML = hero.title || '';
   body.appendChild(title);
 
   if (hero.subtitle) {
     const subtitle = document.createElement('p');
     subtitle.className = 'hero__subtitle';
-    subtitle.textContent = hero.subtitle;
+    subtitle.innerHTML = hero.subtitle;
     body.appendChild(subtitle);
   }
 
@@ -644,7 +644,7 @@ function renderRichTextSection(section) {
   const container = baseSection('textoInformativo');
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   if (section.data?.html) {
@@ -654,7 +654,7 @@ function renderRichTextSection(section) {
   } else {
     section.data?.lines?.forEach(line => {
       const p = document.createElement('p');
-      p.textContent = line;
+      p.innerHTML = line;
       container.appendChild(p);
     });
   }
@@ -686,16 +686,16 @@ function renderKeyValueSection(section) {
   const container = baseSection('keyValue');
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   const list = document.createElement('dl');
   list.className = 'key-value';
   (section.data?.items || []).forEach(it => {
     const dt = document.createElement('dt');
-    dt.textContent = it.k || '';
+    dt.innerHTML = it.k || '';
     const dd = document.createElement('dd');
-    dd.textContent = it.v || '';
+    dd.innerHTML = it.v || '';
     list.appendChild(dt);
     list.appendChild(dd);
   });
@@ -708,7 +708,7 @@ function renderFAQSection(section) {
   const title = section.data?.title || section.title || 'Preguntas frecuentes';
   if (title) {
     const h = document.createElement('h3');
-    h.textContent = title;
+    h.innerHTML = title;
     container.appendChild(h);
   }
   const list = document.createElement('div');
@@ -716,10 +716,10 @@ function renderFAQSection(section) {
   (section.data?.items || section.items || []).forEach(i => {
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    summary.textContent = i.q || '';
+    summary.innerHTML = i.q || '';
     const answer = document.createElement('div');
     answer.className = 'answer';
-    answer.textContent = i.a || '';
+    answer.innerHTML = i.a || '';
     details.appendChild(summary);
     details.appendChild(answer);
     list.appendChild(details);
@@ -732,7 +732,7 @@ function renderLinkCardsSection(section) {
   const container = baseSection('opcionesCompra');
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   const grid = document.createElement('div');
@@ -754,10 +754,10 @@ function renderLinkCardsSection(section) {
     }
     const title = document.createElement('div');
     title.className = 'link-card__title';
-    title.textContent = card.title || 'Link';
+    title.innerHTML = card.title || 'Link';
     const subtitle = document.createElement('div');
     subtitle.className = 'link-card__subtitle';
-    subtitle.textContent = card.subtitle || '';
+    subtitle.innerHTML = card.subtitle || '';
     anchor.appendChild(title);
     anchor.appendChild(subtitle);
     grid.appendChild(anchor);
@@ -804,14 +804,14 @@ function renderImageGridSection(section) {
       if (titleText) {
         const heading = document.createElement('h3');
         heading.className = 'image-card__heading';
-        heading.textContent = titleText;
+        heading.innerHTML = titleText;
         content.appendChild(heading);
       }
 
       if (descriptionText) {
         const bodyText = document.createElement('p');
         bodyText.className = 'image-card__description';
-        bodyText.textContent = descriptionText;
+        bodyText.innerHTML = descriptionText;
         content.appendChild(bodyText);
       }
 
@@ -828,12 +828,12 @@ function renderImageCarouselSection(section) {
   const container = baseSection('imageCarousel');
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   if (section.data?.description) {
     const description = document.createElement('p');
-    description.textContent = section.data.description;
+    description.innerHTML = section.data.description;
     container.appendChild(description);
   }
   const track = document.createElement('div');
@@ -864,12 +864,12 @@ function renderImageHighlightSection(section) {
   body.className = 'imageHighlight__body';
   if (section.data?.title) {
     const heading = document.createElement('h3');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     body.appendChild(heading);
   }
   if (section.data?.body) {
     const paragraph = document.createElement('p');
-    paragraph.textContent = section.data.body;
+    paragraph.innerHTML = section.data.body;
     body.appendChild(paragraph);
   }
   container.appendChild(media);
@@ -885,12 +885,12 @@ function renderCTASection(section) {
   }
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   if (section.data?.body) {
     const paragraph = document.createElement('p');
-    paragraph.textContent = section.data.body;
+    paragraph.innerHTML = section.data.body;
     container.appendChild(paragraph);
   }
   if (section.data?.href) {
@@ -909,7 +909,7 @@ function renderWinnerCardsSection(section) {
   const container = baseSection('muroGanadores');
   if (section.data?.title) {
     const heading = document.createElement('h2');
-    heading.textContent = section.data.title;
+    heading.innerHTML = section.data.title;
     container.appendChild(heading);
   }
   const grid = document.createElement('div');
@@ -926,11 +926,11 @@ function renderWinnerCardsSection(section) {
     }
     const title = document.createElement('div');
     title.className = 'winner-card__title';
-    title.textContent = card.winner || 'Ganador';
+    title.innerHTML = card.winner || 'Ganador';
     cardEl.appendChild(title);
 
     const prize = document.createElement('div');
-    prize.textContent = card.prize || '';
+    prize.innerHTML = card.prize || '';
     cardEl.appendChild(prize);
 
     const meta = document.createElement('div');

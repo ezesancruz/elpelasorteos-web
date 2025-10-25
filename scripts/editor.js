@@ -354,8 +354,8 @@ function renderHeroEditor() {
   legend.textContent = 'Hero';
   fieldset.appendChild(legend);
 
-  fieldset.appendChild(createInput('Titulo', page.hero?.title || '', value => updateHero(hero => hero.title = value)));
-  fieldset.appendChild(createInput('Subtitulo', page.hero?.subtitle || '', value => updateHero(hero => hero.subtitle = value)));
+  fieldset.appendChild(createRichTextInput('Titulo', page.hero?.title || '', value => updateHero(hero => hero.title = value)));
+  fieldset.appendChild(createRichTextInput('Subtitulo', page.hero?.subtitle || '', value => updateHero(hero => hero.subtitle = value)));
   const heroProfilePath = ['pages', pageIndex, 'hero', 'profileImage'];
   fieldset.appendChild(createImageField('Imagen de perfil', page.hero?.profileImage || '', heroProfilePath, value => updateHero(hero => hero.profileImage = value), { aspect: 1 }));
   const heroBannerPath = ['pages', pageIndex, 'hero', 'bannerImage'];
@@ -529,9 +529,9 @@ function renderSectionsEditor() {
 const sectionEditors = {
   textoInformativo(section, index) {
     const wrapper = document.createElement('div');
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
-    const textarea = createTextarea('Lineas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
-      s.data.lines = value.split('\n').map(line => line.trim()).filter(Boolean);
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    const textarea = createRichTextInput('Lineas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
+      s.data.lines = value.split('\n');
     }));
     wrapper.appendChild(textarea);
     return wrapper;
@@ -539,7 +539,7 @@ const sectionEditors = {
   opcionesCompra(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     const list = document.createElement('div');
     list.className = 'editor-inline-list';
     section.data?.cards?.forEach((card, cardIndex) => {
@@ -554,8 +554,8 @@ const sectionEditors = {
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
-      item.appendChild(createInput('Titulo', card.title || '', value => updateSection(index, s => s.data.cards[cardIndex].title = value)));
-      item.appendChild(createInput('Subtitulo', card.subtitle || '', value => updateSection(index, s => s.data.cards[cardIndex].subtitle = value)));
+      item.appendChild(createRichTextInput('Titulo', card.title || '', value => updateSection(index, s => s.data.cards[cardIndex].title = value)));
+      item.appendChild(createRichTextInput('Subtitulo', card.subtitle || '', value => updateSection(index, s => s.data.cards[cardIndex].subtitle = value)));
       item.appendChild(createInput('URL', card.href || '', value => updateSection(index, s => s.data.cards[cardIndex].href = value)));
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'cards', cardIndex, 'image'];
       item.appendChild(createImageField('Imagen', card.image || '', imagePath, value => updateSection(index, s => s.data.cards[cardIndex].image = value)));
@@ -604,10 +604,10 @@ const sectionEditors = {
       item.appendChild(createInput('Link opcional', image.href || '', value => mutateImage(cardIndex, img => {
         img.href = value;
       })));
-      item.appendChild(createInput('Título (opcional)', image.title || '', value => mutateImage(cardIndex, img => {
+      item.appendChild(createRichTextInput('Título (opcional)', image.title || '', value => mutateImage(cardIndex, img => {
         img.title = value;
       })));
-      item.appendChild(createInput('Subtítulo (opcional)', image.subtitle || '', value => mutateImage(cardIndex, img => {
+      item.appendChild(createRichTextInput('Subtítulo (opcional)', image.subtitle || '', value => mutateImage(cardIndex, img => {
         img.subtitle = value;
       })));
       list.appendChild(item);
@@ -627,8 +627,8 @@ const sectionEditors = {
   carruselImagenes(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
-    wrapper.appendChild(createInput('Descripcion', section.data?.description || '', value => updateSection(index, s => s.data.description = value)));
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Descripcion', section.data?.description || '', value => updateSection(index, s => s.data.description = value)));
     const list = document.createElement('div');
     list.className = 'editor-inline-list';
     const ensureImage = (imgIndex, mutator) => {
@@ -672,8 +672,8 @@ const sectionEditors = {
   detalleVisual(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
-    wrapper.appendChild(createInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
     const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'image'];
     wrapper.appendChild(createImageField(
       'Imagen',
@@ -687,8 +687,8 @@ const sectionEditors = {
   botonAccion(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
-    wrapper.appendChild(createInput('Mensaje', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Mensaje', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
     wrapper.appendChild(createInput('Texto boton', section.data?.buttonLabel || '', value => updateSection(index, s => s.data.buttonLabel = value)));
     wrapper.appendChild(createInput('URL boton', section.data?.href || '', value => updateSection(index, s => s.data.href = value)));
     const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'image'];
@@ -698,7 +698,7 @@ const sectionEditors = {
   muroGanadores(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
-    wrapper.appendChild(createInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     const list = document.createElement('div');
     list.className = 'editor-inline-list';
     section.data?.cards?.forEach((card, cardIndex) => {
@@ -713,8 +713,8 @@ const sectionEditors = {
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
-      item.appendChild(createInput('Nombre', card.winner || '', value => updateSection(index, s => s.data.cards[cardIndex].winner = value)));
-      item.appendChild(createInput('Premio', card.prize || '', value => updateSection(index, s => s.data.cards[cardIndex].prize = value)));
+      item.appendChild(createRichTextInput('Nombre', card.winner || '', value => updateSection(index, s => s.data.cards[cardIndex].winner = value)));
+      item.appendChild(createRichTextInput('Premio', card.prize || '', value => updateSection(index, s => s.data.cards[cardIndex].prize = value)));
       item.appendChild(createInput('Ticket', card.ticket || '', value => updateSection(index, s => s.data.cards[cardIndex].ticket = value)));
       item.appendChild(createInput('Fecha', card.date || '', value => updateSection(index, s => s.data.cards[cardIndex].date = value)));
       item.appendChild(createInput('Ubicacion', card.location || '', value => updateSection(index, s => s.data.cards[cardIndex].location = value)));
@@ -1477,6 +1477,67 @@ function createTextarea(labelText, value, onChange) {
   });
   label.appendChild(textarea);
   return label;
+}
+
+function createRichTextInput(labelText, value, onChange) {
+  const container = document.createElement('div');
+  container.className = 'editor-rich-text-container';
+
+  const label = document.createElement('label');
+  label.textContent = labelText;
+  container.appendChild(label);
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'editor-rich-text-toolbar';
+
+  const buttons = [
+    { tag: 'strong', label: 'B' },
+    { tag: 'em', label: 'I' },
+    { tag: 's', label: 'S' },
+    { tag: 'u', label: 'U' }
+  ];
+
+  const textarea = document.createElement('textarea');
+  textarea.value = value || '';
+  textarea.addEventListener('input', event => {
+    onChange(event.target.value);
+    onFieldInput(event);
+  });
+
+  buttons.forEach(({ tag, label }) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.className = 'format-button';
+    button.addEventListener('click', () => {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end);
+      const textBefore = textarea.value.substring(0, start);
+      const textAfter = textarea.value.substring(end);
+
+      if (selectedText) {
+        const formattedText = `<${tag}>${selectedText}</${tag}>`;
+        textarea.value = textBefore + formattedText + textAfter;
+        textarea.focus();
+        textarea.setSelectionRange(start + tag.length + 2, end + tag.length + 2);
+      } else {
+        const newText = `<${tag}></${tag}>`;
+        textarea.value = textBefore + newText + textAfter;
+        textarea.focus();
+        textarea.setSelectionRange(start + tag.length + 2, start + tag.length + 2);
+      }
+
+      onChange(textarea.value);
+      onFieldInput();
+    });
+    toolbar.appendChild(button);
+  });
+
+  label.appendChild(toolbar);
+  label.appendChild(textarea);
+
+  return container;
 }
 
 function updateSite(mutator, { rerenderPanel = false } = {}) {
