@@ -827,7 +827,7 @@ const defaultSections = {
 };
 
 const sectionAliases = {
-  textoinformativo: 'Tarjeta texto',
+  textoInformativo: 'Tarjeta texto',
   opcionesCompra: 'Tarjeta productos',
   galeriaImagenes: 'Tarjeta galería de imágenes',
   carruselImagenes: 'Tarjeta carrusel de imágenes',
