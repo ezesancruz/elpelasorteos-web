@@ -319,29 +319,37 @@ function createImg(srcOrObj, alt = '', opts = {}) {
   const frame = document.createElement('div');
   frame.setAttribute('data-img-frame', '');
   const full = resolveFullImageSrc(srcOrObj);
-  const img = document.createElement('img');
-  img.src = resolved;
-  img.alt = alt || '';
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  frame.appendChild(img);
+
+  if (preferThumb && srcOrObj && srcOrObj.thumb) {
+    frame.style.backgroundImage = `url(${srcOrObj.thumb})`;
+    frame.style.backgroundSize = 'cover';
+    frame.style.backgroundPosition = 'center';
+  } else {
+    const img = document.createElement('img');
+    img.src = resolved;
+    img.alt = alt || '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    frame.appendChild(img);
+    if (full) img.dataset.fullsrc = full;
+    applyImageDisplay(frame, img, srcOrObj);
+  }
 
   try {
-    if (full) img.dataset.fullsrc = full;
     const title = (typeof srcOrObj === 'object' && srcOrObj && (srcOrObj.title || srcOrObj.caption)) || '';
-    if (!img.title && title) img.title = String(title);
+    if (frame.title !== title) frame.title = String(title);
   } catch (_) {}
 
-  applyImageDisplay(frame, img, srcOrObj);
-
-    const fallbackAspect = toPositiveNumber(opts.aspect ?? opts.aspectRatio, null);
+  const fallbackAspect = toPositiveNumber(opts.aspect ?? opts.aspectRatio, null);
   if (fallbackAspect && !frame.style.aspectRatio) {
     frame.style.aspectRatio = String(fallbackAspect);
   }
 
-  if (opts.objectFit && !img.style.objectFit) {
+  if (opts.objectFit && !frame.style.objectFit) {
     frame.dataset.fit = opts.objectFit;
-    img.style.objectFit = opts.objectFit;
+    if (frame.firstChild?.style) {
+      frame.firstChild.style.objectFit = opts.objectFit;
+    }
   }
 
   return frame;
@@ -559,7 +567,7 @@ function renderHero(hero = {}) {
   if (hero.bannerImage) {
     const media = document.createElement('div');
     media.className = 'hero__media';
-    const banner = createImg(hero.bannerImage, hero.title || 'Banner');
+    const banner = createImg(hero.bannerImage, hero.title || 'Banner', { preferThumb: true });
     banner.className = 'hero-banner';
     media.appendChild(banner);
     heroEl.appendChild(media);
