@@ -110,6 +110,7 @@ function applyTheme(theme) {
 }
 
 function renderBackground(background) {
+  console.log('renderBackground called with:', background);
   let media = document.getElementById('background-media');
   if (!media) {
     media = document.createElement('div');
@@ -117,7 +118,12 @@ function renderBackground(background) {
     document.body.prepend(media);
   }
   media.innerHTML = '';
-  if (background?.video) {
+
+  const backgroundMode = background?.backgroundMode || 'none';
+  console.log('backgroundMode:', backgroundMode);
+
+  if (backgroundMode === 'video' && background?.video) {
+    console.log('Rendering video:', background.video);
     const video = document.createElement('video');
     video.setAttribute('autoplay', 'true');
     video.setAttribute('muted', 'true');
@@ -128,14 +134,26 @@ function renderBackground(background) {
     source.src = background.video;
     video.appendChild(source);
     media.appendChild(video);
-  } else if (background?.image && background?.imageEnabled) {
+  } else if (backgroundMode === 'image' && background?.image) {
+    console.log('Rendering image:', background.image);
     const img = createImg(background.image, '');
     media.appendChild(img);
+  } else {
+    console.log('No background media rendered.');
   }
-  if (!document.getElementById('background-overlay')) {
-    const overlay = document.createElement('div');
+
+  let overlay = document.getElementById('background-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
     overlay.id = 'background-overlay';
     document.body.prepend(overlay);
+  }
+
+  // Adjust overlay visibility based on backgroundMode
+  if (backgroundMode === 'video' || backgroundMode === 'image') {
+    overlay.style.opacity = '0'; // Hide overlay for video and image
+  } else {
+    overlay.style.opacity = '1'; // Show overlay for none
   }
 }
 
@@ -337,7 +355,12 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     if (full) {
       img.dataset.fullsrc = full;
       frame.style.cursor = 'pointer'; // Add a pointer cursor to indicate clickability
-      frame.addEventListener('click', () => {
+      frame.addEventListener('click', (e) => {
+        // Check if the frame is inside an <a> tag
+        const parentAnchor = frame.closest('a');
+        if (parentAnchor) {
+          e.preventDefault(); // Prevent the <a> tag's default navigation
+        }
         newLightbox.open(full);
       });
     }

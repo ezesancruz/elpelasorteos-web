@@ -850,20 +850,31 @@ function renderThemeEditor() {
 
 
   fieldset.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
-      fieldset.appendChild(createToggleSwitch('Ver video', theme.background?.videoEnabled, value => updateTheme(themeDraft => {
-        themeDraft.background.videoEnabled = value;
-        if (value) themeDraft.background.imageEnabled = false; // Deactivate image if video is activated
-      }, { rerenderPanel: true })));  
-    const posterPath = ['theme', 'background', 'poster'];
-    fieldset.appendChild(createImageField('Poster video', theme.background?.poster || '', posterPath, value => updateTheme(themeDraft => themeDraft.background.poster = value)));
-    const backgroundImagePath = ['theme', 'background', 'image'];
-    fieldset.appendChild(createImageField('Imagen de fondo', theme.background?.image || '', backgroundImagePath, value => updateTheme(themeDraft => themeDraft.background.image = value)));
-  
-      fieldset.appendChild(createToggleSwitch('Ver imagen', theme.background?.imageEnabled, value => updateTheme(themeDraft => {
-        themeDraft.background.imageEnabled = value;
-        if (value) themeDraft.background.videoEnabled = false; // Deactivate video if image is activated
-      }, { rerenderPanel: true })));
-  return fieldset;
+          fieldset.appendChild(createRadioGroup(
+            'Tipo de fondo',
+            [
+              { value: 'none', label: 'Ninguno' },
+              { value: 'video', label: 'Video' },
+              { value: 'image', label: 'Imagen' }
+            ],
+            theme.background?.backgroundMode || 'none',
+            value => updateTheme(themeDraft => themeDraft.background.backgroundMode = value, { rerenderPanel: true })
+          ));
+        
+          // Video background fields
+          const videoFields = document.createElement('div');
+          videoFields.style.display = (theme.background?.backgroundMode === 'video') ? 'block' : 'none';
+          videoFields.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
+          const posterPath = ['theme', 'background', 'poster'];
+          videoFields.appendChild(createImageField('Poster video', theme.background?.poster || '', posterPath, value => updateTheme(themeDraft => themeDraft.background.poster = value)));
+          fieldset.appendChild(videoFields);
+        
+          // Image background fields
+          const imageFields = document.createElement('div');
+          imageFields.style.display = (theme.background?.backgroundMode === 'image') ? 'block' : 'none';
+          const backgroundImagePath = ['theme', 'background', 'image'];
+          imageFields.appendChild(createImageField('Imagen de fondo', theme.background?.image || '', backgroundImagePath, value => updateTheme(themeDraft => themeDraft.background.image = value)));
+          fieldset.appendChild(imageFields);  return fieldset;
 }
 
 function createInput(labelText, value, onChange) {
@@ -1657,6 +1668,44 @@ function createToggleSwitch(labelText, value, onChange) {
   return label;
 }
 
+function createRadioGroup(labelText, options, selectedValue, onChange) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'editor-radio-group';
+
+  const label = document.createElement('div');
+  label.textContent = labelText;
+  wrapper.appendChild(label);
+
+  const optionsWrapper = document.createElement('div');
+  optionsWrapper.className = 'editor-radio-options';
+
+  options.forEach(option => {
+    const optionLabel = document.createElement('label');
+    optionLabel.className = 'editor-radio-option';
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = labelText.replace(/\s/g, ''); // Unique name for the radio group
+    input.value = option.value;
+    input.checked = option.value === selectedValue;
+    input.addEventListener('change', event => {
+      console.log('Radio button changed:', event.target.value);
+      onChange(event.target.value);
+      onFieldInput(event);
+    });
+
+    const span = document.createElement('span');
+    span.textContent = option.label;
+
+    optionLabel.appendChild(input);
+    optionLabel.appendChild(span);
+    optionsWrapper.appendChild(optionLabel);
+  });
+
+  wrapper.appendChild(optionsWrapper);
+  return wrapper;
+}
+
 function updateSite(mutator, { rerenderPanel = false } = {}) {
   if (!editorState.site) return;
   mutator(editorState.site);
@@ -1700,11 +1749,8 @@ function updateTheme(mutator, options = {}) {
     site.theme = site.theme || { colors: {}, fonts: {}, background: {} };
     site.theme.colors = site.theme.colors || {};
     site.theme.background = site.theme.background || {};
-    if (site.theme.background.videoEnabled === undefined) {
-      site.theme.background.videoEnabled = true; // Default to enabled
-    }
-    if (site.theme.background.imageEnabled === undefined) {
-      site.theme.background.imageEnabled = false; // Default to disabled
+    if (site.theme.background.backgroundMode === undefined) {
+      site.theme.background.backgroundMode = 'none'; // Default to no background
     }
     mutator(site.theme);
   }, options);

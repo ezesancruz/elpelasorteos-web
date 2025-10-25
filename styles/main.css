@@ -31,28 +31,16 @@ body {
 #background-media {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -1; /* Higher than overlay */
   overflow: hidden;
   background: var(--color-accent);
-}
-
-#background-media video,
-#background-media img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  transform: translate(-50%, -50%);
-  object-fit: cover;
-  filter: brightness(0.45);
 }
 
 #background-overlay {
   position: fixed;
   inset: 0;
   background: linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.95) 100%);
-  z-index: -1;
+  z-index: -2; /* Lower than media */
 }
 
 [data-img-frame] {
@@ -1233,8 +1221,7 @@ main {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 8px; /* Space between text and switch */
-  height: 22px; /* Adjust height to match the smaller switch */
+  height: 22px; /* Match the height of the slider */
   margin-bottom: 0.9rem;
   cursor: pointer;
   font-size: 0.85rem;
@@ -1246,10 +1233,6 @@ main {
   opacity: 0;
   width: 0;
   height: 0;
-}
-
-.editor-toggle-switch span:first-of-type {
-  margin-right: 10px;
 }
 
 .slider {
@@ -1299,4 +1282,36 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+/* Radio Group Styles */
+.editor-radio-group {
+  margin-bottom: 1.5rem;
+}
+
+.editor-radio-group > div:first-of-type {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 0.5rem;
+}
+
+.editor-radio-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.editor-radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.editor-radio-option input[type="radio"] {
+  margin-right: 0.5rem;
+  width: auto;
+  height: auto;
+  min-width: 0;
 }
