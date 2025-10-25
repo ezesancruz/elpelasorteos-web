@@ -479,9 +479,15 @@ function resolveCropTransform(crop) {
 
 function resolveLegacyTransform(crop) {
   const zoom = toPositiveNumber(crop.zoom, 1) || 1;
-  if (zoom === 1) {
+  const offsetX = toClamped01(crop.offsetX, 0.5);
+  const offsetY = toClamped01(crop.offsetY, 0.5);
+
+  // If there is no crop at all, do nothing.
+  if (zoom === 1 && offsetX === 0.5 && offsetY === 0.5) {
     return null;
   }
+
+  // Only apply scale. The translate part was conflicting with object-position.
   const value = `scale(${zoom})`;
   return { value, origin: 'center center', willChange: 'transform', mode: 'legacy-transform' };
 }
@@ -852,7 +858,8 @@ function renderImageHighlightSection(section) {
   const media = document.createElement('div');
   media.className = 'imageHighlight__media';
   if (section.data?.image) {
-    const img = createImg(section.data.image, section.data?.title || 'Destacado', { aspect: 5 / 6, objectFit: 'cover' });
+    const imageObj = typeof section.data.image === 'object' && section.data.image ? section.data.image : { src: section.data.image };
+    const img = createImg(imageObj, section.data?.title || 'Destacado', { aspect: 5 / 6 });
     media.appendChild(img);
   }
   const body = document.createElement('div');

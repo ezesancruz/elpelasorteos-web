@@ -1,0 +1,30 @@
+Resumen de la Sesión de Debugging
+
+**1. Problema Inicial:**
+El usuario reportó una inconsistencia en el recorte de imágenes. La previsualización en el modal de recorte no coincidía con la imagen final renderizada en las tarjetas (inicialmente en `galeriaImagenes`), que aparecía con más zoom o mal encuadrada.
+
+**2. Diagnóstico y Primeros Intentos:**
+- Se diagnosticó un "doble recorte" causado por un conflicto entre las propiedades CSS `object-fit: cover` y `transform: translate()`.
+- Se intentó solucionar eliminando `object-fit`, pero esto reveló problemas más profundos en la lógica de renderizado.
+
+**3. Profundización del Análisis y Causa Raíz:**
+- Se identificó que el problema real era un conflicto en una función compartida (`resolveLegacyTransform`) que generaba un `transform: translate()` para el paneo, el cual competía con la propiedad `object-position` que también se encargaba del paneo. El zoom (`transform: scale()`) funcionaba porque no tenía un comando conflictivo.
+- Se determinó que la solución correcta era modificar esta función global para que solo se encargara del zoom (`scale`), dejando que `object-position` fuera la única autoridad para el encuadre.
+
+**4. El Caso Específico de "detalleVisual":**
+- A pesar de aplicar el arreglo global, el usuario reportó que el problema persistía específicamente en la tarjeta `detalleVisual`.
+- Se realizó un experimento (cambiar el título de la tarjeta) que demostró que el problema no era de caché, sino un error específico en cómo se renderizaba la imagen de esa tarjeta.
+- Se descubrió un segundo bug: la función que dibuja `detalleVisual` (`renderImageHighlightSection`) no preparaba ("normalizaba") correctamente los datos de la imagen, impidiendo que la solución global le afectara.
+
+**5. Intentos de Solución Local y Reversiones:**
+- Se propuso y aplicó una solución "quirúrgica" para aislar y reescribir la lógica de renderizado solo para `detalleVisual`. 
+- Esta solución introdujo un error secundario (proporción de aspecto incorrecta), que fue corregido posteriormente.
+- A petición del usuario, todos estos cambios locales fueron deshechos, restaurando el código a un estado donde la solución global (Punto 3) y la corrección del bug de normalización de datos (Punto 4) están activas.
+
+**6. Estado Actual y Conclusión Final:**
+- El código se encuentra actualmente en el estado que, según todos los análisis técnicos, es el correcto y debería funcionar para todas las tarjetas.
+- Sin embargo, el usuario sigue reportando el problema en `detalleVisual`.
+- La conclusión final es que la causa del error persistente debe ser un **factor externo** al script analizado. Las hipótesis más probables son:
+    a) Una regla de CSS en un archivo no inspeccionado que interfiere específicamente con esa tarjeta.
+    b) Un problema de caché del navegador extremadamente persistente que no se soluciona con una recarga forzada estándar.
+- Se recomendó como paso final que un desarrollador utilice las herramientas del navegador (F12) para inspeccionar la imagen en vivo, revisar los estilos CSS que se le aplican y la URL de su `src`, ya que ahí se encontrará la causa definitiva del problema.
