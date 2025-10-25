@@ -467,6 +467,23 @@ main {
   text-align: center;
 }
 
+.section--faq .faq-list details {
+  background: var(--color-primary);
+  border-radius: 999px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+.section--faq .faq-list summary {
+  color: #111;
+  font-weight: 600;
+}
+
+.section--faq .faq-list .answer {
+    color: #111;
+}
+
 .site-footer {
   padding: 2rem 1.5rem 3rem;
   text-align: center;
