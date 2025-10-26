@@ -1,22 +1,33 @@
 # syntax=docker/dockerfile:1
-FROM node:20-alpine
 
+# 1. Base image
+FROM node:20-alpine AS base
+
+# 2. Set working directory
 WORKDIR /app
 
-# Sharp en Alpine
-RUN apk add --no-cache libc6-compat
+# 3. Create a non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Instalar dependencias (producción)
+# 4. Install dependencies
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copiar el proyecto
+# 5. Copy application files
 COPY . .
 
+# 6. Set ownership
+RUN chown -R appuser:appgroup /app
+
+# 7. Switch to non-root user
+USER appuser
+
+# 8. Set environment variables
 ENV NODE_ENV=production
 ENV PORT=8080
 
+# 9. Expose port
 EXPOSE 8080
 
+# 10. Start command
 CMD ["npm", "start"]
-

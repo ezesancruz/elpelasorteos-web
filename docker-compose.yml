@@ -1,14 +1,13 @@
 services:
   web:
     build: .
-    container_name: web
     env_file: .env
-    environment:
-      - PORT=8080
+    ports:
+      - "8080:8080"
     volumes:
       - uploads:/app/server/public/uploads
       - ./data:/app/data
-    restart: always
+    restart: unless-stopped
 
   caddy:
     image: caddy:2
@@ -22,7 +21,7 @@ services:
       - caddy_config:/config
     depends_on:
       - web
-    restart: always
+    restart: unless-stopped
 
 volumes:
   uploads:

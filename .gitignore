@@ -69,6 +69,7 @@ server/public/uploads/
 *.tar
 *.zip
 *.bak
+web_estable.zip
 
 # Scripts auxiliares
 _tmp_fix_add_section.js

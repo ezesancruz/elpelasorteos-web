@@ -54,6 +54,31 @@ web/
 - **Dynamic hosting**: If runtime saving is required in production, deploy the Express server to your chosen infrastructure and expose the `/api/content` and `/api/upload` routes (HTTPS recommended).
 - Backup `data/site-content.json` regularly and keep `server/public/uploads/` outside of version control (see `.gitignore`).
 
+## Deploying with Docker
+This project includes a `Dockerfile` and `docker-compose.yml` to make it easy to build and run the application in a container.
+
+### Building the image
+To build the Docker image, run the following command in the `web` directory:
+```bash
+docker build -t ojedapreparacion-web .
+```
+
+### Running the container
+You can run the container using `docker run` or `docker-compose`.
+
+#### Using `docker run`
+```bash
+docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+```
+
+#### Using `docker-compose`
+The `docker-compose.yml` file is configured to run the application and a Caddy server as a reverse proxy.
+To start the application, run the following command in the `web` directory:
+```bash
+docker-compose up -d
+```
+This will start the web application on port 8080 and the Caddy server on ports 80 and 443.
+
 ## Pre-render (optional, SEO-friendly)
 Create static HTML snapshots for key routes without dynamic scripts.
 

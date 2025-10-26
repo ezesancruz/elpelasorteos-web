@@ -54,6 +54,31 @@ web/
 - **Hosting dinámico**: Si se necesita permitir guardado en producción, despliega también el servidor Express en la infraestructura elegida y expón las rutas `/api/content` y `/api/upload` (HTTPS recomendado).
 - Realiza respaldos frecuentes de `data/site-content.json` y mantén `server/public/uploads/` fuera del control de versiones (ver `.gitignore`).
 
+## Despliegue con Docker
+Este proyecto incluye un `Dockerfile` y `docker-compose.yml` para facilitar la creación y ejecución de la aplicación en un contenedor.
+
+### Creando la imagen
+Para construir la imagen de Docker, ejecuta el siguiente comando en el directorio `web`:
+```bash
+docker build -t ojedapreparacion-web .
+```
+
+### Ejecutando el contenedor
+Puedes ejecutar el contenedor usando `docker run` o `docker-compose`.
+
+#### Usando `docker run`
+```bash
+docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+```
+
+#### Usando `docker-compose`
+El archivo `docker-compose.yml` está configurado para ejecutar la aplicación y un servidor Caddy como proxy inverso.
+Para iniciar la aplicación, ejecuta el siguiente comando en el directorio `web`:
+```bash
+docker-compose up -d
+```
+Esto iniciará la aplicación web en el puerto 8080 y el servidor Caddy en los puertos 80 y 443.
+
 ## Pre-render (opcional, mejora SEO)
 Genera snapshots HTML estáticos para rutas clave sin los scripts dinámicos.
 
