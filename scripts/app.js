@@ -39,8 +39,10 @@ function initAppState(site, pageId, root) {
     },
     setSite(nextSite) {
       appState.site = deepClone(nextSite);
-      if (!appState.site.pages?.some(p => p.id === appState.pageId)) {
-        appState.pageId = appState.site.pages?.[0]?.id || 'home';
+      const currentPage = appState.site.pages?.find(p => p.id === appState.pageId);
+      if (!currentPage || currentPage.hidden) {
+        const firstVisiblePage = appState.site.pages?.find(p => !p.hidden);
+        appState.pageId = firstVisiblePage?.id || appState.site.pages?.[0]?.id || 'home';
       }
       render();
     },
@@ -85,7 +87,15 @@ async function loadSite(url) {
 function resolvePageId(site) {
   const path = normalisePath(window.location.pathname);
   const navMatch = site.navigation?.find(nav => normalisePath(nav.path) === path);
-  return navMatch?.pageId || site.pages?.[0]?.id || 'home';
+  let pageId = navMatch?.pageId || site.pages?.[0]?.id || 'home';
+
+  const page = site.pages.find(p => p.id === pageId);
+  if (page?.hidden) {
+    const firstVisiblePage = site.pages.find(p => !p.hidden);
+    pageId = firstVisiblePage?.id || site.pages?.[0]?.id || 'home';
+  }
+
+  return pageId;
 }
 
 function normalisePath(pathname) {
@@ -302,7 +312,10 @@ function renderNav(site, activePageId) {
   const links = document.createElement('nav');
   links.className = 'top-nav__links';
 
-  site.navigation?.forEach(item => {
+  const visiblePageIds = new Set((site.pages || []).filter(p => !p.hidden).map(p => p.id));
+
+  (site.navigation || []).forEach(item => {
+    if (!visiblePageIds.has(item.pageId)) return;
     const anchor = document.createElement('a');
     anchor.href = item.path;
     anchor.textContent = capitalise(item.label || item.pageId);

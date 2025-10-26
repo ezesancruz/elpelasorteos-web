@@ -1381,3 +1381,13 @@ input:checked + .slider:before {
 #edit-toggle, .editor-panel { display: none; }
 .admin #edit-toggle { display: inline-flex; }
 .admin .editor-panel.is-open { display: flex; }
+
+.page-selector-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-selector-wrapper .editor-toggle-switch {
+  transform: scale(0.8);
+}

@@ -462,7 +462,8 @@
             ]
           }
         }
-      ]
+      ],
+      "hidden": false
     },
     {
       "id": "ganadoresanteriores",
@@ -582,7 +583,8 @@
             }
           }
         }
-      ]
+      ],
+      "hidden": true
     }
   ]
 }

@@ -248,6 +248,7 @@ function renderPanelImmediate() {
 
 function renderPageSelector() {
   const wrapper = document.createElement('div');
+  wrapper.className = 'page-selector-wrapper';
   const label = document.createElement('label');
   label.textContent = 'Pagina actual';
   const select = document.createElement('select');
@@ -266,6 +267,13 @@ function renderPageSelector() {
   });
   label.appendChild(select);
   wrapper.appendChild(label);
+
+  const page = currentPage();
+  const hiddenToggle = createToggleSwitch('Oculta', page.hidden, isHidden => {
+    updatePage(p => p.hidden = isHidden);
+  });
+  wrapper.appendChild(hiddenToggle);
+
   return wrapper;
 }
 
