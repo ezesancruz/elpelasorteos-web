@@ -2,7 +2,7 @@ services:
   web:
     build: .
     env_file: .env
-    ports:
+    environment:
       - "8080:8080"
     volumes:
       - uploads:/app/server/public/uploads
