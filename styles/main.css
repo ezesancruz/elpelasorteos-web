@@ -1111,7 +1111,8 @@ main {
 }
 .social-list {
   display: flex;
-  gap: 12px;
+  justify-content: center; /* Center the group */
+  gap: clamp(1rem, 4vw, 1.5rem); /* More space: 16px to 24px */
   align-items: center;
   padding: 0;
   margin: 0;
@@ -1124,26 +1125,34 @@ main {
 }
 
 .social-list a {
-  width: clamp(40px, 4vw, 44px);
-  height: clamp(40px, 4vw, 44px);
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #1a1a1a, #242424);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-block; /* Allow padding */
+  padding: 0.5rem; /* 8px clickable area */
+  background: transparent; /* No background */
+  border-radius: 0; /* No circle */
+  box-shadow: none; /* No shadow */
+  transition: opacity 0.2s ease; /* Subtle hover transition */
   color: #fff;
+  /* Remove fixed width/height and grid centering */
 }
 
 .social-list a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  opacity: 0.85; /* Subtle hover effect */
+  transform: none; /* Remove previous transform */
+  box-shadow: none; /* Ensure no shadow on hover */
 }
 
+.social-list a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px; /* Slight radius for the outline */
+}
+
+
 .social-list svg {
-  width: clamp(20px, 2.25vw, 24px);
-  height: clamp(20px, 2.25vw, 24px);
+  width: clamp(1.5rem, 5vw, 1.75rem); /* 24px to 28px */
+  height: clamp(1.5rem, 5vw, 1.75rem);
   fill: currentColor;
+  display: block; /* Remove extra space below */
 }
 @media (prefers-reduced-motion: reduce) {
   video { animation: none; }
