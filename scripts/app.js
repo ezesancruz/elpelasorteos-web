@@ -178,7 +178,7 @@ function renderShell(site, activePageId, page) {
 
   const footer = document.createElement('footer');
   footer.className = 'site-footer';
-  footer.textContent = `Â© ${new Date().getFullYear()} ${site.meta.title}. Todos los derechos reservados.`;
+  footer.textContent = `© ${new Date().getFullYear()} ${site.meta.title}. Todos los derechos reservados.`;
 
   shell.appendChild(nav);
   shell.appendChild(main);
