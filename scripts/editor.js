@@ -9,33 +9,13 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const resp = await fetch('/api/config');
-    if (!resp || !resp.ok) throw new Error('config no disponible');
-    const cfg = await resp.json();
-        editorState.config = cfg;
     await waitForApp();
     initEditor();
   } catch (err) {
-    console.warn('Editor no disponible (backend no activo o deshabilitado)', err);
+    console.warn('Editor no disponible', err);
   }
 });
 
-// Lee el token de administrador guardado en el mismo origen
-// Para configurarlo manualmente desde la consola del navegador:
-// localStorage.setItem('ADMIN_TOKEN', 'TU_TOKEN_LARGO')
-const getAdminToken = () => localStorage.getItem('ADMIN_TOKEN') || '';
-const withAdmin = (extra = {}) => {
-  const t = getAdminToken();
-  return t ? { ...extra, 'x-admin-token': t } : extra;
-};
-
-// Adjunta el token también por query (?token=...) para mayor compatibilidad
-const withAdminUrl = (url) => {
-  const t = getAdminToken();
-  if (!t) return url;
-  const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}token=${encodeURIComponent(t)}`;
-};
 
 function waitForApp() {
   return new Promise((resolve, reject) => {
@@ -116,9 +96,8 @@ function rerenderEditorPreservingScroll(renderFn) {
 async function uploadImage(file) {
   const fd = new FormData();
   fd.append('image', file);
-  const res = await fetch(withAdminUrl('/api/upload'), {
+  const res = await fetch('/api/upload', {
     method: 'POST',
-    headers: withAdmin(), // no establecer Content-Type manual con FormData
     body: fd
   });
   if (!res.ok) throw new Error('No se pudo subir la imagen');
@@ -168,10 +147,11 @@ async function onPickImage(event, pathArr) {
 
 function createToggle() {
   const btn = document.createElement('button');
-  btn.id = 'editor-toggle';
+  btn.id = 'edit-toggle';
   btn.className = 'editor-toggle';
   btn.type = 'button';
   btn.textContent = 'Editar';
+  btn.style.display = 'none'; // Oculto por defecto
   btn.addEventListener('click', () => togglePanel());
   document.body.appendChild(btn);
   editorState.toggle = btn;
@@ -196,72 +176,9 @@ function createPanel() {
   const body = document.createElement('div');
   body.className = 'editor-panel__body';
 
-  // Controles de autenticación (token ADMIN)
-  const auth = document.createElement('div');
-  auth.className = 'editor-panel__auth';
-  function renderAuth() {
-    auth.innerHTML = '';
-    const token = getAdminToken();
-    const status = document.createElement('div');
-    status.textContent = token ? 'Estado: Autenticado' : 'Estado: No autenticado';
-    auth.appendChild(status);
-    if (token) {
-      const masked = token.slice(0, 4) + '...' + token.slice(-4);
-      const maskEl = document.createElement('div');
-      maskEl.textContent = 'Token: ' + masked;
-      auth.appendChild(maskEl);
-      const changeBtn = document.createElement('button');
-      changeBtn.type = 'button';
-      changeBtn.textContent = 'Cambiar token';
-      changeBtn.addEventListener('click', () => {
-        const next = window.prompt('Pegá el nuevo ADMIN_TOKEN');
-        if (typeof next === 'string') {
-          if (next) localStorage.setItem('ADMIN_TOKEN', next); else localStorage.removeItem('ADMIN_TOKEN');
-          renderAuth();
-        }
-      });
-      const clearBtn = document.createElement('button');
-      clearBtn.type = 'button';
-      clearBtn.textContent = 'Salir';
-      clearBtn.addEventListener('click', () => {
-        localStorage.removeItem('ADMIN_TOKEN');
-        renderAuth();
-      });
-      auth.appendChild(changeBtn);
-      auth.appendChild(clearBtn);
-    } else {
-      const input = document.createElement('input');
-      input.type = 'password';
-      input.placeholder = 'Pegar ADMIN_TOKEN aquí';
-      const saveBtn = document.createElement('button');
-      saveBtn.type = 'button';
-      saveBtn.textContent = 'Guardar token';
-      saveBtn.addEventListener('click', () => {
-        const val = input.value.trim();
-        if (val) {
-          localStorage.setItem('ADMIN_TOKEN', val);
-          input.value = '';
-          renderAuth();
-        } else {
-          alert('El token no puede estar vacío');
-        }
-      });
-      auth.appendChild(input);
-      auth.appendChild(saveBtn);
-    }
-  }
-  const tokenRequired = !!(editorState.config && editorState.config.tokenRequired);
-  if (tokenRequired) {
-    renderAuth();
-  } else {
-    const status = document.createElement('div');
-    status.textContent = 'Edición local: no requiere token';
-    auth.appendChild(status);
-  }
-
   const actions = document.createElement('div');
   actions.className = 'editor-panel__actions';
-  actions.appendChild(auth);
+  
   const downloadBtn = document.createElement('button');
   downloadBtn.type = 'button';
   downloadBtn.textContent = 'Descargar JSON';
@@ -272,8 +189,14 @@ function createPanel() {
   saveBtn.textContent = 'Guardar cambios';
   saveBtn.addEventListener('click', saveContent);
 
+  const logoutBtn = document.createElement('button');
+  logoutBtn.type = 'button';
+  logoutBtn.id = 'logout-admin';
+  logoutBtn.textContent = 'Salir del modo edición';
+
   actions.appendChild(downloadBtn);
   actions.appendChild(saveBtn);
+  actions.appendChild(logoutBtn);
 
   panel.appendChild(header);
   panel.appendChild(body);
@@ -1786,15 +1709,15 @@ function downloadContent() {
 
 async function saveContent() {
   try {
-    const response = await fetch(withAdminUrl('/api/content'), {
+    const response = await fetch('/api/content', {
       method: 'PUT',
-      headers: withAdmin({ 'Content-Type': 'application/json' }),
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editorState.site, null, 2)
     });
     if (!response.ok) throw new Error(`Status ${response.status}`);
     alert('Contenido guardado correctamente.');
   } catch (error) {
-    alert('No se pudo guardar automaticamente. DescargÃƒÂ¡ el JSON y reemplazalo manualmente.');
+    alert('No se pudo guardar automaticamente. Descargá el JSON y reemplazalo manualmente.');
     console.error(error);
   }
 }

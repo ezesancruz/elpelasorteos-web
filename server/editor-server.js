@@ -5,63 +5,86 @@ const fs = require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
 const { randomUUID } = require('crypto');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// === SECURITY FLAGS ===
-// Habilitar el editor por defecto (solo deshabilitar si EDITOR_ENABLED='false')
-const EDITOR_ENABLED = process.env.EDITOR_ENABLED !== 'false';
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
-
-// Exponer flag al frontend
-app.get('/api/config', (req, res) => {
-  const tokenRequired = !isLocalRequest(req) && !!ADMIN_TOKEN;
-  res.json({ editorEnabled: EDITOR_ENABLED, tokenRequired });
-});
-
-function requireEditorEnabled(_req, res, next) {
-  if (!EDITOR_ENABLED) return res.status(403).json({ error: 'editor disabled' });
-  next();
-}
-function isLocalRequest(req) {
-  try {
-    const host = (req.hostname || '').toLowerCase();
-    const ip = (req.ip || '').toLowerCase();
-    const fwd = String(req.headers['x-forwarded-for'] || '').toLowerCase();
-    const isHostLocal = host === 'localhost' || host === '127.0.0.1';
-    const isIpLocal = ip === '127.0.0.1' || ip === '::1' || ip.startsWith('::ffff:127.0.0.1');
-    const forwardedLocals = fwd.split(',').map(s => s.trim());
-    const isFwdLocal = forwardedLocals.some(x => x === '127.0.0.1' || x === '::1' || x.startsWith('::ffff:127.0.0.1'));
-    return isHostLocal || isIpLocal || isFwdLocal;
-  } catch (_) {
-    return false;
-  }
-}
-
-function requireAdmin(req, res, next) {
-  // En local, no exigir token para facilitar edición
-  if (isLocalRequest(req)) return next();
-  const token = req.get('x-admin-token') || req.query.token || '';
-  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: 'unauthorized' });
-  next();
-}
-
 // === CONFIG ===
-const PORT = process.env.PORT || 5173;                  // one port, one server
-const ROOT_DIR = path.join(__dirname, '..');            // index.html, scripts, styles, data
-const PUBLIC_DIR = path.join(__dirname, 'public');      // /server/public
-const UPLOAD_DIR = path.join(PUBLIC_DIR, 'uploads');    // /server/public/uploads
+const PORT = process.env.PORT || 5173;
+const ROOT_DIR = path.join(__dirname, '..');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const UPLOAD_DIR = path.join(PUBLIC_DIR, 'uploads');
 const CONTENT_PATH = path.join(ROOT_DIR, 'data', 'site-content.json');
+
+// === SECURITY ===
+const ADMIN_USER = process.env.ADMIN_USER;
+const ADMIN_PASS = process.env.ADMIN_PASS;
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'dev-secret-change-me';
 
 // ensure folders exist
 if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // middlewares
-// Aumentar límite para contenidos más grandes
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(ROOT_DIR));
-app.use('/uploads', express.static(UPLOAD_DIR));
+app.use(cookieParser());
+
+// ===== AUTH =====
+
+// Emite cookie de sesión admin
+function issueAdminCookie(res, payload) {
+  const token = jwt.sign(payload, ADMIN_JWT_SECRET, { expiresIn: '12h' });
+  res.cookie('admin_session', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production', // true si estás en HTTPS
+    maxAge: 12 * 60 * 60 * 1000,
+  });
+}
+
+// Comprueba si la request es admin por cookie
+function isAdmin(req) {
+  const t = req.cookies?.admin_session;
+  if (!t) return false;
+  try {
+    jwt.verify(t, ADMIN_JWT_SECRET);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function requireAdmin(req, res, next) {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'No autorizado' });
+  next();
+}
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+});
+
+app.post('/api/auth/login', loginLimiter, (req, res) => {
+  const { username, password } = req.body || {};
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    issueAdminCookie(res, { u: username });
+    return res.json({ ok: true });
+  }
+  return res.status(401).json({ ok: false, error: 'Credenciales inválidas' });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('admin_session');
+  res.json({ ok: true });
+});
+
+app.get('/api/auth/check', (req, res) => {
+  res.json({ ok: true, isAdmin: isAdmin(req) });
+});
+
 
 // ===== API: content =====
 app.get('/api/content', (_req, res) => {
@@ -74,7 +97,8 @@ app.get('/api/content', (_req, res) => {
   }
 });
 
-app.put('/api/content', requireEditorEnabled, requireAdmin, (req, res) => {
+// El endpoint de guardado ahora requiere ser admin
+app.put('/api/content', requireAdmin, (req, res) => {
   try {
     fs.writeFileSync(CONTENT_PATH, JSON.stringify(req.body, null, 2), 'utf8');
     res.json({ ok: true });
@@ -102,7 +126,8 @@ const upload = multer({
   },
 });
 
-app.post('/api/upload', requireEditorEnabled, requireAdmin, upload.single('image'), async (req, res) => {
+// El endpoint de subida ahora requiere ser admin
+app.post('/api/upload', requireAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
@@ -141,6 +166,11 @@ app.post('/api/upload', requireEditorEnabled, requireAdmin, upload.single('image
     res.status(500).json({ error: 'No se pudo subir la imagen' });
   }
 });
+
+// ===== STATIC & FALLBACK =====
+// Servir archivos estáticos desde el root y los uploads
+app.use(express.static(ROOT_DIR));
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // fallback SPA
 app.get('*', (_req, res) => res.sendFile(path.join(ROOT_DIR, 'index.html')));

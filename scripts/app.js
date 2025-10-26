@@ -178,7 +178,15 @@ function renderShell(site, activePageId, page) {
 
   const footer = document.createElement('footer');
   footer.className = 'site-footer';
-  footer.textContent = `© ${new Date().getFullYear()} ${site.meta.title}. Todos los derechos reservados.`;
+  const small = document.createElement('small');
+  small.innerHTML = `© ${new Date().getFullYear()} ${site.meta.title}. Todos los derechos reservados. `;
+  const devButton = document.createElement('button');
+  devButton.id = 'dev-mode-trigger';
+  devButton.className = 'dev-link';
+  devButton.setAttribute('aria-haspopup', 'dialog');
+  devButton.textContent = 'Modo desarrollador';
+  small.appendChild(devButton);
+  footer.appendChild(small);
 
   shell.appendChild(nav);
   shell.appendChild(main);
@@ -187,6 +195,101 @@ function renderShell(site, activePageId, page) {
   appState.root.innerHTML = '';
   appState.root.appendChild(shell);
 }
+
+// --- Estado auth & UI edición ---
+async function checkAdmin() {
+  try {
+    const r = await fetch('/api/auth/check', { credentials: 'include' });
+    const { isAdmin } = await r.json();
+    document.documentElement.classList.toggle('admin', !!isAdmin);
+
+    const editToggle = document.getElementById('edit-toggle');
+    if (editToggle) {
+        editToggle.style.display = isAdmin ? 'inline-flex' : 'none';
+    }
+
+    const logoutBtn = document.getElementById('logout-admin');
+    if (logoutBtn) logoutBtn.classList.toggle('hidden', !isAdmin);
+  } catch (e) {
+    console.warn('No se pudo comprobar auth', e);
+  }
+}
+
+// --- Modal login ---
+function setupDevLoginUI() {
+  const trigger = document.getElementById('dev-mode-trigger');
+  const modal = document.getElementById('dev-login');
+  const form = document.getElementById('dev-login-form');
+  const cancel = document.getElementById('dev-cancel');
+  const error = document.getElementById('dev-error');
+
+  if (!trigger || !modal || !form) {
+    setTimeout(setupDevLoginUI, 100);
+    return;
+  }
+
+  const open = () => {
+    modal.classList.remove('hidden');
+    error.textContent = '';
+    form.reset();
+    form.elements.username.focus();
+  };
+  const close = () => modal.classList.add('hidden');
+
+  trigger.addEventListener('click', open);
+  cancel.addEventListener('click', close);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    error.textContent = '';
+    const data = Object.fromEntries(new FormData(form).entries());
+    try {
+      const r = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        error.textContent = j?.error || 'Error al iniciar sesión';
+        return;
+      }
+      close();
+      await checkAdmin();
+      document.getElementById('edit-toggle')?.click?.();
+    } catch (err) {
+      error.textContent = 'No se pudo conectar con el servidor';
+    }
+  });
+}
+
+// --- Logout (opcional dentro de tu panel de edición) ---
+function setupLogout() {
+  const btn = document.getElementById('logout-admin');
+  if (!btn) {
+    setTimeout(setupLogout, 100);
+    return;
+  }
+  btn.addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    await checkAdmin();
+    document.querySelector('.editor-panel')?.classList.remove('is-open');
+  });
+}
+
+// Init en DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  setupDevLoginUI();
+  setupLogout();
+  checkAdmin();
+});
 
 function renderNav(site, activePageId) {
   const nav = document.createElement('header');

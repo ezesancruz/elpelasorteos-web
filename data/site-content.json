@@ -6,7 +6,7 @@
   "theme": {
     "colors": {
       "primary": "#fe9200",
-      "accent": "#545454",
+      "accent": "#fe9200",
       "text": "#ffffff",
       "muted": "#111111"
     },

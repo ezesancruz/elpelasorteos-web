@@ -1330,3 +1330,54 @@ input:checked + .slider:before {
   height: auto;
   min-width: 0;
 }
+
+.dev-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  opacity: .55;
+  cursor: pointer;
+}
+.dev-link:hover { opacity: .85; }
+
+/* Modal */
+.modal.hidden { display: none; }
+.modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,.45);
+}
+.modal-box {
+  width: min(92vw, 380px);
+  background: #111;
+  color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+}
+.modal-box input {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: #0b0b0b;
+  color: #fff;
+}
+.modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;
+}
+.modal-actions button {
+  border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer;
+}
+.modal-actions button[type="submit"] { background: #2b7fff; color: #fff; }
+.modal-actions #dev-cancel { background: #333; color: #ddd; }
+.error { color: #ff6961; min-height: 1.2em; }
+
+/* Ocultar UI de edición para visitantes */
+#edit-toggle, .editor-panel { display: none; }
+.admin #edit-toggle { display: inline-flex; }
+.admin .editor-panel.is-open { display: flex; }
