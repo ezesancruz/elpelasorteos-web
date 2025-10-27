@@ -15,7 +15,7 @@ services:
       - ./microservices/integracion_mercadopago_app:/app/microservices/integracion_mercadopago_app
       # Monta la base de datos de pagos desde el host (persistente, fuera del repo)
       # Configura PAGOS_DB_HOST_PATH en tu .env del servidor si querés cambiar la ruta
-      - ./microservices/integracion_mercadopago_app:/app/microservices/integracion_mercadopago_app
+      - ./microservices/integracion_mercadopago_app/pagos.db:/app/microservices/integracion_mercadopago_app/pagos.db
 
     restart: unless-stopped
 
