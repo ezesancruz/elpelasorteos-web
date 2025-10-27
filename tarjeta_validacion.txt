@@ -1,0 +1,120 @@
+=====================================
+Tarjeta “Validación de participación”
+=====================================
+
+1) Descripción general
+----------------------
+La tarjeta “Validación de participación” permite a un usuario ingresar su número de operación/participación y comprobar si su pago está acreditado en la base local. La verificación se realiza desde el frontend contra un endpoint HTTP del backend Node/Express que consulta una base SQLite mediante un pequeño script Python.
+
+2) Dónde se define en el contenido
+----------------------------------
+- Archivo: `data/site-content.json` (página home).
+- Estructura del bloque:
+  {
+    "id": "tarjetaValidacion-...",
+    "type": "tarjetaValidacion",
+    "data": { "title": "Validacion de participacion", "description": "Ingrese su numero..." }
+  }
+
+3) Renderizado en el frontend
+-----------------------------
+- Archivo: `scripts/app.js`.
+- Función: `renderValidationCardSection(section)`.
+- Estructura HTML generada:
+  - `section.section--tarjetaValidacion`
+    - (Opcional) `h2` con el título.
+    - (Opcional) `p` con la descripción.
+    - `div.validation-box` conteniendo:
+      - `input.validation-input` (texto, 100% ancho) para el número de participación.
+      - `button.button--primary` (100% ancho) con la etiqueta “comprobar”.
+      - `div.validation-feedback` para mostrar mensajes de estado/resultado.
+
+4) Validación de entrada en el cliente
+-------------------------------------
+- Patrón requerido: solo dígitos (0–9), longitud entre 6 y 24: `/^[0-9]{6,24}$/`.
+- Si no cumple, muestra: “Ingresá un número válido (6-24 dígitos).” (en rojo) y no realiza la consulta.
+
+5) Origen de datos (endpoint y configuración)
+--------------------------------------------
+- La tarjeta construye la URL de consulta con `getApiBase()`:
+  - Prioriza `window.VALIDATION_API_BASE` si está definido en `window` (permite apuntar a un microservicio externo, ej. FastAPI).
+  - Si no está definido, usa el backend integrado: `'/api/payments'`.
+- Endpoint final consultado (GET):
+  `GET ${getApiBase()}/verificar?op=<NUMERO>`
+
+6) Flujo en el backend Node/Express (integrado)
+-----------------------------------------------
+- Archivo: `server/editor-server.js`
+- Ruta: `GET /api/payments/verificar`
+  1. Valida el parámetro `op` (6–24 dígitos).
+  2. Ejecuta el script Python `microservices/integracion_mercadopago_app/scripts/query_payment.py` pasando `op`.
+  3. Recibe JSON por stdout y lo devuelve al cliente.
+  4. En caso de error devuelve 500 con `{ ok: false, error: '...' }`.
+
+7) Script Python de verificación
+--------------------------------
+- Archivo: `microservices/integracion_mercadopago_app/scripts/query_payment.py`
+- Comportamiento:
+  - Ubica la base SQLite en `microservices/integracion_mercadopago_app/pagos.db`.
+  - Verifica que `op` sea dígitos 6–24; si no, error JSON.
+  - Abre la base en modo solo lectura (`?mode=ro`), `PRAGMA query_only = ON`.
+  - Consulta: `SELECT numero_operacion, status, amount, currency, date_approved, payer_name, description FROM pagos WHERE numero_operacion = ?`.
+  - Si no hay fila: responde `{"verified": false, "mensaje": "No encontrado..."}` más metadatos `null`.
+  - Si hay fila: responde JSON con campos:
+    - `verified`: `true` si `status == 'approved'`, `false` en otro caso.
+    - `numero_operacion`, `status`, `fecha` (ISO), `monto` (float), `moneda` (ej. ARS), `payer_name`, `description`, `mensaje`.
+
+8) Presentación del resultado en el cliente
+-------------------------------------------
+- Si `verified === true`:
+  - Se formatea `fecha` a `dd / mm / yyyy – HH:MM hs` (local).
+  - Se elimina cualquier dígito de `payer_name` (sanitización básica visual).
+  - Se arma un mensaje de confirmación incluyendo número, descripción y fecha.
+  - Se añade un mensaje promocional aleatorio (links a redes/Canal de WhatsApp).
+- Si `verified === false` pero hay respuesta:
+  - Muestra `mensaje` del backend (por ejemplo, “Pago aún no acreditado.”) en rojo.
+- Si la llamada falla o hay HTTP !200:
+  - Muestra: “No se pudo comprobar ahora. Intentá más tarde.” en rojo.
+
+9) Estilos y clases CSS
+------------------------
+- Archivo: `styles/main.css`
+- Selectores relevantes:
+  - `.section--tarjetaValidacion h2` y `p`: tipografía y centrado.
+  - `.section--tarjetaValidacion .validation-box`: grilla centrada, `max-width: 520px`.
+  - `.validation-input`: padding, borde y fondo semitransparente; texto blanco.
+  - `.section--tarjetaValidacion .button`: tipografía consistente.
+  - `.validation-feedback`: tamaño de fuente y centrado del mensaje.
+
+10) Integración con el editor visual
+------------------------------------
+- Archivo: `scripts/editor.js`
+- Configuración del panel para este tipo:
+  - Editor de “Titulo” (enriquecido) y “Descripcion” (enriquecido).
+  - Atajo para agregar la sección: `sectionAliases.tarjetaValidacion = 'Tarjeta validacion'`.
+  - Plantilla por defecto: `data: { title: 'Validacion de participacion', description: 'Ingrese ...' }`.
+
+11) Variantes de despliegue
+---------------------------
+- Backend integrado (por defecto):
+  - `npm run dev` expone `/api/payments/verificar` desde el servidor Express.
+  - Requiere Python disponible (comando `python` o `py`/`python3`) y la base `pagos.db` en la ruta indicada.
+- Backend externo (microservicio):
+  - Definir `window.VALIDATION_API_BASE = 'http://HOST:PUERTO'` en un `<script>` antes de cargar `scripts/app.js`.
+  - La tarjeta llamará `GET <BASE>/verificar?op=...` contra el servicio externo.
+
+12) Consideraciones y buenas prácticas
+--------------------------------------
+- Entrada: validar siempre formato numérico (6–24). Ya se hace en cliente y backend.
+- Errores: manejar cortes de red y respuestas no-200 mostrando mensaje amigable.
+- Seguridad: la ruta de verificación solo lee; no requiere autenticación.
+- Datos: la precisión depende de la actualización de `pagos.db`. La tarjeta no sincroniza datos; solo consulta.
+- UI/UX: el botón y el input se deshabilitan mientras se consulta para evitar envíos múltiples.
+
+13) Cómo probar localmente (rápido)
+-----------------------------------
+1. Asegurate de tener `pagos.db` en `microservices/integracion_mercadopago_app/` con la tabla `pagos` y datos.
+2. Instalá dependencias y levantá el server: `npm install && npm run dev`.
+3. Abrí `http://localhost:5173` y, en la tarjeta, ingresá un `numero_operacion` válido.
+4. Deberías ver confirmación si `status == approved`; caso contrario, mensaje de no acreditado.
+
