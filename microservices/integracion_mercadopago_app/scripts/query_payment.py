@@ -1,10 +1,29 @@
 #!/usr/bin/env python3
-import json, sqlite3, sys
+import json, sqlite3, sys, os, shutil, time, tempfile
 from pathlib import Path
 
 # Localiza la base en el directorio del microservicio
 BASE_DIR = Path(__file__).resolve().parents[1]
 DB_PATH = BASE_DIR / 'pagos.db'
+
+# Para evitar errores de SQLite cuando intenta crear archivos -wal/-shm en un
+# directorio sin permisos de escritura (por ejemplo, bind-mounts de sólo lectura
+# o directorios del host con permisos 755), copiamos la base a un directorio
+# temporal del contenedor y consultamos esa copia. Esto no modifica datos.
+STAGING_DIR = Path(tempfile.gettempdir()) / 'pagos_cache'
+STAGING_DIR.mkdir(parents=True, exist_ok=True)
+STAGED_DB = STAGING_DIR / 'pagos.db'
+
+def ensure_staged_copy():
+    try:
+        src = DB_PATH
+        dst = STAGED_DB
+        if not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime:
+            shutil.copy2(src, dst)
+    except Exception:
+        # Si falla la copia, seguimos usando el DB_PATH original
+        return DB_PATH
+    return STAGED_DB
 
 def main():
     if len(sys.argv) < 2:
@@ -21,16 +40,17 @@ def main():
         return 1
 
     try:
+        OPEN_PATH = ensure_staged_copy()
         # Intento 1: abrir en modo solo lectura. En bases con WAL puede requerir
         # crear archivos -shm; si el modo ro impide esa escritura, reintentamos rw.
         try:
-            conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
+            conn = sqlite3.connect(f"file:{OPEN_PATH}?mode=ro", uri=True, check_same_thread=False)
             conn.row_factory = sqlite3.Row
             conn.execute("PRAGMA query_only = ON")
         except Exception as e:
             # Fallback: abrir sin mode=ro para permitir crear -wal/-shm si hace falta.
             # Seguimos forzando PRAGMA query_only=ON para evitar escrituras de datos.
-            conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
+            conn = sqlite3.connect(str(OPEN_PATH), check_same_thread=False)
             conn.row_factory = sqlite3.Row
             conn.execute("PRAGMA query_only = ON")
 
