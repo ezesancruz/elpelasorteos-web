@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+const { spawn } = require('child_process');
 
 // === CONFIG ===
 const PORT = process.env.PORT || 5173;
@@ -83,6 +84,50 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.get('/api/auth/check', (req, res) => {
   res.json({ ok: true, isAdmin: isAdmin(req) });
+});
+
+// ===== API: pagos (consulta SQLite via Python) =====
+// Evita mantener un microservicio aparte; llama un script Python que usa sqlite3 (stdlib)
+app.get('/api/payments/verificar', async (req, res) => {
+  try {
+    const op = String(req.query.op || '').trim();
+    if (!/^\d{6,24}$/.test(op)) {
+      return res.status(400).json({ ok: false, error: 'Formato inválido de número de operación' });
+    }
+
+    const scriptPath = path.join(ROOT_DIR, 'microservices', 'integracion_mercadopago_app', 'scripts', 'query_payment.py');
+
+    // Helper para ejecutar Python con fallback a 'py' en Windows
+    const runPython = (cmd) => new Promise((resolve, reject) => {
+      const child = spawn(cmd, [scriptPath, op], {
+        cwd: path.dirname(scriptPath),
+        env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+      let out = '';
+      let err = '';
+      child.stdout.on('data', (d) => { out += d.toString(); });
+      child.stderr.on('data', (d) => { err += d.toString(); });
+      child.on('close', (code) => {
+        if (code === 0) return resolve(out);
+        reject(new Error(err || `python exit ${code}`));
+      });
+      child.on('error', reject);
+    });
+
+    let raw;
+    try {
+      raw = await runPython('python');
+    } catch (_) {
+      raw = await runPython(process.platform === 'win32' ? 'py' : 'python3');
+    }
+
+    const data = JSON.parse(raw);
+    return res.json(data);
+  } catch (e) {
+    console.error('GET /api/payments/verificar', e);
+    return res.status(500).json({ ok: false, error: 'Fallo al verificar operación' });
+  }
 });
 
 

@@ -10,6 +10,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 report.*.json
+coverage-final.json
 *.pid
 *.seed
 *.pid.lock
@@ -27,6 +28,11 @@ tmp/
 temp/
 .cache/
 .eslintcache
+.parcel-cache/
+.turbo/
+.vite/
+.next/
+out/
 
 # Environment files
 .env
@@ -36,10 +42,14 @@ temp/
 .env.production
 .env.test
 .npmrc
+.pnpm-store/
+.npm/
 
 # Editor & OS
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 .vscode/
 .idea/
 .vs/
@@ -77,3 +87,36 @@ _tmp_fix_add_section.js
 # Agentes
 AGENTS.md
 GEMINI.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+coverage.xml
+htmlcov/
+
+# Cypress / Playwright
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+playwright-report/
+test-results/
+
+# Storybook
+storybook-static/
+
+# Microservicios (datos locales y artefactos)
+microservices/**/pagos.db*
+microservices/**/*.csv
+microservices/**/*.log

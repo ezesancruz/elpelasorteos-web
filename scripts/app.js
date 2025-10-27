@@ -795,6 +795,7 @@ const sectionRenderers = {
   detalleVisual: renderImageHighlightSection,
   imageHighlight: renderImageHighlightSection,
   botonAccion: renderCTASection,
+  tarjetaValidacion: renderValidationCardSection,
   muroGanadores: renderWinnerCardsSection,
   keyValue: renderKeyValueSection,
   faq: renderFAQSection
@@ -1063,6 +1064,120 @@ function renderCTASection(section) {
     button.rel = 'noopener';
     container.appendChild(button);
   }
+  return container;
+}
+
+function renderValidationCardSection(section) {
+  const container = baseSection('tarjetaValidacion');
+  if (section.data?.title) {
+    const heading = document.createElement('h2');
+    heading.innerHTML = section.data.title;
+    container.appendChild(heading);
+  }
+  if (section.data?.description) {
+    const description = document.createElement('p');
+    description.innerHTML = section.data.description;
+    container.appendChild(description);
+  }
+
+  const box = document.createElement('div');
+  box.className = 'validation-box';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Numero de participacion';
+  input.className = 'validation-input';
+  input.style.width = '100%';
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'button button--primary';
+  button.textContent = 'comprobar';
+  button.style.width = '100%';
+
+  const feedback = document.createElement('div');
+  feedback.className = 'validation-feedback';
+  feedback.style.marginTop = '8px';
+  feedback.style.minHeight = '1.25em';
+
+  // Helpers para replicar el mensaje del microservicio
+  const formatLocalDate = (isoString) => {
+    try {
+      const date = new Date(isoString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${day} / ${month} / ${year} – ${hours}:${minutes} hs`;
+    } catch (_) {
+      return '';
+    }
+  };
+
+  const promoMessages = [
+    '👉 Seguí el canal de <a href="https://whatsapp.com/channel/0029VbBolV5A2pL9zNnhfT0n" target="_blank">WhatsApp</a> para enterarte de todas las novedades',
+    '👀 ¡No te lo pierdas! Seguime en <a href="https://www.tiktok.com/@_milpeso" target="_blank">TikTok</a> para ver los vivos y próximos sorteos 🎥🍀',
+    '👉 Seguime en <a href="https://www.facebook.com/elpelaaaaaaa/" target="_blank">Facebook</a> y activá las notificaciones 🔔 Así no te perdés de nada 💥',
+    '👉 Entrá a mi <a href="https://www.instagram.com/__elpelaaa/" target="_blank">Instagram</a> y seguime 💚 Ahí aviso todos los sorteos, ganadores y promos 🔥'
+  ];
+
+  const getApiBase = () => {
+    // Permite configurar en runtime: window.VALIDATION_API_BASE
+    // Fallback al backend integrado en Node
+    return (window && window.VALIDATION_API_BASE) || '/api/payments';
+  };
+
+  const setBusy = (busy) => {
+    button.disabled = busy;
+    input.disabled = busy;
+  };
+
+  const show = (text, color) => {
+    feedback.textContent = text || '';
+    feedback.style.color = color || 'inherit';
+  };
+
+  button.addEventListener('click', async () => {
+    const raw = String(input.value || '').trim();
+    if (!/^[0-9]{6,24}$/.test(raw)) {
+      show('Ingresá un número válido (6-24 dígitos).', '#ff4d4f');
+      return;
+    }
+    setBusy(true);
+    show('Comprobando…', '#999');
+    try {
+      const url = `${getApiBase()}/verificar?op=${encodeURIComponent(raw)}`;
+      const res = await fetch(url, { method: 'GET' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data && data.verified) {
+        const participantName = String(data.payer_name || 'Participante').replace(/[0-9]/g, '');
+        const formattedDate = data.fecha ? formatLocalDate(data.fecha) : '';
+        const randomPromo = promoMessages[Math.floor(Math.random() * promoMessages.length)];
+        const dateLine = formattedDate ? `\ndesde el <strong>${formattedDate}</strong><br><br>` : '';
+        feedback.innerHTML = `💥 ¡Confirmado, <strong>${participantName}</strong>, ya estás jugando! 💪<br>
+<br><em>Tu oportunidad está buscándote 🙂</em><br>
+🎟️ Número: <strong>${data.numero_operacion || ''}</strong><br>
+🤑 Participás en la promo <strong>${data.description || ''}</strong><br>${dateLine}
+Guardá tu comprobante y preparate para el vivo 🔴<br><br>
+${randomPromo}`;
+        feedback.style.color = 'inherit';
+      } else {
+        show((data && data.mensaje) || 'No encontrado o no acreditado.', '#ff4d4f');
+      }
+    } catch (e) {
+      console.error('validacion_error', e);
+      show('No se pudo comprobar ahora. Intentá más tarde.', '#ff4d4f');
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  box.appendChild(input);
+  box.appendChild(button);
+  box.appendChild(feedback);
+  container.appendChild(box);
   return container;
 }
 
