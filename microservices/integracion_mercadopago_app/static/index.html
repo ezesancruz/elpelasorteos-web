@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Participación</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none; /* Oculto por defecto */
+            word-wrap: break-word;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Comprobar participación</h1>
+    <form id="verify-form">
+        <input type="text" id="op_number" placeholder="Ingresa el número de operación" required>
+        <button type="submit">Comprobar</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    function formatLocalDate(isoString) {
+        const date = new Date(isoString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day} / ${month} / ${year} – ${hours}:${minutes} hs`;
+    }
+
+    const promoMessages = [
+        '👉 Seguí el canal de <a href="https://whatsapp.com/channel/0029VbBolV5A2pL9zNnhfT0n" target="_blank">WhatsApp</a> para enterarte de todas las novedades',
+        '👀 ¡No te lo pierdas! Seguime en <a href="https://www.tiktok.com/@_milpeso" target="_blank">TikTok</a> para ver los vivos y próximos sorteos 🎥🍀',
+        '👉 Seguime en <a href="https://www.facebook.com/elpelaaaaaaa/" target="_blank">Facebook</a> y activá las notificaciones 🔔 Así no te perdés de nada 💥',
+        '👉 Entrá a mi <a href="https://www.instagram.com/__elpelaaa/" target="_blank">Instagram</a> y seguime 💚 Ahí aviso todos los sorteos, ganadores y promos 🔥'
+    ];
+
+    document.getElementById('verify-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const opNumber = document.getElementById('op_number').value;
+        const resultDiv = document.getElementById('result');
+        const button = document.querySelector('button');
+
+        // Validar que no esté vacío
+        if (!opNumber.trim()) {
+            resultDiv.textContent = 'Por favor, ingresa un número de operación.';
+            resultDiv.className = 'error';
+            resultDiv.style.display = 'block';
+            return;
+        }
+        
+        // Mostrar estado de carga
+        resultDiv.textContent = 'Comprobando...';
+        resultDiv.className = '';
+        resultDiv.style.display = 'block';
+        button.disabled = true;
+
+        try {
+            // La URL de tu API. Asegúrate de que la API se esté ejecutando.
+            const response = await fetch(`http://127.0.0.1:8000/verificar?op=${opNumber}`);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Si la API devuelve un error (ej. 422 por validación)
+                resultDiv.textContent = data.detail ? data.detail[0].msg : 'Error al verificar. Revisa el número ingresado.';
+                resultDiv.className = 'error';
+            } else {
+                // Si la API devuelve una respuesta exitosa
+                if (data.verified) {
+                    const participantName = (data.payer_name || 'Participante').replace(/[0-9]/g, '');
+                    const formattedDate = formatLocalDate(data.fecha);
+                    const randomPromo = promoMessages[Math.floor(Math.random() * promoMessages.length)];
+                    resultDiv.innerHTML = `💥 ¡Confirmado, <strong>${participantName}</strong>, ya estás jugando! 💪<br>
+Tu suerte está en marcha 🍀<br>
+🎟️ Número: <strong>${data.numero_operacion}</strong><br>
+🤑 Participás en la promo <strong>${data.description}</strong><br>
+⏰ ${formattedDate}<br><br>
+Guardá tu comprobante y preparate para el vivo 🔴<br><br>
+${randomPromo}`;
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.textContent = data.mensaje || 'No se pudo verificar la participación.';
+                    resultDiv.className = 'error';
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            resultDiv.textContent = 'No se pudo conectar con el servicio de verificación. Asegúrate de que la API esté en funcionamiento.';
+            resultDiv.className = 'error';
+        } finally {
+            resultDiv.style.display = 'block';
+            button.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

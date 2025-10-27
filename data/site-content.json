@@ -202,6 +202,14 @@
           }
         },
         {
+          "id": "tarjetaValidacion-1761533649439",
+          "type": "tarjetaValidacion",
+          "data": {
+            "title": "Validacion de participacion",
+            "description": "Ingrese su numero de participacion para comprobar."
+          }
+        },
+        {
           "id": "opcionesCompra",
           "type": "opcionesCompra",
           "data": {

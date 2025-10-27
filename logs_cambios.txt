@@ -1,0 +1,29 @@
+Titulo: Análisis sistema de tarjetas
+Timestamp: 2025-10-27T00:00:00Z
+Pedido: Confirmar si el menú de edición permite agregar tarjetas de varios tipos que se muestran en la página.
+Entregado: Confirmé que sí. Revisé el editor (scripts/editor.js) y el renderizado (scripts/app.js). El editor permite agregar secciones llamadas "Tarjetas" de varios tipos (texto, productos, galería, carrusel, detalle visual, tienda/CTA, muro de ganadores, FAQ). Estas se guardan en data/site-content.json y se renderizan en la página.
+SesionID: sesion-analisis-tarjetas-2025-10-27-1
+
+Titulo: Aclaración ejecución y sincronización microservicio
+Timestamp: 2025-10-27T00:50:00Z
+Pedido: Explicar qué hace la variable window.VALIDATION_API_BASE y si el microservicio consulta DB local o llama a MP, y si la actualización es automática cada 4 horas.
+Entregado: Expliqué que window.VALIDATION_API_BASE solo configura la URL base del microservicio para el frontend (no cambia backend); el endpoint /verificar lee de la base SQLite local sin llamar a MP; y la actualización de la DB se hace con el script scripts/sync_mp.py (pull a la API de Mercado Pago) que debe programarse externamente (cron/Task Scheduler). En el repo no hay scheduler de 4 horas.
+SesionID: sesion-aclaraciones-2025-10-27-1
+
+Titulo: Instrucciones de ejecución (web + microservicio)
+Timestamp: 2025-10-27T00:40:00Z
+Pedido: Explicar cómo se ejecuta ahora el sistema con la nueva tarjeta y la integración al microservicio; si se ejecutan por separado o juntos.
+Entregado: Describí que se ejecutan en procesos separados: servidor web Node/Express en el puerto 5173 (scripts/app.js + editor) y microservicio FastAPI en el puerto 8000. Se conectan vía HTTP desde la tarjeta usando window.VALIDATION_API_BASE o por defecto http://localhost:8000. Incluí comandos y opciones para producción.
+SesionID: sesion-ejecucion-guia-2025-10-27-1
+
+Titulo: Conexión tarjeta validación con microservicio
+Timestamp: 2025-10-27T00:30:00Z
+Pedido: Leer carpeta microservices, confirmar si existe la lógica para verificar número de participación y luego conectarla a la nueva “Tarjeta validacion”.
+Entregado: Encontré el microservicio FastAPI en microservices/integracion_mercadopago_app/api.py con endpoint GET /verificar?op=... que consulta pagos.db y devuelve verified, mensaje y metadatos. Integré la tarjeta para que, al presionar “comprobar”, haga fetch al endpoint (configurable con window.VALIDATION_API_BASE o por defecto http://localhost:8000), muestre el estado y maneje errores. No se cambió la API ni la DB.
+SesionID: sesion-integracion-validacion-2025-10-27-1
+
+Titulo: Nueva tarjeta: Tarjeta validacion
+Timestamp: 2025-10-27T00:15:00Z
+Pedido: Crear un nuevo tipo de tarjeta “Tarjeta validacion” visible en el editor (selector de secciones) con campos editables Titulo y Descripcion; y renderizarla en la página con una casilla para “Numero de participacion” y un botón del mismo ancho que diga “comprobar”, sin lógica adicional.
+Entregado: Agregué el tipo en el editor (nuevo editor de sección, alias y defaultSections) en scripts/editor.js y el renderer en scripts/app.js con input y botón de ancho completo. No incluye funcionalidad de verificación, solo estructura visual.
+SesionID: sesion-tarjeta-validacion-2025-10-27-1

@@ -482,6 +482,48 @@ main {
     color: #111;
 }
 
+.section--tarjetaValidacion h2 {
+  font-family: var(--font-heading);
+  font-size: 2.1rem; /* igual que otras tarjetas (texto/galería) */
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.section--tarjetaValidacion p {
+  margin: 0.5rem 0;
+  font-size: 1.05rem; /* igual que subtítulos en texto informativo */
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.86);
+  text-align: center;
+}
+
+.section--tarjetaValidacion .validation-box {
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.section--tarjetaValidacion .validation-input {
+  width: 100%;
+  font-size: 1rem; /* igual que FAQ summary por defecto */
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+.section--tarjetaValidacion .button {
+  font-family: var(--font-body);
+  font-size: 1rem; /* igual que los textos de los desplegables FAQ */
+}
+
+.section--tarjetaValidacion .validation-feedback {
+  font-size: 0.98rem;
+  text-align: center; /* Centrar mensaje de confirmación */
+}
+
 .site-footer {
   padding: 2rem 1.5rem 3rem;
   text-align: center;

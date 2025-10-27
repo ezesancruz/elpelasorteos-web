@@ -636,6 +636,12 @@ const sectionEditors = {
     wrapper.appendChild(createImageField('Imagen', section.data?.image || '', imagePath, value => updateSection(index, s => s.data.image = value)));
     return wrapper;
   },
+  tarjetaValidacion(section, index) {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Descripcion', section.data?.description || '', value => updateSection(index, s => s.data.description = value)));
+    return wrapper;
+  },
   muroGanadores(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
@@ -739,6 +745,11 @@ const defaultSections = {
     type: 'botonAccion',
     data: { title: 'Llamado a la accion', body: 'Descripcion', href: '#', buttonLabel: 'Ver mas', image: '' }
   },
+  tarjetaValidacion: {
+    id: 'tarjetaValidacion-new',
+    type: 'tarjetaValidacion',
+    data: { title: 'Validacion de participacion', description: 'Ingrese su numero de participacion para comprobar.' }
+  },
   muroGanadores: {
     id: 'muroGanadores-new',
     type: 'muroGanadores',
@@ -764,6 +775,7 @@ const sectionAliases = {
   carruselImagenes: 'Tarjeta carrusel de imágenes',
   detalleVisual: 'Tarjeta detalle visual',
   botonAccion: 'Tarjeta tienda',
+  tarjetaValidacion: 'Tarjeta validacion',
   muroGanadores: 'Tarjeta muro de ganadores',
   faq: 'Tarjeta FAQ'
 };

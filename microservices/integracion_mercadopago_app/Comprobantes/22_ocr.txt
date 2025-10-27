@@ -1,0 +1,46 @@
+9/10/25, 12:37 a.m. Detalle de operación
+
+l-MercadoPago
+
+Número de operación 1218086437315
++ Creada el 14 de agosto - 13:32 hs
+
+(S) Cobro $ 3.500,00
+
+SI Cargo de Mercado Pago () - $ 266,35
+
+Total $ 3.233,65
+Cobro aprobado
+
+EJ Medio de pago
+
+O Dinero disponible en Mercado Pago
+
+E] Vendiste 1 producto
+I Link de pago
+$ 3.500,00 x1 Unidad
+(9) Cliente
+
+Nicolás Cerullo
+nicolascerulloegmail.com Y
+
+Conocé tu dinero disponible
+
+Ir a Movimientos de tu dinero
+
+/ Ncciones relacionadas
+
+https://www.mercadopago.com.ar/activities/detail/checkout_merchant _order-b352a6aac2118db2171ba26af95172beca188c08?from=activities-frontend 1/2
+
+
+9/10/25, 12:37 a.m. Detalle de operación
+
+Devolver dinero
+
+Agregar nota
+
+E Y Necesito ayuda
+
+Cómo devuelvo el pago de esta venta
+
+https://www.mercadopago.com.ar/activities/detail/checkout_merchant _order-b352a6aac2118db2171ba26af95172beca188c08?from=activities-frontend 2/2
