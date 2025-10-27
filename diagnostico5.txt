@@ -1,0 +1,72 @@
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ cd ~/sorteo-web/web && docker compose ps 
+NAME        IMAGE     COMMAND                  SERVICE   CREATED        STATUS        PORTS
+caddy       caddy:2   "caddy run --config …"   caddy     39 hours ago   Up 39 hours   0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+web-web-1   web-web   "docker-entrypoint.s…"   web       9 hours ago    Up 9 hours    8080/tcp
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose logs --since 30m web 
+web-1  | GET /api/payments/verificar Error: python exit 1
+web-1  |     at ChildProcess.<anonymous> (/app/server/editor-server.js:113:16)
+web-1  |     at ChildProcess.emit (node:events:524:28)
+web-1  |     at maybeClose (node:internal/child_process:1104:16)
+web-1  |     at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+web-1  | GET /api/payments/verificar Error: python exit 1
+web-1  |     at ChildProcess.<anonymous> (/app/server/editor-server.js:113:16)
+web-1  |     at ChildProcess.emit (node:events:524:28)
+web-1  |     at maybeClose (node:internal/child_process:1104:16)
+web-1  |     at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+web-1  | GET /api/payments/verificar Error: python exit 1
+web-1  |     at ChildProcess.<anonymous> (/app/server/editor-server.js:113:16)
+web-1  |     at ChildProcess.emit (node:events:524:28)
+web-1  |     at maybeClose (node:internal/child_process:1104:16)
+web-1  |     at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+web-1  | GET /api/payments/verificar Error: python exit 1
+web-1  |     at ChildProcess.<anonymous> (/app/server/editor-server.js:113:16)
+web-1  |     at ChildProcess.emit (node:events:524:28)
+web-1  |     at maybeClose (node:internal/child_process:1104:16)
+web-1  |     at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web ls -l /app/microservices/integracion_mercadopago_app/pagos.db 
+-rw-r--r--    1 node     node        385024 Oct 27 04:41 /app/microservices/integracion_mercadopago_app/pagos.db
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web ls -l /app/microservices/integracion_mercadopago_app/scripts/      
+        query_payment.py
+total 760
+-rw-r--r--    1 node     node          5281 Oct 27 04:09 extract_comprobantes_mp.py
+-rw-r--r--    1 node     node         21021 Oct 27 04:09 modify_editor.py
+-rw-r--r--    1 node     node           748 Oct 27 04:09 ocr_pdf_to_txt.py
+-rw-r--r--    1 node     node        385024 Oct 27 05:03 pagos.db
+-rw-r--r--    1 node     node        336502 Oct 27 05:03 payment_details.log
+-rw-r--r--    1 node     node          2480 Oct 27 07:00 query_payment.py
+-rw-r--r--    1 node     node          8968 Oct 27 07:55 sync_mp.py
+-bash: query_payment.py: command not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$  docker compose exec web python3 --version
+Python 3.12.12
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 -c "import sqlite3; print('sqlite3-ok')"
+sqlite3-ok
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 /app/microservices/integracion_mercadopago_app/scripts/    
+        query_payment.py 131185946716
+/usr/bin/python3: can't find '__main__' module in '/app/microservices/integracion_mercadopago_app/scripts/'
+-bash: query_payment.py: command not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web pwd && docker compose exec web ls -l /app/server/editor-server.js 
+/app
+-rw-r--r--    1 appuser  appgroup      7035 Oct 27 04:09 /app/server/editor-server.js
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web printenv | grep -E '^(PORT|NODE_ENV|ADMIN_)'
+PORT=8080
+NODE_ENV=production
+ADMIN_JWT_SECRET=62bbdf40c4ff9de4af5d0c0c8065c808
+ADMIN_PASS=sorteosorteante28!
+ADMIN_USER=elpelaflow
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web ss -ltnp | grep :8080 || docker compose exec web ss -ltnp 
+OCI runtime exec failed: exec failed: unable to start container process: exec: "ss": executable file not found in $PATH: unknown
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716"
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:47:39 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ python3 microservices/integracion_mercadopago_app/scripts/             s/integracion_mercadopago_app/scripts/
+    query_payment.py 131185946716
+/opt/bitnami/python/bin/python3: can't find '__main__' module in '/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/scripts/'
+-bash: query_payment.py: command not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$

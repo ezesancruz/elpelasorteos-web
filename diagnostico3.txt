@@ -1,0 +1,150 @@
+bitnami@ip-172-26-1-205:~$ cd sorteo-web
+bitnami@ip-172-26-1-205:~/sorteo-web$ cd web
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ cd microservices/integracion_mercadopago_app/
+bitnami@ip-172-26-1-205:~/sorteo-web/web/microservices/integracion_mercadopago_app$ cd ..
+bitnami@ip-172-26-1-205:~/sorteo-web/web/microservices$ cd ..
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ ls -la 
+total 504
+drwxrwxrwx 10 bitnami bitnami   4096 Oct 27 05:17 .
+drwxr-xr-x  3 bitnami docker    4096 Oct 25 23:04 ..
+-rw-rw-rw-  1 bitnami bitnami    309 Oct 22 14:18 AGENTS.md
+-rw-r--r--  1 bitnami bitnami  10938 Oct 26 01:21 apple-touch-icon.png
+-rw-r--r--  1 bitnami bitnami    119 Oct 26 01:21 Caddyfile
+drwxrwxrwx  2 bitnami bitnami   4096 Oct 27 01:09 data
+-rw-r--r--  1 bitnami bitnami   1714 Oct 27 04:55 DEPLOY_LIGHTSAIL.md
+-rwxr-xr-x  1 bitnami bitnami    472 Oct 25 23:52 deploy.sh
+-rw-r--r--  1 bitnami bitnami   2146 Oct 26 01:21 DNS_NAMECHEAP_LIGHTSAIL.md
+-rw-r--r--  1 bitnami bitnami    610 Oct 27 04:00 docker-compose.yml
+-rw-r--r--  1 bitnami bitnami    510 Oct 27 01:55 docker-compose.yml.bak
+-rw-r--r--  1 bitnami bitnami    682 Oct 27 04:00 Dockerfile
+-rw-r--r--  1 bitnami bitnami   2821 Oct 27 04:00 duda.txt
+-rw-------  1 bitnami bitnami    622 Oct 27 05:17 .env
+-rw-r--r--  1 bitnami bitnami    806 Oct 27 04:55 .env.example
+-rw-r--r--  1 bitnami bitnami   1116 Oct 26 01:21 favicon-16x16.png
+-rw-r--r--  1 bitnami bitnami   1950 Oct 26 01:21 favicon-32x32.png
+-rw-r--r--  1 bitnami bitnami 215254 Oct 26 01:21 favicon.png
+drwxrwxrwx  2 bitnami bitnami   4096 Oct 26 01:21 ganadoresanteriores
+-rw-rw-rw-  1 bitnami bitnami     32 Oct 24 20:14 GEMINI.md
+drwxrwxrwx  7 bitnami bitnami   4096 Oct 27 04:55 .git
+-rw-r--r--  1 bitnami bitnami   1402 Oct 27 01:09 .gitignore
+-rw-r--r--  1 bitnami bitnami   2792 Oct 26 01:21 index.html
+-rw-r--r--  1 bitnami bitnami   4996 Oct 26 01:21 INSTRUCTIVO.txt
+-rw-r--r--  1 bitnami bitnami   1074 Oct 27 04:55 LICENSE
+-rw-r--r--  1 bitnami bitnami   3317 Oct 27 01:09 logs_cambios.txt
+drwxr-xr-x  3 bitnami bitnami   4096 Oct 27 01:09 microservices
+-rw-r--r--  1 bitnami bitnami    590 Oct 26 01:21 package.json
+-rw-r--r--  1 bitnami bitnami 124549 Oct 26 01:21 package-lock.json
+-rw-r--r--  1 bitnami bitnami   5182 Oct 26 01:21 README_es.md
+-rw-r--r--  1 bitnami bitnami   4911 Oct 26 01:21 README.md
+-rw-r--r--  1 bitnami bitnami   3227 Oct 26 01:21 resumen_cli.txt
+-rw-r--r--  1 bitnami bitnami     72 Oct 26 01:21 robots.txt
+drwxrwxrwx  2 bitnami bitnami   4096 Oct 27 01:09 scripts
+drwxrwxrwx  3 bitnami bitnami   4096 Oct 27 01:09 server
+-rw-r--r--  1 bitnami bitnami    235 Oct 26 01:21 sitemap.xml
+drwxrwxrwx  2 bitnami bitnami   4096 Oct 26 01:21 sorteo
+drwxrwxrwx  2 bitnami bitnami   4096 Oct 27 01:09 styles
+-rw-r--r--  1 bitnami bitnami     26 Oct 27 01:09 test.js
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ ls -la sorteo-web
+ls: cannot access 'sorteo-web': No such file or directory
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ ls -la sorteo-web/microservices/integracion_mercadopago_app/scripts/query_payment.py
+ls: cannot access 'sorteo-web/microservices/integracion_mercadopago_app/scripts/query_payment.py': No such file or directory
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ cd ..
+bitnami@ip-172-26-1-205:~/sorteo-web$ ls -la sorteo-web/microservices/integracion_mercadopago_app/scripts/query_payment.py
+ls: cannot access 'sorteo-web/microservices/integracion_mercadopago_app/scripts/query_payment.py': No such file or directory
+bitnami@ip-172-26-1-205:~/sorteo-web$ ls -la sorteo-web/web/microservices/integracion_mercadopago_app/scripts/query_payment.py
+ls: cannot access 'sorteo-web/web/microservices/integracion_mercadopago_app/scripts/query_payment.py': No such file or directory
+bitnami@ip-172-26-1-205:~/sorteo-web$ ls -la web/microservices/integracion_mercadopago_app/scripts/query_payment.py
+-rw-r--r-- 1 bitnami bitnami 2480 Oct 27 04:00 web/microservices/integracion_mercadopago_app/scripts/query_payment.py
+bitnami@ip-172-26-1-205:~/sorteo-web$ pid=$(pgrep -f "server/editor-server.js"); echo "PID=$pid"; readlink -f /proc/$pid/cwd;    
+        cat /proc/$pid/cmdline | tr '\0' ' '
+PID=58592
+bitnami@ip-172-26-1-205:~/sorteo-web$ ls -l web/microservices/integracion_mercadopago_app/pagos.db* || echo 'NO DB'app/pagos.db* || echo 'NO DB'
+-rw-r--r-- 1 bitnami bitnami 385024 Oct 27 01:41 web/microservices/integracion_mercadopago_app/pagos.db
+bitnami@ip-172-26-1-205:~/sorteo-web$ python3 web/microservices/integracion_mercadopago_app/scripts/query_payment.py      
+        131185946716 || true
+{"ok": false, "error": "Falta parámetro op"}
+-bash: 131185946716: command not found
+bitnami@ip-172-26-1-205:~/sorteo-web$ mkdir -p sorteo-web/server/public/uploads && ls -ld sorteo-web/server/public/uploads
+drwxr-xr-x 2 bitnami bitnami 4096 Oct 27 14:34 sorteo-web/server/public/uploads
+bitnami@ip-172-26-1-205:~/sorteo-web$ ls -la
+total 33092
+drwxr-xr-x  4 bitnami docker      4096 Oct 27 14:34 .
+drwxr-xr-x  8 bitnami bitnami     4096 Oct 27 05:37 ..
+drwxr-xr-x  3 bitnami bitnami     4096 Oct 27 14:34 sorteo-web
+drwxrwxrwx 10 bitnami bitnami     4096 Oct 27 05:17 web
+-rw-r--r--  1 bitnami bitnami 33868981 Oct 25 23:03 web_on_aws.zip
+bitnami@ip-172-26-1-205:~/sorteo-web$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716"
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:35:20 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52
+
+{"ok":false,"error":"Fallo al verificar operación"}bitnami@ip-172-26-1-205:~/sorteo-web$ cd web
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716"
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:35:37 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ grep -RniE 'localhost|5173|8080' ~/sorteo-web 2>/dev/null | sed -n '1,50p' || true' ~/sorteo-web 2>/dev/null | sed -n '1,50p' || true
+/home/bitnami/sorteo-web/web/docker-compose.yml.bak:6:      - "8080:8080"
+/home/bitnami/sorteo-web/web/server/editor-server.js:16:const PORT = process.env.PORT || 5173;     
+/home/bitnami/sorteo-web/web/server/editor-server.js:224:  console.log(`Server unico en http://localhost:${PORT}`);
+/home/bitnami/sorteo-web/web/README.md:21:The command above starts the Express server on `http://localhost:5173`, serves the SPA, exposes the `/api/content` endpoint to persist JSON edits, and `/api/upload` to handle image uploads.
+/home/bitnami/sorteo-web/web/README.md:41:1. Open `http://localhost:5173`.
+/home/bitnami/sorteo-web/web/README.md:71:docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+/home/bitnami/sorteo-web/web/README.md:80:This will start the web application on port 8080 and the Caddy server on ports 80 and 443.
+/home/bitnami/sorteo-web/web/logs_cambios.txt:16:Entregado: Describí que se ejecutan en procesos separados: servidor web Node/Express en el puerto 5173 (scripts/app.js + editor) y microservicio FastAPI en el puerto 8000. Se conectan vía HTTP desde la tarjeta usando window.VALIDATION_API_BASE o por defecto http://localhost:8000. Incluí comandos y opciones para producción.
+/home/bitnami/sorteo-web/web/logs_cambios.txt:22:Entregado: Encontré el microservicio FastAPI en microservices/integracion_mercadopago_app/api.py con endpoint GET /verificar?op=... que consulta pagos.db y devuelve verified, mensaje y metadatos. Integré la tarjeta para que, al presionar “comprobar”, haga fetch al endpoint (configurable con window.VALIDATION_API_BASE o por defecto http://localhost:8000), muestre el estado y maneje errores. No se cambió la API ni la DB.
+/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/payment_details.log:484:          "client_id": "3298225725173080",
+/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/scripts/payment_details.log:484:          "client_id": "3298225725173080",
+/home/bitnami/sorteo-web/web/DEPLOY_LIGHTSAIL.md:56:Si todo está correcto, Caddy habrá emitido certificados TLS automáticamente y actuará como reverse proxy hacia `web:8080`. Las imágenes subidas persistirán en el volumen `uploads`.
+/home/bitnami/sorteo-web/web/DNS_NAMECHEAP_LIGHTSAIL.md:41:  reverse_proxy web:8080
+/home/bitnami/sorteo-web/web/README_es.md:21:El comando inicia el servidor Express en `http://localhost:5173`, sirve la SPA, expone `/api/content` para guardar el JSON y `/api/upload` para subir imágenes.
+/home/bitnami/sorteo-web/web/README_es.md:41:1. Abre `http://localhost:5173`.
+/home/bitnami/sorteo-web/web/README_es.md:71:docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+/home/bitnami/sorteo-web/web/README_es.md:80:Esto iniciará la aplicación web en el puerto 8080 y el servidor Caddy en los puertos 80 y 443.
+/home/bitnami/sorteo-web/web/docker-compose.yml:6:      - "8080:8080"
+/home/bitnami/sorteo-web/web/INSTRUCTIVO.txt:35:4. Abrir `http://localhost:5173` en el navegador. El sitio queda servido junto con el panel de edición.
+/home/bitnami/sorteo-web/web/Caddyfile:4:  reverse_proxy web:8080
+/home/bitnami/sorteo-web/web/.env:5:PORT=8080
+/home/bitnami/sorteo-web/web/Dockerfile:31:ENV PORT=8080
+/home/bitnami/sorteo-web/web/Dockerfile:34:EXPOSE 8080
+/home/bitnami/sorteo-web/web/scripts/prerender.js:9:const PORT = process.env.PRERENDER_PORT || process.env.PORT || 5173;
+/home/bitnami/sorteo-web/web/scripts/prerender.js:38:  const baseUrl = `http://localhost:${PORT}`; 
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ cd ..
+bitnami@ip-172-26-1-205:~/sorteo-web$ grep -RniE 'localhost|5173|8080' ~/sorteo-web 2>/dev/null | sed -n '1,50p' || true
+/home/bitnami/sorteo-web/web/docker-compose.yml.bak:6:      - "8080:8080"
+/home/bitnami/sorteo-web/web/server/editor-server.js:16:const PORT = process.env.PORT || 5173;     
+/home/bitnami/sorteo-web/web/server/editor-server.js:224:  console.log(`Server unico en http://localhost:${PORT}`);
+/home/bitnami/sorteo-web/web/README.md:21:The command above starts the Express server on `http://localhost:5173`, serves the SPA, exposes the `/api/content` endpoint to persist JSON edits, and `/api/upload` to handle image uploads.
+/home/bitnami/sorteo-web/web/README.md:41:1. Open `http://localhost:5173`.
+/home/bitnami/sorteo-web/web/README.md:71:docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+/home/bitnami/sorteo-web/web/README.md:80:This will start the web application on port 8080 and the Caddy server on ports 80 and 443.
+/home/bitnami/sorteo-web/web/logs_cambios.txt:16:Entregado: Describí que se ejecutan en procesos separados: servidor web Node/Express en el puerto 5173 (scripts/app.js + editor) y microservicio FastAPI en el puerto 8000. Se conectan vía HTTP desde la tarjeta usando window.VALIDATION_API_BASE o por defecto http://localhost:8000. Incluí comandos y opciones para producción.
+/home/bitnami/sorteo-web/web/logs_cambios.txt:22:Entregado: Encontré el microservicio FastAPI en microservices/integracion_mercadopago_app/api.py con endpoint GET /verificar?op=... que consulta pagos.db y devuelve verified, mensaje y metadatos. Integré la tarjeta para que, al presionar “comprobar”, haga fetch al endpoint (configurable con window.VALIDATION_API_BASE o por defecto http://localhost:8000), muestre el estado y maneje errores. No se cambió la API ni la DB.
+/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/payment_details.log:484:          "client_id": "3298225725173080",
+/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/scripts/payment_details.log:484:          "client_id": "3298225725173080",
+/home/bitnami/sorteo-web/web/DEPLOY_LIGHTSAIL.md:56:Si todo está correcto, Caddy habrá emitido certificados TLS automáticamente y actuará como reverse proxy hacia `web:8080`. Las imágenes subidas persistirán en el volumen `uploads`.
+/home/bitnami/sorteo-web/web/DNS_NAMECHEAP_LIGHTSAIL.md:41:  reverse_proxy web:8080
+/home/bitnami/sorteo-web/web/README_es.md:21:El comando inicia el servidor Express en `http://localhost:5173`, sirve la SPA, expone `/api/content` para guardar el JSON y `/api/upload` para subir imágenes.
+/home/bitnami/sorteo-web/web/README_es.md:41:1. Abre `http://localhost:5173`.
+/home/bitnami/sorteo-web/web/README_es.md:71:docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+/home/bitnami/sorteo-web/web/README_es.md:80:Esto iniciará la aplicación web en el puerto 8080 y el servidor Caddy en los puertos 80 y 443.
+/home/bitnami/sorteo-web/web/docker-compose.yml:6:      - "8080:8080"
+/home/bitnami/sorteo-web/web/INSTRUCTIVO.txt:35:4. Abrir `http://localhost:5173` en el navegador. El sitio queda servido junto con el panel de edición.
+/home/bitnami/sorteo-web/web/Caddyfile:4:  reverse_proxy web:8080
+/home/bitnami/sorteo-web/web/.env:5:PORT=8080
+/home/bitnami/sorteo-web/web/Dockerfile:31:ENV PORT=8080
+/home/bitnami/sorteo-web/web/Dockerfile:34:EXPOSE 8080
+/home/bitnami/sorteo-web/web/scripts/prerender.js:9:const PORT = process.env.PRERENDER_PORT || process.env.PORT || 5173;
+/home/bitnami/sorteo-web/web/scripts/prerender.js:38:  const baseUrl = `http://localhost:${PORT}`; 
+bitnami@ip-172-26-1-205:~/sorteo-web$

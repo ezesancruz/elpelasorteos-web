@@ -1,0 +1,55 @@
+bitnami@ip-172-26-1-205:~/sorteo-web/web$  docker compose exec web sh -lc 'python3 /microservices/i
+ntegracion_mercadopago_app/
+        scripts/query_payment.py 131185946716; echo exit=$?'\
+> \
+> 
+python3: can't open file '/microservices/integracion_mercadopago_app/': [Errno 2] No such file or directory
+sh: scripts/query_payment.py: not found
+exit=127
+
+#EL OP ES VERDERO
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$  docker compose exec web sh -lc 'python3 /microservices/i
+ntegracion_mercadopago_app/
+        scripts/query_payment.py 131185946716; echo exit=$?'\
+> \
+> 
+python3: can't open file '/microservices/integracion_mercadopago_app/': [Errno 2] No such file or directory
+sh: scripts/query_payment.py: not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'python3 /microservices/integracion_mercadopago_app/
+        scripts/query_payment.py 123; echo exit=$?'    
+python3: can't open file '/microservices/integracion_mercadopago_app/': [Errno 2] No such file or directory
+sh: scripts/query_payment.py: not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'python3 -c '''import sqlite3; c=sqlite3.connect("/
+        app/microservices/integracion_mercadopago_app/pagos.db"); print("tabla_pagos=",             
+        c.execute("select count(*) from sqlite_master where type=''table'' and                      
+        name=''pagos''").fetchone()[0]); print("ejemplo=", c.execute("select                        
+        numero_operacion,status from pagos limit 1").fetchone())''''
+-bash: syntax error near unexpected token `('
+-bash: syntax error near unexpected token `('
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+>
+> ^C
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716"  
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:58:42 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52

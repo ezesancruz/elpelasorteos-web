@@ -1,0 +1,140 @@
+bitnami@ip-172-26-1-205:~$ node -v && npm -v
+v22.18.0
+10.9.3
+bitnami@ip-172-26-1-205:~$ ls -la node_modules | wc -l
+55
+bitnami@ip-172-26-1-205:~$ ps aux | grep -i 'editor-server.js' | grep -v grep
+uuidd      58592  0.0  5.5 724984 53932 ?        Sl   05:18   0:01 node server/editor-server.js
+bitnami@ip-172-26-1-205:~$ ss -tulpn | grep -E ':5173|:3000|:8080'
+bitnami@ip-172-26-1-205:~$ test -f .env && echo '.env presente' || echo 'SIN .env'
+.env presente
+bitnami@ip-172-26-1-205:~$ grep -E '^(ADMIN_USER|ADMIN_PASS|ADMIN_JWT_SECRET|PORT)=' .env 2>/dev/null || echo 'vars no visibles en .env'
+PORT=8080
+bitnami@ip-172-26-1-205:~$ python3 --version || python --version
+Python 3.13.6
+bitnami@ip-172-26-1-205:~$ python3 microservices/integracion_mercadopago_app/scripts/query_payment.py 131185946716 || true
+python3: can't open file '/home/bitnami/microservices/integracion_mercadopago_app/scripts/query_payment.py': [Errno 2] No such file or directory
+
+#PROBADOS POR MI
+(bitnami@ip-172-26-1-205:~$ cd web
+-bash: cd: web: No such file or directory
+bitnami@ip-172-26-1-205:~$ cd 'web'
+-bash: cd: web: No such file or directory
+bitnami@ip-172-26-1-205:~$ web
+-bash: web: command not found
+bitnami@ip-172-26-1-205:~$ dir
+backup_elpelasorteos-web_2025-10-26.tgz  htdocs        package-lock.json  sync_mp.log
+bitnami_application_password             node_modules  sorteo-web
+bitnami_credentials                      package.json  stack
+bitnami@ip-172-26-1-205:~$ cd bitnami
+-bash: cd: bitnami: No such file or directory)
+bitnami@ip-172-26-1-205:~$ curl -I https://elpelasorteos.shop
+HTTP/2 200 
+accept-ranges: bytes
+alt-svc: h3=":443"; ma=2592000
+cache-control: public, max-age=0
+content-type: text/html; charset=UTF-8
+date: Mon, 27 Oct 2025 17:22:12 GMT
+etag: W/"ae8-19a1ec01beb"
+last-modified: Sun, 26 Oct 2025 04:21:37 GMT
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 2792
+bitnami@ip-172-26-1-205:~$ curl -i https://elpelasorteos.shop/api/health || echo 'health no disponible'
+HTTP/2 200 
+accept-ranges: bytes
+alt-svc: h3=":443"; ma=2592000
+cache-control: public, max-age=0
+content-type: text/html; charset=UTF-8
+date: Mon, 27 Oct 2025 17:22:46 GMT
+etag: W/"ae8-19a1ec01beb"
+last-modified: Sun, 26 Oct 2025 04:21:37 GMT
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 2792
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>elpelasorteos.shop - Sorteos en vivo y transparentes</title>
+  <meta name="description" content="Participá fácil, en vivo y con ganadores verificados. Sumate al próximo sorteo.">
+  <link rel="canonical" href="https://elpelasorteos.shop/">
+
+  <meta property="og:title" content="elpelasorteos.shop - Sorteos en vivo y transparentes">
+  <meta property="og:description" content="Participá fácil, en vivo y con ganadores verificados.">
+  <meta property="og:image" content="https://elpelasorteos.shop/og-image.jpg">
+  <meta property="og:url" content="https://elpelasorteos.shop/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <!-- Analytics (GA4) - Reemplaza G-XXXXXXXXXX por tu Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="scripts/app.js"></script>
+  <script type="module" src="scripts/editor.js"></script>
+  <script type="module" src="scripts/new-lightbox.js"></script>
+
+  <div id="dev-login" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dev-login-title">
+    <div class="modal-box" role="document">
+      <h2 id="dev-login-title">Iniciar sesión</h2>
+      <form id="dev-login-form">
+        <label>
+          Usuario
+          <input name="username" autocomplete="username" required>
+        </label>
+        <label>
+          Contraseña
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <div class="modal-actions">
+          <button type="submit">Entrar</button>
+          <button type="button" id="dev-cancel">Cancelar</button>
+        </div>
+        <p class="error" id="dev-error" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+bitnami@ip-172-26-1-205:~$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716" 
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:22:52 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52
+
+{"ok":false,"error":"Fallo al verificar operación"}bitnami@ip-172-26-1-205:~$ ls -ld server/public/ls -ld server/public/uploads
+ls: cannot access 'server/public/uploads': No such file or directory
+bitnami@ip-172-26-1-205:~$ touch server/public/uploads/_perm_test && rm server/public/uploads/_perm_test || echo 'sin permisos de escritura'
+touch: cannot touch 'server/public/uploads/_perm_test': No such file or directory
+sin permisos de escritura
+bitnami@ip-172-26-1-205:~$ Nginx Bitnami: sudo tail -n 100 /opt/bitnami/nginx/logs/error.log 2>/dev/null || sudo tail -n 100 /var/log/nginx/error.log 2>/dev/null 
+bitnami@ip-172-26-1-205:~$ App Node (si usas pm2): pm2 logs --lines 100
+-bash: syntax error near unexpected token `('
+bitnami@ip-172-26-1-205:~$ Nginx Bitnami: sudo tail -n 100 /opt/bitnami/nginx/logs/error.log 2>/dev/null || sudo tail -n 100 /var/log/nginx/error.log 2>/dev/null
+s de escritura'
+> 
+> pm2 logs --lines 100
+>
+> ^C
+bitnami@ip-172-26-1-205:~$

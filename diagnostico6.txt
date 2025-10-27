@@ -1,0 +1,76 @@
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 /app/microservices/integracion_mercadopago_app/scripts/    
+        query_payment.py 131185946716; echo exit=$? 
+/usr/bin/python3: can't find '__main__' module in '/app/microservices/integracion_mercadopago_app/scripts/'
+-bash: query_payment.py: command not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 /microservices/integracio
+n_mercadopago_app/scripts/
+        query_payment.py 131185946716; echo exit=$? 
+python3: can't open file '/microservices/integracion_mercadopago_app/scripts/': [Errno 2] No such file or directory
+-bash: query_payment.py: command not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 /app/microservices/integracion_mercadopago_app/scripts/    
+        query_payment.py 123; echo exit=$? 
+/usr/bin/python3: can't find '__main__' module in '/app/microservices/integracion_mercadopago_app/scripts/'
+-bash: query_payment.py: command not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ python3 microservices/integracion_mercadopago_app/scripts/
+/opt/bitnami/python/bin/python3: can't find '__main__' module in '/home/bitnami/sorteo-web/web/microservices/integracion_mercadopago_app/scripts/'
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 /microservices/integracion_mercadopago_app/scripts/
+        query_payment.py 123; echo exit=$?  
+python3: can't open file '/microservices/integracion_mercadopago_app/scripts/': [Errno 2] No such file or directory
+-bash: query_payment.py: command not found
+exit=127
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web ls -l /microservices/integracion_mercadopago_app/pagos.db /        microservices/integracion_mercadopago_app/scripts/query_payment.py
+ls: /microservices/integracion_mercadopago_app/pagos.db: No such file or directory
+-rw-r--r--    1 node     node          2480 Oct 27 07:00 microservices/integracion_mercadopago_app/scripts/query_payment.py
+
+/:
+total 76
+drwxr-xr-x    1 appuser  appgroup      4096 Oct 27 07:55 app
+drwxr-xr-x    1 root     root          4096 Oct 21 20:18 bin
+drwxr-xr-x    5 root     root           340 Oct 27 08:18 dev
+drwxr-xr-x    1 root     root          4096 Oct 27 08:18 etc
+drwxr-xr-x    1 root     root          4096 Oct 26 02:17 home
+drwxr-xr-x    1 root     root          4096 Oct  8 09:28 lib
+drwxr-xr-x    5 root     root          4096 Oct  8 09:28 media
+drwxr-xr-x    2 root     root          4096 Oct  8 09:28 mnt
+drwxr-xr-x    1 root     root          4096 Oct 21 20:18 opt
+dr-xr-xr-x  143 root     root             0 Oct 27 08:18 proc
+drwx------    1 root     root          4096 Oct 26 04:21 root
+drwxr-xr-x    3 root     root          4096 Oct  8 09:28 run
+drwxr-xr-x    2 root     root          4096 Oct  8 09:28 sbin
+drwxr-xr-x    2 root     root          4096 Oct  8 09:28 srv
+dr-xr-xr-x   13 root     root             0 Oct 27 08:18 sys
+drwxrwxrwt    2 root     root          4096 Oct  8 09:28 tmp
+drwxr-xr-x    1 root     root          4096 Oct 27 07:00 usr
+drwxr-xr-x   11 root     root          4096 Oct  8 09:28 var
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 -c "import sqlite3; c=sqlite3.connect('/app/microservices/ 
+        integracion_mercadopago_app/pagos.db'); print('tabla_pagos=', c.execute('select             
+        count(*) from sqlite_master where type="table" and name="pagos"').fetchone()                
+        [0]); r=c.execute('select numero_operacion,status from pagos limit 1').fetchone();          
+        print('ejemplo=', r)"
+  File "<string>", line 1
+    import sqlite3; c=sqlite3.connect('/app/microservices/
+                                      ^
+SyntaxError: unterminated string literal (detected at line 1)
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web python3 -c "import sqlite3; c=sqlite3.connect('/microservices/
+        integracion_mercadopago_app/pagos.db'); print('tabla_pagos=', c.execute('select             
+        count(*) from sqlite_master where type="table" and name="pagos"').fetchone()                
+        [0]); r=c.execute('select numero_operacion,status from pagos limit 1').fetchone();          
+        print('ejemplo=', r)"
+  File "<string>", line 1
+    import sqlite3; c=sqlite3.connect('/microservices/
+                                      ^
+SyntaxError: unterminated string literal (detected at line 1)
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ curl -i "https://elpelasorteos.shop/api/payments/verificar?op=131185946716" 
+HTTP/2 500 
+alt-svc: h3=":443"; ma=2592000
+content-type: application/json; charset=utf-8
+date: Mon, 27 Oct 2025 17:55:12 GMT
+etag: W/"34-Okoj9hB3iJjkcMLX0EPWPEF8KyY"
+via: 1.1 Caddy
+x-powered-by: Express
+content-length: 52
+
+{"ok":false,"error":"Fallo al verificar operación"}bitnami@ip-172-26-1-205:~/sorteo-web/web$   
