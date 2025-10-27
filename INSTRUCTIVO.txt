@@ -85,3 +85,29 @@ Con esta información cualquier persona puede operar, actualizar y compartir el 
   - `webv1.zip`
   - Archivos de diagnóstico `diagnost*.txt`
 - Los patrones de archivos comprimidos ya están contemplados en `.gitignore` (por ejemplo `*.zip`). Si aparecen localmente, borrarlos antes de ejecutar `git add`.
+
+11. Base de datos de validación en producción (pagos.db)
+-------------------------------------------------------
+La tarjeta de validación usa `pagos.db` (SQLite). Este archivo no se versiona y debe existir en el servidor.
+
+- Montaje en Docker Compose
+  - En `docker-compose.yml` se agregó:
+    `${PAGOS_DB_HOST_PATH:-/srv/elpela/pagos.db}:/app/microservices/integracion_mercadopago_app/pagos.db:ro`
+  - Esto significa: “montar el archivo del host definido en `PAGOS_DB_HOST_PATH` dentro del contenedor en la ruta fija `/app/microservices/integracion_mercadopago_app/pagos.db` (solo lectura)”.
+
+- ¿Dónde definir `PAGOS_DB_HOST_PATH`?
+  - En el `.env` que vive junto a `docker-compose.yml` (Docker Compose usa ese `.env` para interpolación). No confundir con el `.env` que se inyecta al contenedor para Node.
+  - Ejemplos:
+    - Linux: `PAGOS_DB_HOST_PATH=/srv/elpela/pagos.db`
+    - Windows (Docker Desktop): `PAGOS_DB_HOST_PATH=C:/data/pagos.db`
+
+- Pasos de despliegue
+  1) Copiar `pagos.db` a la ruta persistente del host (ej. `/srv/elpela/pagos.db`).
+  2) Establecer `PAGOS_DB_HOST_PATH` en el `.env` del proyecto (junto a `docker-compose.yml`).
+  3) Recrear contenedores: `docker compose up -d --build`.
+  4) Probar verificación dentro del contenedor:
+     `docker compose exec web sh -lc 'python microservices/integracion_mercadopago_app/scripts/query_payment.py 123456'`.
+
+- Notas:
+  - La ruta del host va a la izquierda del `:`. La ruta del contenedor (derecha) no se cambia.
+  - Si la DB falta o no es accesible, el endpoint `/api/payments/verificar` devolverá error y la tarjeta mostrará “No se pudo comprobar ahora. Intentá más tarde.”.

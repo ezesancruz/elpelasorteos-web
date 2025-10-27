@@ -79,6 +79,23 @@ docker-compose up -d
 ```
 Esto iniciará la aplicación web en el puerto 8080 y el servidor Caddy en los puertos 80 y 443.
 
+### Base de datos de validación (pagos.db) en producción
+- La tarjeta de validación consulta una base SQLite llamada `pagos.db`. Este archivo NO va en git y debe estar presente en el host del servidor.
+- En `docker-compose.yml` se montó un bind-mount del archivo usando la variable `PAGOS_DB_HOST_PATH`:
+  - `${PAGOS_DB_HOST_PATH:-/srv/elpela/pagos.db}:/app/microservices/integracion_mercadopago_app/pagos.db:ro`
+- Dónde definir `PAGOS_DB_HOST_PATH`:
+  - En el archivo `.env` que está al lado de `docker-compose.yml` (este `.env` es el de Docker Compose para interpolación, no el que consume Node dentro del contenedor).
+  - Ejemplo (Linux): `PAGOS_DB_HOST_PATH=/srv/elpela/pagos.db`
+  - Ejemplo (Windows con Docker Desktop): `PAGOS_DB_HOST_PATH=C:/data/pagos.db` (asegurando compartir esa carpeta con Docker).
+- Importante:
+  - La ruta a la izquierda del `:` es SIEMPRE del host.
+  - La ruta a la derecha (`/app/microservices/integracion_mercadopago_app/pagos.db`) es la ruta fija dentro del contenedor. No la pongas en el `.env`.
+- Pasos rápidos:
+  1) Copiá `pagos.db` al host (por ejemplo `/srv/elpela/pagos.db`).
+  2) Poné `PAGOS_DB_HOST_PATH=/srv/elpela/pagos.db` en `.env` (junto a `docker-compose.yml`).
+  3) `docker compose up -d --build`.
+  4) Probar dentro del contenedor: `docker compose exec web sh -lc 'python microservices/integracion_mercadopago_app/scripts/query_payment.py 123456'`.
+
 ## Pre-render (opcional, mejora SEO)
 Genera snapshots HTML estáticos para rutas clave sin los scripts dinámicos.
 
