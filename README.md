@@ -95,6 +95,13 @@ npm run prerender
 - `INSTRUCTIVO.txt`: extended operator manual for editors and stakeholders.
 - `LICENCE`: licensing terms (MIT).
 
+## Repository housekeeping
+- Avoid committing large artifacts (archives, builds).
+- Remove temporary diagnostics and archives from the repo root before committing:
+  - Delete `webv1.zip`.
+  - Delete `diagnost*.txt` files.
+- Patterns for archives are already in `.gitignore` (e.g., `*.zip`). If such files appear locally, remove them prior to `git add`.
+
 ## Troubleshooting
 - **"Save changes" button fails**: confirm `npm run dev` is active and the JSON is valid.
 - **New images are not visible**: verify the upload finished without error and the file exists in `server/public/uploads/`.

@@ -77,3 +77,11 @@ web/
 - `LICENCE`: términos de uso del código (licencia MIT).
 
 Con esta información cualquier persona puede operar, actualizar y compartir el proyecto sin depender de instrucciones externas.
+
+10. Limpieza y buenas prácticas
+-------------------------------
+- Evitar versionar artefactos pesados como archivos comprimidos o builds.
+- Antes de commitear, eliminar en la raíz del repo:
+  - `webv1.zip`
+  - Archivos de diagnóstico `diagnost*.txt`
+- Los patrones de archivos comprimidos ya están contemplados en `.gitignore` (por ejemplo `*.zip`). Si aparecen localmente, borrarlos antes de ejecutar `git add`.

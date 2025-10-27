@@ -95,6 +95,13 @@ npm run prerender
 - `INSTRUCTIVO.txt`: manual extendido para operadores.
 - `LICENCE`: términos de la licencia MIT.
 
+## Mantenimiento del repositorio
+- Evita commitear artefactos pesados (archivos de build, comprimidos).
+- Antes de hacer commit, elimina diagnósticos y archivos temporales en la raíz:
+  - Borrar `webv1.zip`.
+  - Borrar archivos `diagnost*.txt`.
+- `.gitignore` ya contempla patrones para archivos comprimidos (por ejemplo `*.zip`). Si aparecen localmente, elimínalos antes de `git add`.
+
 ## Solución de problemas frecuentes
 - **El botón "Guardar cambios" falla**: confirma que `npm run dev` está activo y que el JSON es válido.
 - **No se ven nuevas imágenes**: verifica que la subida terminó sin error y que el archivo exista en `server/public/uploads/`.
