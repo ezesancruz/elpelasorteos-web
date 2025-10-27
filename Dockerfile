@@ -11,6 +11,8 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # 4. Install dependencies
 COPY package*.json ./
+# Evita descargar Chromium de Puppeteer en builds de producción
+ENV PUPPETEER_SKIP_DOWNLOAD=1
 RUN npm ci --only=production
 
 # Python para los scripts que invoca Express
@@ -35,3 +37,7 @@ EXPOSE 8080
 
 # 10. Start command
 CMD ["npm", "start"]
+
+# Salud del contenedor: responde 200 en /api/content
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT||8080) + '/api/content').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"
