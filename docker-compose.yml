@@ -1,13 +1,9 @@
 services:
   web:
     build: .
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    env_file: .env
+    environment:
+      - "8080:8080"
     volumes:
       - uploads:/app/server/public/uploads
       - ./data:/app/data
