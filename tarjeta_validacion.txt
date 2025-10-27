@@ -118,3 +118,30 @@ La tarjeta “Validación de participación” permite a un usuario ingresar su 
 3. Abrí `http://localhost:5173` y, en la tarjeta, ingresá un `numero_operacion` válido.
 4. Deberías ver confirmación si `status == approved`; caso contrario, mensaje de no acreditado.
 
+  - La tarjeta hace un GET a GET /api/payments/verificar?op=<numero> desde el   
+    frontend.                                                                   
+  - Ese endpoint del servidor Node/Express ejecuta microservices/               
+    integracion_mercadopago_app/scripts/query_payment.py.                       
+  - Ese script lee la base SQLite microservices/integracion_mercadopago_app/    
+    pagos.db en modo solo lectura y hace:                                       
+    SELECT numero_operacion, status, amount, currency, date_approved,           
+    payer_name, description FROM pagos WHERE numero_operacion = ?               
+  - Si status == 'approved' responde verified: true; si no, verified: false.    
+  - Requisito: tener Python disponible y que pagos.db exista en esa ruta.       
+  - Alternativa: si definís window.VALIDATION_API_BASE, la tarjeta consulta     
+    un microservicio externo (FastAPI), que también usa la misma pagos.db o su  
+    equivalente servidor-side.
+
+ Resumen planteo de problema
+                                                                                
+  - En local: DB presente → OK.                                                 
+  - En server: git checkout limpio sin DB → el script devuelve error → Express  
+    responde 500 → la tarjeta muestra “Intentá más tarde.”.                     
+  - Solución: asegurá pagos.db en el entorno de producción (volumen/bind-       
+    mount) o apunta a un servicio externo que la tenga. ¿Querés que te proponga 
+    el cambio exacto en docker-compose.yml para montar la DB desde una ruta     
+    persistente?  
+
+/microservices/integracion_mercadopago_app/pagos.db:ro  
+${PAGOS_DB_HOST_PATH:-/srv/elpela/pagos.db}:/app/microservices/         
+        integracion_mercadopago_app/pagos.db:ro  
