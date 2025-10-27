@@ -1,0 +1,91 @@
+  Opción A — Usar la DB del repo (rápida)                                       
+                                                                                
+  - Deja solo el volumen del directorio y elimina la línea 18.                  
+  - Resultado: el contenedor verá el pagos.db que está dentro de microservices/ 
+    integracion_mercadopago_app en el host.                                     
+  - Pasos:                                                                      
+      - Edita docker-compose.yml y BORRA la línea 18.                           
+      - Redeploy: docker compose up -d --build                                  
+      - Verifica en contenedor:                                                 
+          - docker compose exec web sh -lc 'ls -l /app/microservices/           
+            integracion_mercadopago_app/pagos.db'                               
+          - docker compose exec web sh -lc 'python microservices/               
+            integracion_mercadopago_app/scripts/query_payment.py 123456'
+
+    bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose up -d --build
+[+] Building 35.2s (17/17) FINISHED
+ => [internal] load local bake definitions                                 0.0s 
+ => => reading from stdin 489B                                             0.0s 
+ => [internal] load build definition from Dockerfile                       0.0s 
+ => [internal] load local bake definitions                                 0.0s 
+ => => reading from stdin 489B                                             0.0s 
+ => [internal] load build definition from Dockerfile                       0.0s 
+ => => transferring dockerfile: 721B                                       0.0s 
+ => [internal] load build definition from Dockerfile                       0.0s 
+ => => transferring dockerfile: 721B                                       0.0s 
+ => => transferring dockerfile: 721B                                       0.0s 
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.2s 
+ => CACHED docker-image://docker.io/docker/dockerfile:1@sha256:b6afd42430  0.0s 
+ => [internal] load metadata for docker.io/library/node:20-alpine          0.1s 
+ => [internal] load .dockerignore                                          0.0s 
+ => => transferring context: 2B                                            0.0s 
+ => [1/8] FROM docker.io/library/node:20-alpine@sha256:6178e78b972f79c335  0.0s 
+ => [internal] load build context                                          3.1s 
+ => => transferring context: 102.10MB                                      3.0s 
+ => CACHED [2/8] WORKDIR /app                                              0.0s 
+ => CACHED [3/8] RUN addgroup -S appgroup && adduser -S appuser -G appgro  0.0s 
+ => CACHED [4/8] COPY package*.json ./                                     0.0s 
+ => CACHED [5/8] RUN npm ci --only=production                              0.0s 
+ => CACHED [6/8] RUN apk add --no-cache python3  && ln -sf /usr/bin/pytho  0.0s 
+ => [7/8] COPY . .                                                         1.8s 
+ => [8/8] RUN chown -R appuser:appgroup /app                              24.3s 
+ => exporting to image                                                     5.1s 
+ => => exporting layers                                                    5.0s 
+ => => writing image sha256:4f1df94cebb0548f005cecdf3c02a458e435f17a9904a  0.0s 
+ => => naming to docker.io/library/web-web                                 0.0s 
+ => resolving provenance for metadata file                                 0.1s 
+[+] Running 3/3
+ ✔ web-web              Built                                              0.0s 
+ ✔ Container web-web-1  Started                                            0.4s 
+ ✔ Container caddy      Started                                            0.3s 
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'ls -l /app/microservices/
+            integracion_mercadopago_app/pagos.db'
+total 4
+drwxr-xr-x    5 node     node          4096 Oct 27 22:04 integracion_mercadopago_app
+sh: integracion_mercadopago_app/pagos.db: not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'python microservices/
+            integracion_mercadopago_app/scripts/query_payment.py 130455149235'
+/usr/bin/python: can't find '__main__' module in '/app/microservices/'
+sh: integracion_mercadopago_app/scripts/query_payment.py: not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ 
+
+
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'ls -l /app/microservices/integracion_mercadopago_app/pagos.db'
+-rw-r--r--    1 node     node        385024 Oct 27 04:41 /app/microservices/integracion_mercadopago_app/pagos.db
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'ls -l /app/microservices/integracion_mercadopago_app/pagos.db'
+-rw-r--r--    1 node     node        385024 Oct 27 04:41 /app/microservices/integracion_mercadopago_app/pagos.db
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'python /app/microservicio/integracion_mercadopago_app/scripts/query_payment.py 1304551
+49235'
+python: can't open file '/app/microservicio/integracion_mercadopago_app/scripts/query_payment.py': [Errno 2] No such file or directory
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose logs web | grep "/api/payments/verificar"
+web-1  | GET /api/payments/verificar Error: python exit 1
+bitnami@ip-172-26-1-205:~/sorteo-web/web$
+
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'ls -l /app/microservices/integracion_mercadopago_app/pagos.db'
+-rw-r--r--    1 node     node        385024 Oct 27 04:41 /app/microservices/integracion_mercadopago_app/pagos.db
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc 'python /app/microservices/integracion_mercadopago_app/scripts/query_payment.py 130455149235 || true'
+{"ok": false, "error": "Error DB: attempt to write a readonly database"}
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose exec web sh -lc "python - <<'PY'\nimport
+        sqlite3\np='/app/microservices/integracion_mercadopago_app/              
+        pagos.db'\nconn=sqlite3.connect(f'file:{p}?mode=ro',                     
+        uri=True)\ncur=conn.cursor()\ncur.execute("SELECT name FROM              
+        sqlite_master WHERE type='table'")\nprint([r[0] for r in                 
+        cur.fetchall()])\nPY"
+  File "<stdin>", line 1
+    sqlite3\np='/app/microservices/integracion_mercadopago_app/
+IndentationError: unexpected indent
+-bash: sqlite_master: command not found
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ 
