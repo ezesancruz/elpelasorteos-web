@@ -45,6 +45,7 @@ out/
 .pnpm-store/
 .npm/
 
+
 # Editor & OS
 .DS_Store
 Thumbs.db
@@ -63,6 +64,7 @@ data/site-content.backup.json
 data/*.backup.json
 server/public/uploads/
 !server/public/uploads/.gitkeep
+venv/
 
 # SSL/TLS keys & certs
 *.pem
