@@ -42,7 +42,9 @@ INSERT OR IGNORE INTO sync_state (id, last_synced_at) VALUES (1, NULL);
 """
 
 def load_env():
-    load_dotenv()
+    # Cargar el .env unificado desde la raíz del proyecto (web/.env)
+    root_env = Path(__file__).resolve().parents[3] / ".env"
+    load_dotenv(dotenv_path=root_env)
     token = os.getenv("MP_ACCESS_TOKEN")
     if not token:
         token = os.getenv("Access_Token")

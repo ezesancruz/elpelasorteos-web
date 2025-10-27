@@ -6,6 +6,10 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
+# Carga del .env unificado en la raíz del proyecto (web/.env)
+ROOT_ENV = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(dotenv_path=ROOT_ENV)
+
 DB_PATH = Path("pagos.db")
 
 app = FastAPI(title="Verificador de participación", version="1.0.0")
