@@ -58,10 +58,14 @@ Una aplicación FastAPI que expone endpoints para verificar pagos. Se conecta a 
     pip install -r requirements.txt
     ```
 
-4.  **Configura las variables de entorno:**
-    Crea un archivo `.env` en el directorio raíz y añade las variables necesarias (ej., el token de acceso de Mercado Pago).
+4.  **Variables de entorno (unificadas en la raíz):**
+    Este microservicio ahora lee variables desde el `.env` de la raíz del proyecto (un solo `.env` para todo `web/`).
+    Define allí tus credenciales de Mercado Pago:
     ```
-    MP_ACCESS_TOKEN=TU_ACCESS_TOKEN
+    MP_PUBLIC_KEY=APP_USR-...
+    MP_ACCESS_TOKEN=APP_USR-...
+    MP_CLIENT_ID=...
+    MP_CLIENT_SECRET=...
     ```
 
 ## Uso

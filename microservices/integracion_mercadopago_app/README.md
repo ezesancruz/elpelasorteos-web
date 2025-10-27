@@ -58,10 +58,14 @@ A FastAPI application that exposes endpoints to verify payments. It connects to 
     pip install -r requirements.txt
     ```
 
-4.  **Set up environment variables:**
-    Create a `.env` file in the root directory and add the necessary variables (e.g., Mercado Pago access token).
+4.  **Environment variables (Unified at project root):**
+    This microservice now reads environment variables from the project root `.env` (single `.env` for the entire `web/` project).
+    Define your Mercado Pago credentials there:
     ```
-    MP_ACCESS_TOKEN=YOUR_ACCESS_TOKEN
+    MP_PUBLIC_KEY=APP_USR-...
+    MP_ACCESS_TOKEN=APP_USR-...
+    MP_CLIENT_ID=...
+    MP_CLIENT_SECRET=...
     ```
 
 ## Usage
