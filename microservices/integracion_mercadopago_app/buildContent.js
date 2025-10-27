@@ -16,7 +16,7 @@ const primaryLink = (linksBlock.links || []).find(link => link.display);
 
 const site = {
   meta: {
-    title: 'Ojedapreparacion.com',
+    title: 'elpelasorteos.shop',
     description: 'Bienvenidos a mi pagina oficial'
   },
   theme: {
