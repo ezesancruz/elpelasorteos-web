@@ -1,6 +1,6 @@
 ﻿# Ojedapreparacion Web
 
-Landing page and admin tooling for the Ojeda Preparacion sweepstakes campaign.
+Landing page and admin tooling for the El Pela Sorteos sweepstakes campaign.
 
 ## Highlights
 - Single-page application that renders dynamic content from `data/site-content.json`.

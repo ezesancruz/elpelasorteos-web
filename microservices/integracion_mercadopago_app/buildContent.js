@@ -49,7 +49,7 @@ const homePage = {
   slug: '',
   title: home.pages?.[0]?.page_title || 'Sorteo',
   hero: {
-    title: headerBlock.nickname || 'Ojeda Preparacion',
+    title: headerBlock.nickname || 'El Pela Sorteos',
     subtitle: headerBlock.header_bio || '',
     profileImage: home.profile_picture_url,
     bannerImage: headerBlock.header_banner_image || '',
