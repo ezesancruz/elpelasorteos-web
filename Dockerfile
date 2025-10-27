@@ -13,6 +13,10 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY package*.json ./
 RUN npm ci --only=production
 
+# Python para los scripts que invoca Express
+RUN apk add --no-cache python3 \
+ && ln -sf /usr/bin/python3 /usr/bin/python
+
 # 5. Copy application files
 COPY . .
 

@@ -7,6 +7,8 @@ services:
     volumes:
       - uploads:/app/server/public/uploads
       - ./data:/app/data
+      - ./microservices/integracion_mercadopago_app:/app/microservices/integracion_mercadopago_app
+
     restart: unless-stopped
 
   caddy:

@@ -21,16 +21,16 @@ def main():
         return 1
 
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
         conn.row_factory = sqlite3.Row
-        with conn:
-            row = conn.execute(
-                """
-                SELECT numero_operacion, status, amount, currency, date_approved, payer_name, description
-                FROM pagos WHERE numero_operacion = ?
-                """,
-                (op,),
-            ).fetchone()
+        conn.execute("PRAGMA query_only = ON")
+        row = conn.execute(
+            """
+            SELECT numero_operacion, status, amount, currency, date_approved, payer_name, description
+            FROM pagos WHERE numero_operacion = ?
+            """,
+            (op,),
+        ).fetchone()
     except Exception as e:
         print(json.dumps({"ok": False, "error": f"Error DB: {e}"}, ensure_ascii=False))
         return 1
@@ -72,4 +72,3 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
-
