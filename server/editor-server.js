@@ -92,7 +92,7 @@ app.get('/api/payments/verificar', async (req, res) => {
   try {
     const op = String(req.query.op || '').trim();
     if (!/^\d{6,24}$/.test(op)) {
-      return res.status(400).json({ ok: false, error: 'Formato inválido de número de operación' });
+      return res.status(200).json({ ok: false, verified: false, mensaje: 'Ingresá un número válido (6-24 dígitos).' });
     }
 
     const scriptPath = path.join(ROOT_DIR, 'microservices', 'integracion_mercadopago_app', 'scripts', 'query_payment.py');
@@ -119,14 +119,19 @@ app.get('/api/payments/verificar', async (req, res) => {
     try {
       raw = await runPython('python');
     } catch (_) {
-      raw = await runPython(process.platform === 'win32' ? 'py' : 'python3');
+      try {
+        raw = await runPython(process.platform === 'win32' ? 'py' : 'python3');
+      } catch (err2) {
+        console.error('GET /api/payments/verificar', err2);
+        return res.status(200).json({ ok: false, verified: false, mensaje: 'No se pudo comprobar ahora. Intentá más tarde.' });
+      }
     }
 
     const data = JSON.parse(raw);
     return res.json(data);
   } catch (e) {
     console.error('GET /api/payments/verificar', e);
-    return res.status(500).json({ ok: false, error: 'Fallo al verificar operación' });
+    return res.status(200).json({ ok: false, verified: false, mensaje: 'No se pudo comprobar ahora. Intentá más tarde.' });
   }
 });
 
