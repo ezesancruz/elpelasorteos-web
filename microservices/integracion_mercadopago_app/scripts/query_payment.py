@@ -21,9 +21,19 @@ def main():
         return 1
 
     try:
-        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
+        # Intento 1: abrir en modo solo lectura. En bases con WAL puede requerir
+        # crear archivos -shm; si el modo ro impide esa escritura, reintentamos rw.
+        try:
+            conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA query_only = ON")
+        except Exception as e:
+            # Fallback: abrir sin mode=ro para permitir crear -wal/-shm si hace falta.
+            # Seguimos forzando PRAGMA query_only=ON para evitar escrituras de datos.
+            conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA query_only = ON")
+
         row = conn.execute(
             """
             SELECT numero_operacion, status, amount, currency, date_approved, payer_name, description
