@@ -60,7 +60,7 @@ Este proyecto incluye un `Dockerfile` y `docker-compose.yml` para facilitar la c
 ### Creando la imagen
 Para construir la imagen de Docker, ejecuta el siguiente comando en el directorio `web`:
 ```bash
-docker build -t ojedapreparacion-web .
+docker build -t elpelasorteos-web .
 ```
 
 ### Ejecutando el contenedor
@@ -68,7 +68,7 @@ Puedes ejecutar el contenedor usando `docker run` o `docker-compose`.
 
 #### Usando `docker run`
 ```bash
-docker run -p 8080:8080 -d --name ojedapreparacion-web ojedapreparacion-web
+docker run -p 8080:8080 -d --name elpelasorteos-web elpelasorteos-web
 ```
 
 #### Usando `docker-compose`

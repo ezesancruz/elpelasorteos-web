@@ -1,10 +1,10 @@
 ﻿========================================
-INSTRUCTIVO DE DESPLIEGUE Y EDICIÓN - Proyecto "Ojedapreparacion"
+INSTRUCTIVO DE DESPLIEGUE Y EDICIÓN - Proyecto "El Pela Sorteos"
 ========================================
 
 1. Objetivo
 -----------
-Este instructivo resume cómo montar el entorno, editar el contenido dinámico y publicar el sitio estático que acompaña a la campaña de sorteos de Ojeda Preparación.
+Este instructivo resume cómo montar el entorno, editar el contenido dinámico y publicar el sitio estático que acompaña a la campaña de sorteos de El Pela Sorteos.
 
 2. Requisitos previos
 ---------------------
