@@ -1,9 +1,8 @@
 # syntax=docker/dockerfile:1
-
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Usuario no-root
+# Usuario y grupo
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Node deps
@@ -11,15 +10,14 @@ COPY package*.json ./
 ENV PUPPETEER_SKIP_DOWNLOAD=1
 RUN npm ci --only=production
 
-# Python + pip + sqlite (CLI para inspecciones)
+# Python + pip + sqlite
 RUN apk add --no-cache python3 py3-pip sqlite \
  && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Copiar la app
+# App
 COPY . .
 
-# --- Crear venv e instalar deps Python ---
-# (si hay requirements.txt lo usamos; si no, instalamos básicas)
+# Venv + deps Python (usa requirements si existe)
 RUN python3 -m venv /opt/venv \
  && . /opt/venv/bin/activate \
  && pip install --no-cache-dir -U pip \
@@ -27,16 +25,16 @@ RUN python3 -m venv /opt/venv \
       pip install --no-cache-dir -r /app/microservices/integracion_mercadopago_app/requirements.txt ; \
     else \
       pip install --no-cache-dir requests python-dotenv ; \
-    fi \
- && chown -R appuser:appuser /opt/venv
+    fi
 
 # Que el venv quede primero en PATH
 ENV PATH="/opt/venv/bin:${PATH}"
 
-# Permisos app
-RUN chown -R appuser:appgroup /app
+# Permisos
+RUN chown -R appuser:appgroup /opt/venv /app
 USER appuser
 
+# Entorno Node
 ENV NODE_ENV=production
 ENV PORT=8080
 EXPOSE 8080
