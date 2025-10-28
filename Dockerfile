@@ -9,18 +9,25 @@ WORKDIR /app
 # 3. Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# 4. Install dependencies
+# 4. Install Node deps
 COPY package*.json ./
 # Evita descargar Chromium de Puppeteer en builds de producción
 ENV PUPPETEER_SKIP_DOWNLOAD=1
 RUN npm ci --only=production
 
-# Python para los scripts que invoca Express
-RUN apk add --no-cache python3 \
+# 4.b Python + pip + sqlite (CLI para inspecciones)
+RUN apk add --no-cache python3 py3-pip sqlite \
  && ln -sf /usr/bin/python3 /usr/bin/python
 
 # 5. Copy application files
 COPY . .
+
+# 5.b Deps de Python del microservicio (condicional)
+RUN if [ -f /app/microservices/integracion_mercadopago_app/requirements.txt ]; then \
+      pip install --no-cache-dir -r /app/microservices/integracion_mercadopago_app/requirements.txt ; \
+    else \
+      pip install --no-cache-dir requests python-dotenv ; \
+    fi
 
 # 6. Set ownership
 RUN chown -R appuser:appgroup /app
