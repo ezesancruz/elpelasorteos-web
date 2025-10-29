@@ -485,8 +485,17 @@ function createImg(srcOrObj, alt = '', opts = {}) {
 
     // Aplicar recorte/posicionamiento si el objeto de imagen trae crop
     try {
+      const desiredAspect = toPositiveNumber(opts.aspect ?? opts.aspectRatio, null);
+      const reapplyDesiredAspectIfNeeded = () => {
+        const cropAspect = (srcOrObj && srcOrObj.crop && toPositiveNumber(srcOrObj.crop.aspect, null)) || null;
+        if (desiredAspect && !cropAspect) {
+          // applyImageDisplay limpia aspect-ratio; si la imagen no provee crop.aspect, restauramos el deseado.
+          frame.style.aspectRatio = String(desiredAspect);
+        }
+      };
       applyImageDisplay(frame, img, srcOrObj);
-      img.addEventListener('load', () => applyImageDisplay(frame, img, srcOrObj), { once: true });
+      reapplyDesiredAspectIfNeeded();
+      img.addEventListener('load', () => { applyImageDisplay(frame, img, srcOrObj); reapplyDesiredAspectIfNeeded(); }, { once: true });
     } catch (_) {}
 
     attachLightbox(frame, full);

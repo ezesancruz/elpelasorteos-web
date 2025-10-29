@@ -362,9 +362,13 @@ main {
 /* Slider dv2 para detalleVisual cuando está activado */
 .dv2-slider {
   display: flex;
-  gap: 0;
+  gap: clamp(0.5rem, 3vw, 1rem);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  padding-inline: clamp(0.5rem, 3vw, 1rem);
+  scroll-padding-left: clamp(0.5rem, 3vw, 1rem);
+  scroll-padding-right: clamp(0.5rem, 3vw, 1rem);
+  -webkit-overflow-scrolling: touch; /* Suaviza scroll en iOS */
   -ms-overflow-style: none; /* IE/Edge oculta scrollbar */
   scrollbar-width: none;    /* Firefox oculta scrollbar */
 }
@@ -408,13 +412,20 @@ main {
   align-items: center; /* Alineación vertical centrada entre media y texto */
 }
 
+/* Centrar verticalmente la imagen y el contenido también en el modo base (no slider) */
+.section--detalleVisual .imageHighlight__media { align-self: center; }
+.section--detalleVisual .imageHighlight__body { justify-content: center; }
+/* Evitar desbordes horizontales de las columnas en pantallas estrechas */
+.section--detalleVisual .imageHighlight__media,
+.section--detalleVisual .imageHighlight__body { min-width: 0; }
+
 
   .dv2-slide .section--detalleVisual { align-items: center; }
   .dv2-slide .imageHighlight__media, .dv2-slide .imageHighlight__body { align-self: center; }
   .section--detalleVisual.is-single {
     grid-template-columns: 1fr; /* Una sola columna cuando no hay descripción */
   }
-  /* Forzar misma fila para evitar disposición en diagonal al invertir */
+  /* Forzar misma fila en desktop/tablet para evitar diagonal al invertir */
   .section--detalleVisual .imageHighlight__media,
   .section--detalleVisual .imageHighlight__body { grid-row: 1; }
   .section--detalleVisual .imageHighlight__media { grid-column: 1; }
@@ -423,9 +434,32 @@ main {
   .section--detalleVisual.is-reverse .imageHighlight__body { grid-column: 1; }
 }
 
+/* En móvil, apilar: imagen arriba, texto abajo (1 columna) */
+@media (max-width: 767px) {
+  .section--detalleVisual { grid-template-columns: 1fr; }
+  .section--detalleVisual .imageHighlight__media,
+  .section--detalleVisual .imageHighlight__body {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .section--detalleVisual .imageHighlight__media { grid-row: 1; }
+  .section--detalleVisual .imageHighlight__body { grid-row: 2; }
+
+  /* En slider, asegurar una sola columna y orden Imagen -> Texto */
+  .dv2-slide .section--detalleVisual { grid-template-columns: 1fr !important; }
+  .dv2-slide .section--detalleVisual .imageHighlight__media,
+  .dv2-slide .section--detalleVisual .imageHighlight__body { grid-column: 1; }
+  .dv2-slide .section--detalleVisual .imageHighlight__media { grid-row: 1; }
+  .dv2-slide .section--detalleVisual .imageHighlight__body { grid-row: 2; }
+
+  /* Ratio más amable en móvil para que la imagen no se vea "angosta y alta" */
+  .section--detalleVisual .imageHighlight__media [data-img-frame],
+  .dv2-slide .imageHighlight__media [data-img-frame] { aspect-ratio: 3 / 2; }
+}
+
 .imageHighlight__media [data-img-frame] {
   width: 100%;
-  aspect-ratio: 5 / 6; /* Portada – 5:6 cover */
+  aspect-ratio: 5 / 6; /* Portada - 5:6 cover (desktop/tablet) */
   border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.12);
 }
@@ -1548,3 +1582,24 @@ input:checked + .slider:before {
 
 
 
+/* Override fuerte para móvil/tablet chico: 1 columna imagen->texto */
+@media (max-width: 1023px) {
+  .section--detalleVisual { grid-template-columns: 1fr !important; }
+  .section--detalleVisual .imageHighlight__media,
+  .section--detalleVisual .imageHighlight__body {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  .section--detalleVisual .imageHighlight__media { grid-row: 1 !important; }
+  .section--detalleVisual .imageHighlight__body { grid-row: 2 !important; }
+
+  /* Dentro de slides también apilar */
+  .dv2-slide .section--detalleVisual { grid-template-columns: 1fr !important; }
+  .dv2-slide .section--detalleVisual .imageHighlight__media,
+  .dv2-slide .section--detalleVisual .imageHighlight__body {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  .dv2-slide .section--detalleVisual .imageHighlight__media { grid-row: 1 !important; }
+  .dv2-slide .section--detalleVisual .imageHighlight__body { grid-row: 2 !important; }
+}
