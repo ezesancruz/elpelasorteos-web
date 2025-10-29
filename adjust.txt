@@ -117,3 +117,6 @@ Botones e íconos alineaditos.
 “editar” perfectamente centrado.
 
 Si querés, te armo el bloque completo de tu Hero con estas clases para pegar y probar.
+
+
+

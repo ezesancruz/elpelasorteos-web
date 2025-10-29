@@ -1079,6 +1079,13 @@ function renderVideoHighlightSection(section) {
   const container = baseSection('detalleVisual');
   const media = document.createElement('div');
   media.className = 'imageHighlight__media';
+  const showTitle = section.data?.showTitle !== false;
+  const showDescription = section.data?.showDescription !== false;
+  let headingEl = null;
+  if (showTitle && section.data?.title) {
+    headingEl = document.createElement('h3');
+    headingEl.innerHTML = section.data.title;
+  }
 
   const videoData = section.data?.video;
   const posterData = section.data?.poster;
@@ -1192,24 +1199,34 @@ function renderVideoHighlightSection(section) {
     frame.addEventListener('touchstart', toggle, { passive: true });
 
     frame.appendChild(videoEl);
+    // Si la descripción está OFF y el título ON, el título va arriba del video
+    if (headingEl && !showDescription) {
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'imageHighlight__body';
+      titleWrap.appendChild(headingEl);
+      media.appendChild(titleWrap);
+      // headingEl ya fue usado; evitamos volver a agregarlo en el body
+      headingEl = null;
+    }
     media.appendChild(frame);
   }
 
   const body = document.createElement('div');
   body.className = 'imageHighlight__body';
-  if (section.data?.title) {
-    const heading = document.createElement('h3');
-    heading.innerHTML = section.data.title;
-    body.appendChild(heading);
+  if (headingEl) {
+    body.appendChild(headingEl);
   }
-  if (section.data?.body) {
+  if (showDescription && section.data?.body) {
     const paragraph = document.createElement('p');
     paragraph.innerHTML = section.data.body;
     body.appendChild(paragraph);
   }
 
   container.appendChild(media);
-  container.appendChild(body);
+  // Solo agregamos el cuerpo si tiene contenido (título o descripción visibles)
+  if (body.children.length > 0) {
+    container.appendChild(body);
+  }
   return container;
 }
 

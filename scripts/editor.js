@@ -647,6 +647,29 @@ const sectionEditors = {
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
 
+    // Controles de visibilidad para Titulo y Descripcion (estilo "Formato del area")
+    const titleVisibility = (section.data?.showTitle === false) ? 'off' : 'on';
+    wrapper.appendChild(createRadioGroup(
+      'Mostrar título',
+      [
+        { value: 'on', label: 'ON' },
+        { value: 'off', label: 'OFF' }
+      ],
+      titleVisibility,
+      value => updateSection(index, s => { s.data.showTitle = (value === 'on'); })
+    ));
+
+    const descVisibility = (section.data?.showDescription === false) ? 'off' : 'on';
+    wrapper.appendChild(createRadioGroup(
+      'Mostrar descripción',
+      [
+        { value: 'on', label: 'ON' },
+        { value: 'off', label: 'OFF' }
+      ],
+      descVisibility,
+      value => updateSection(index, s => { s.data.showDescription = (value === 'on'); })
+    ));
+
     // Selector de formato del area (1:1, 3:4, 9:16, Auto)
     const aspectOptions = [
       { value: '1:1', label: '1:1' },
@@ -704,23 +727,6 @@ const sectionEditors = {
     videoUploadControls.appendChild(videoFileInput);
     videoUploadControls.appendChild(pickVideoBtn);
     wrapper.appendChild(videoUploadControls);
-
-    // Poster con recorte 3:4; su crop se replica al video
-    const posterPath = ['pages', pageIndex, 'sections', index, 'data', 'poster'];
-    wrapper.appendChild(createImageField(
-      'Poster (recorte 3:4)',
-      section.data?.poster || '',
-      posterPath,
-      value => updateSection(index, s => {
-        s.data.poster = value;
-        const posterObj = typeof s.data.poster === 'object' ? s.data.poster : { src: s.data.poster };
-        if (!s.data.video || typeof s.data.video !== 'object') s.data.video = { src: '' };
-        if (posterObj && posterObj.crop) {
-          s.data.video.crop = { ...posterObj.crop };
-        }
-      }),
-      { aspect: 3 / 4 }
-    ));
 
     return wrapper;
   },
@@ -842,7 +848,7 @@ const defaultSections = {
   detalleVisualVideo: {
     id: 'detalleVisualVideo-new',
     type: 'detalleVisualVideo',
-    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, poster: { src: '' }, aspectMode: '3:4' }
+    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, aspectMode: '3:4', showTitle: true, showDescription: true }
   },
   botonAccion: {
     id: 'botonAccion-new',
