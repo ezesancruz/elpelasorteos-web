@@ -1782,6 +1782,7 @@ async function saveContent() {
     const response = await fetch('/api/content', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(editorState.site, null, 2)
     });
     if (!response.ok) throw new Error(`Status ${response.status}`);
