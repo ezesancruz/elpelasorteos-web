@@ -641,6 +641,77 @@ const sectionEditors = {
     ));
     return wrapper;
   },
+  detalleVisualVideo(section, index) {
+    const wrapper = document.createElement('div');
+    const pageIndex = currentPageIndex();
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
+
+    // Asegurar estructura del objeto de video
+    updateSection(index, s => {
+      if (!s.data) s.data = {};
+      if (!s.data.video || typeof s.data.video !== 'object') s.data.video = { src: '' };
+    });
+
+    // Campo URL del video
+    const videoUrlLabel = createInput('Video (URL)', section.data?.video?.src || section.data?.video || '', value => updateSection(index, s => {
+      if (!s.data.video || typeof s.data.video !== 'object') s.data.video = { src: '' };
+      s.data.video.src = value;
+    }));
+    wrapper.appendChild(videoUrlLabel);
+
+    // Subida de archivo de video
+    const videoUploadControls = document.createElement('div');
+    videoUploadControls.className = 'editor-video-controls';
+    const videoFileInput = document.createElement('input');
+    videoFileInput.type = 'file';
+    videoFileInput.accept = 'video/*';
+    videoFileInput.style.display = 'none';
+    const pickVideoBtn = document.createElement('button');
+    pickVideoBtn.type = 'button';
+    pickVideoBtn.textContent = 'Archivo video';
+    pickVideoBtn.addEventListener('click', () => videoFileInput.click());
+    videoFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const uploaded = await uploadVideo(file);
+        updateSection(index, s => {
+          if (!s.data.video || typeof s.data.video !== 'object') s.data.video = { src: '' };
+          s.data.video.src = uploaded.url;
+        });
+        const inputEl = videoUrlLabel.querySelector('input');
+        if (inputEl) inputEl.value = uploaded.url;
+      } catch (err) {
+        console.error('uploadVideo', err);
+        alert('No se pudo subir el video');
+      } finally {
+        e.target.value = '';
+      }
+    });
+    videoUploadControls.appendChild(videoFileInput);
+    videoUploadControls.appendChild(pickVideoBtn);
+    wrapper.appendChild(videoUploadControls);
+
+    // Poster con recorte 3:4; su crop se replica al video
+    const posterPath = ['pages', pageIndex, 'sections', index, 'data', 'poster'];
+    wrapper.appendChild(createImageField(
+      'Poster (recorte 3:4)',
+      section.data?.poster || '',
+      posterPath,
+      value => updateSection(index, s => {
+        s.data.poster = value;
+        const posterObj = typeof s.data.poster === 'object' ? s.data.poster : { src: s.data.poster };
+        if (!s.data.video || typeof s.data.video !== 'object') s.data.video = { src: '' };
+        if (posterObj && posterObj.crop) {
+          s.data.video.crop = { ...posterObj.crop };
+        }
+      }),
+      { aspect: 3 / 4 }
+    ));
+
+    return wrapper;
+  },
   botonAccion(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
@@ -756,6 +827,11 @@ const defaultSections = {
     type: 'detalleVisual',
     data: { title: 'Destacado', body: 'Descripcion', image: '' }
   },
+  detalleVisualVideo: {
+    id: 'detalleVisualVideo-new',
+    type: 'detalleVisualVideo',
+    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, poster: { src: '' } }
+  },
   botonAccion: {
     id: 'botonAccion-new',
     type: 'botonAccion',
@@ -790,6 +866,7 @@ const sectionAliases = {
   galeriaImagenes: 'Tarjeta galería de imágenes',
   carruselImagenes: 'Tarjeta carrusel de imágenes',
   detalleVisual: 'Tarjeta detalle visual',
+  detalleVisualVideo: 'Tarjeta detalle visual (video)',
   botonAccion: 'Tarjeta tienda',
   tarjetaValidacion: 'Tarjeta validacion',
   muroGanadores: 'Tarjeta muro de ganadores',

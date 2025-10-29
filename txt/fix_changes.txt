@@ -1,0 +1,42 @@
+Resumen de incidencia y solución (guardar cambios en Modo desarrollador)
+
+Contexto y planteo del usuario
+- Problema: al guardar desde el Modo desarrollador, los cambios no persistían en producción.
+- Duda: si Docker (contenedores/volúmenes) podía estar afectando el guardado.
+
+Hallazgos (detecciones técnicas)
+1) Frontend (editor):
+   - En `scripts/editor.js`, la función `saveContent()` hacía `PUT /api/content` sin `credentials: 'include'`.
+   - El login sí enviaba credenciales y establecía cookie (`admin_session`), pero el guardado no las enviaba, causando 401/errores cuando el backend exigía autenticación.
+   - Cambio aplicado: agregar `credentials: 'include'` al `fetch` de `saveContent()`.
+
+2) Backend/servidor (Docker y permisos):
+   - Los logs (info.txt, desde la línea 90) muestran repetidos: `EACCES: permission denied, open '/app/data/site-content.json'` en `PUT /api/content`.
+   - Causa raíz: el contenedor monta `./data:/app/data` (bind mount), pero el proceso dentro del contenedor corría con un usuario distinto al dueño de `./data` en el host. Resultado: el backend no tenía permisos de escritura sobre `site-content.json`.
+   - Confirmación en logs: `errno: -13, code: 'EACCES'`.
+   - Nota adicional: aparece un warning de express-rate-limit por `X-Forwarded-For` (no crítico para el guardado).
+
+Acciones realizadas
+1) Arreglo mínimo en el editor:
+   - Archivo: `scripts/editor.js`
+   - Cambio: `credentials: 'include'` en `fetch('/api/content', { ... })` dentro de `saveContent()`.
+
+2) Ajuste de Docker Compose para permisos de escritura en `./data`:
+   - Archivo: `docker-compose.yml`
+   - Servicio: `web`
+   - Se agregó: `user: "1000:1000"` (UID:GID del host `bitnami`, obtenido con `stat -c '%u:%g' ./data` → `1000:1000`).
+   - Objetivo: que el proceso dentro del contenedor tenga el mismo UID/GID que el dueño de `./data` en el host y pueda escribir `site-content.json`.
+
+Resultados y verificación
+- Tras agregar `credentials: 'include'`, el request de guardado incluye la cookie `admin_session`.
+- Tras fijar `user: "1000:1000"` y recrear el servicio (`docker compose up -d --force-recreate`), desaparece el error `EACCES` y el guardado funciona correctamente.
+- Confirmación del usuario: “lo último funcionó muy bien. ahora sí guarda”.
+
+Notas complementarias
+- Imágenes y persistencia: se actualizó `.gitignore` para dejar de ignorar `server/public/uploads/` y permitir versionar esas imágenes si fuese necesario.
+- Warning `X-Forwarded-For`: recomendable configurar `app.set('trust proxy', 1)` en Express cuando se opera detrás de Caddy, aunque esto no afectó el guardado.
+
+Estado final
+- Guardado desde Modo desarrollador funcionando en producción.
+- Causas resueltas: autenticación del fetch y permisos de escritura del bind mount `./data` dentro del contenedor.
+

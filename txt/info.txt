@@ -1,0 +1,200 @@
+Image49774305-dd3c-4fed-963f-6b465e6fb014_imagen_de_2whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp	200	webp	Other	379 kB	924 ms
+login	200	fetch	app.js:263	0.4 kB	167 ms
+login	200	fetch	app.js:263	0.3 kB	167 ms
+check	200	fetch	app.js:212	0.1 kB	170 ms
+
+check	200	fetch	app.js:212	0.1 kB	166 ms
+Imagedata:image/webp;bas…	200	webp	Other	(memory cache)	0 ms
+Imagedata:image/webp;bas…	200	webp	Other	(memory cache)	0 ms
+Image6fd8b953-a39d-4113-9de9-67d8763e4881_4d40e28d5c5a6419fd22581437b4d868_upscayl_2x_ultrasharp-4x.webp	200	text/html	editor.js:1375	2.9 kB	179 ms
+Image6fd8b953-a39d-4113-9de9-67d8763e4881_4d40e28d5c5a6419fd22581437b4d868_upscayl_2x_ultrasharp-4x.webp	200	text/html	editor.js:1375	2.9 kB	171 ms
+upload	200	fetch	editor.js:99	0.3 kB	2.12 s
+Image1f7818cb-a93b-4e86-ba04-6dc9cb990c66_4d40e28d5c5a6419fd22581437b4d868_upscayl_2x_ultrasharp-4x.webp	200	webp	Other	518 kB	616 ms
+Image1f7818cb-a93b-4e86-ba04-6dc9cb990c66_4d40e28d5c5a6…2581437b4d868_upscayl_2x_ultrasharp-4x-thumb.webp	200	webp	Other	141 kB	379 ms
+Image49774305-dd3c-4fed-963f-6b465e6fb014_imagen_de_2whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp	200	webp	app.js:477	379 kB	614 ms
+Image1f7818cb-a93b-4e86-ba04-6dc9cb990c66_4d40e28d5c5a6419fd22581437b4d868_upscayl_2x_ultrasharp-4x.webp	200	webp	Other	518 kB	1.05 s
+Image1f7818cb-a93b-4e86-ba04-6dc9cb990c66_4d40e28d5c5a6419fd22581437b4d868_upscayl_2x_ultrasharp-4x.webp	200	webp	app.js:477	518 kB	1.09 s
+Image49774305-dd3c-4fed-963f-6b465e6fb014_imagen_de_2whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp	200	webp	app.js:477	379 kB	1.31 s
+content	500	fetch	editor.js:1782	0.1 kB	338 ms
+
+Request URL
+https://www.elpelasorteos.shop/api/content
+Request Method
+PUT
+Status Code
+500 Internal Server Error
+Remote Address
+100.28.41.200:443
+Referrer Policy
+strict-origin-when-cross-origin
+alt-svc
+h3=":443"; ma=2592000
+content-length
+43
+content-type
+application/json; charset=utf-8
+date
+Wed, 29 Oct 2025 01:08:53 GMT
+etag
+W/"2b-cBYa8CrWjjyCAyfyIAM988Yp2Zo"
+via
+1.1 Caddy
+x-powered-by
+Express
+:authority
+www.elpelasorteos.shop
+:method
+PUT
+:path
+/api/content
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+es-419,es;q=0.9
+cache-control
+no-cache
+content-length
+681086
+content-type
+application/json
+cookie
+_ga=GA1.1.560506546.1761445241; _ga_XXXXXXXXXX=GS2.1.s1761698943$o21$g1$t1761699957$j59$l0$h0; admin_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiZWxwZWxhZmxvdyIsImlhdCI6MTc2MTcwMDA4NSwiZXhwIjoxNzYxNzQzMjg1fQ.nYUCHyj5LLfvJ2Cwofeg9FmHvzohERzC_IJgj3IdDnI
+origin
+https://www.elpelasorteos.shop
+pragma
+no-cache
+priority
+u=1, i
+referer
+https://www.elpelasorteos.shop/
+sec-ch-ua
+"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"
+sec-ch-ua-mobile
+?1
+sec-ch-ua-platform
+"Android"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+user-agent
+Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36
+
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ docker compose logs -f web
+web-1  | 
+web-1  | > sorteo-web@1.0.0 start
+web-1  | > node server/editor-server.js
+web-1  | 
+web-1  | [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+web-1  | Server unico en http://localhost:8080
+web-1  | ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+web-1  |     at Object.xForwardedForHeader (/app/node_modules/express-rate-limit/dist/index.cjs:366:13)
+web-1  |     at wrappedValidations.<computed> [as xForwardedForHeader] (/app/node_modules/express-rate-limit/dist/index.cjs:638:22)
+web-1  |     at Object.keyGenerator (/app/node_modules/express-rate-limit/dist/index.cjs:740:20)
+web-1  |     at /app/node_modules/express-rate-limit/dist/index.cjs:801:32
+web-1  |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+web-1  |     at async /app/node_modules/express-rate-limit/dist/index.cjs:782:5 {
+web-1  |   code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+web-1  |   help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+web-1  | }
+web-1  | PUT /api/content Error: EACCES: permission denied, open '/app/data/site-content.json'
+web-1  |     at Object.writeFileSync (node:fs:2368:20)
+web-1  |     at /app/server/editor-server.js:153:8
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at requireAdmin (/app/server/editor-server.js:62:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at Route.dispatch (/app/node_modules/express/lib/router/route.js:119:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at /app/node_modules/express/lib/router/index.js:284:15 {
+web-1  |   errno: -13,
+web-1  |   code: 'EACCES',
+web-1  |   syscall: 'open',
+web-1  |   path: '/app/data/site-content.json'
+web-1  | }
+web-1  | PUT /api/content Error: EACCES: permission denied, open '/app/data/site-content.json'
+web-1  |     at Object.writeFileSync (node:fs:2368:20)
+web-1  |     at /app/server/editor-server.js:153:8
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at requireAdmin (/app/server/editor-server.js:62:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at Route.dispatch (/app/node_modules/express/lib/router/route.js:119:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at /app/node_modules/express/lib/router/index.js:284:15 {
+web-1  |   errno: -13,
+web-1  |   code: 'EACCES',
+web-1  |   syscall: 'open',
+web-1  |   path: '/app/data/site-content.json'
+web-1  | }
+web-1  | PUT /api/content Error: EACCES: permission denied, open '/app/data/site-content.json'
+web-1  |     at Object.writeFileSync (node:fs:2368:20)
+web-1  |     at /app/server/editor-server.js:153:8
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at requireAdmin (/app/server/editor-server.js:62:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at next (/app/node_modules/express/lib/router/route.js:149:13)
+web-1  |     at Route.dispatch (/app/node_modules/express/lib/router/route.js:119:3)
+web-1  |     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+web-1  |     at /app/node_modules/express/lib/router/index.js:284:15 {
+web-1  |   errno: -13,
+web-1  |   code: 'EACCES',
+web-1  |   syscall: 'open',
+web-1  |   path: '/app/data/site-content.json'
+web-1  | }
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ ls -l ./data 
+total 672
+drwxr-xr-x 2 bitnami bitnami   4096 Oct 27 21:33 logs
+-rw-r--r-- 1 bitnami bitnami 681086 Oct 28 21:47 site-content.json
+bitnami@ip-172-26-1-205:~/sorteo-web/web$
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ sudo docker compose ps
+NAME        IMAGE     COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+caddy       caddy:2   "caddy run --config …"   caddy     15 minutes ago   Up 15 minutes             0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+web-web-1   web-web   "docker-entrypoint.s…"   web       15 minutes ago   Up 15 minutes (healthy)   8080/tcp
+bitnami@ip-172-26-1-205:~/sorteo-web/web$
+
+########################################################################################################################################
+########################################################################################################################################
+
+  - Error exacto: EACCES: permission denied, open '/app/data/site-content.json' en múltiples intentos del PUT /api/content. Esto es un fallo de permisos al escribir el archivo dentro del contenedor.                   
+  - Contexto Docker:                                                                                                                                                                                                     
+      - Estás corriendo con Docker Compose; el servicio web monta ./data:/app/data. Si el contenedor corre como appuser (no root), y en el host ./data no es escribible por ese UID/GID, aparece EACCES.                 
+      - El ls -l ./data en el host muestra bitnami bitnami con permisos -rw-r--r-- (644) para site-content.json. Eso da escritura solo al dueño (bitnami). Dentro del contenedor, el usuario es distinto, por eso no     
+        puede escribir.
+                                                                                                                                                                                                                         
+  Además, aparece un warning de express-rate-limit por X-Forwarded-For (no crítico para guardar, pero recomendable configurar trust proxy).                                                                              
+                                                                                                                                                                                                                         
+  Conclusión                                                                                                                                                                                                             
+                                                                                                                                                                                                                         
+  - Sí, el problema al guardar es por Docker y permisos del bind mount de ./data. El contenedor no tiene permisos de escritura sobre site-content.json.                                                                  
+                                                                                                                                                                                                                         
+  Opciones para solucionarlo                                                                                                                                                                                             
+                                                                                                                                                                                                                         
+  - Cambiar permisos en el host: dar escritura al grupo/otros o al UID que usa el contenedor.                                                                                                                            
+      - Ejemplo: chmod 664 ./data/site-content.json y chmod 775 ./data o chown -R <uid_del_contenedor>:<gid> ./data.                                                                                                     
+  - Ejecutar el contenedor con un UID/GID que coincida con el dueño de ./data:                                                                                                                                           
+      - En docker-compose.yml agrega user: "1000:1000" (o el UID/GID de bitnami en tu host).                                                                                                                             
+  - Usar un volumen nombrado para data en lugar de bind mount (pierdes edición directa del JSON en el host, pero el contenedor escribe sin problemas).                                                                   
+                                                                                                                                                                                                                         
+  El warning de rate limit                                                                                                                                                                                               
+                                                                                                                                                                                                                         
+  - Configurar app.set('trust proxy', 1) en Express para estar detrás de Caddy; así se elimina el warning y se calculan bien los límites por IP. Esto no afecta el problema de guardado, pero es recomendable.
+########################################################################################################################################
+########################################################################################################################################
+
+
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ ls -ld ./data
+drwxr-xr-x 3 bitnami bitnami 4096 Oct 28 21:47 ./data
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ stat -c '%u:%g' ./data
+1000:1000
+bitnami@ip-172-26-1-205:~/sorteo-web/web$ 

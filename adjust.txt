@@ -1,0 +1,119 @@
+(1) el fondo se “corta” y abajo queda negro en tu celu, (2) foto de perfil mal ubicada, y (3) alineación de botones/íconos + texto de “editar” descentrado.
+Voy directo a las correcciones prácticas (Tailwind-friendly).
+
+1) Fondo que aparece “arriba” y luego queda negro en móvil
+
+Causa típica: background-attachment: fixed (parallax) en iOS/Android rompe el render; también 100vh puede fallar.
+Solución:
+
+Evitá bg-fixed en mobile. Úsalo solo desde md: para arriba.
+
+Usá bg-cover bg-center bg-no-repeat y altura dinámica: min-h-dvh (o min-h-screen como fallback).
+
+<!-- Wrapper de página -->
+<body class="min-h-dvh md:min-h-screen bg-black">
+  <div class="min-h-dvh md:min-h-screen 
+              bg-[url('/ruta/fondo.jpg')] bg-cover bg-center bg-no-repeat 
+              md:bg-fixed">
+    <!-- contenido -->
+  </div>
+</body>
+
+
+Si querés un color de respaldo por si tarda en cargar la imagen: dejá bg-black en <body> y/o bg-neutral-900 en el wrapper.
+
+2) Foto de perfil (sticker) pegada al borde y desalineada
+
+Poné la tarjeta en relative y el sticker en absolute con márgenes internos, no 0. Además dale un z-10 y sombra para que no tape botones.
+
+<div class="relative rounded-3xl p-4 md:p-6 bg-[rgba(0,0,0,.35)]">
+  <!-- ...contenido... -->
+
+  <!-- Sticker / foto perfil -->
+  <img src="/img/sticker.png" alt="Perfil"
+       class="absolute right-4 bottom-4 h-16 w-16 rounded-full shadow-lg z-10">
+</div>
+
+
+Si en algún breakpoint te pisa el botón, usá sm:right-4 sm:bottom-4 md:right-6 md:bottom-6 o movelo arriba con md:bottom-auto md:top-4.
+
+3) Botones e íconos desalineados y “editar” descentrado
+a) Contenedor de botones + redes
+
+Usá una sola fila flex con items-center y gap consistente. Evitá márgenes “a ojo”.
+
+<div class="mt-4 flex flex-wrap items-center gap-3">
+  <a class="inline-flex items-center justify-center rounded-full px-5 py-3 
+            font-semibold bg-amber-400 text-black shadow-md hover:opacity-90">
+    ¡Conseguí tu primer chance! 🍀
+  </a>
+
+  <a class="inline-flex items-center justify-center rounded-full px-5 py-3 
+            font-semibold bg-white/10 text-white hover:bg-white/20">
+    ¡Botón sorpresa! 😜
+  </a>
+
+  <!-- Redes (mantenelas en el mismo flex) -->
+  <div class="ml-auto flex items-center gap-4 text-white/90">
+    <a aria-label="TikTok" class="text-2xl">…</a>
+    <a aria-label="Instagram" class="text-2xl">…</a>
+    <a aria-label="Facebook" class="text-2xl">…</a>
+  </div>
+</div>
+
+
+ml-auto empuja las redes a la derecha en pantallas donde entra todo. Si en móviles querés apilarlos, usá sm:flex-col sm:items-stretch o parte en dos filas.
+
+b) Texto del botón “editar” centrado
+
+El descentrado suele ser line-height ≠ alto. Forzalo a flex:
+
+<button class="fixed right-4 bottom-4 h-12 w-12 rounded-full bg-amber-400 
+               shadow-lg z-20 flex items-center justify-center 
+               leading-none">
+  <span class="text-black font-bold text-sm">editar</span>
+</button>
+
+
+flex items-center justify-center centra vertical y horizontal.
+
+leading-none evita que la línea agregue “aire” arriba/abajo.
+
+Si usás un icono + texto, ponelos en flex gap-1 dentro del botón.
+
+4) Imagen del banner (dentro de la tarjeta)
+
+Para que no “salte” ni desborde bordes redondeados:
+
+<div class="overflow-hidden rounded-2xl">
+  <img src="/img/banner.jpg" alt="Honda Wave"
+       class="w-full h-44 sm:h-56 object-cover">
+</div>
+
+5) Checklist rápido (evita sorpresas en móvil real)
+
+meta viewport: width=device-width, initial-scale=1, viewport-fit=cover
+
+Evitar bg-fixed en mobile → usar md:bg-fixed
+
+Usar min-h-dvh para alturas a pantalla completa
+
+Contenedores relative si vas a posicionar algo absolute
+
+Centrados con flex + items-center justify-center
+
+No mezclar márgenes absolutos distintos por lado; preferí gap
+
+Revisar que ningún botón tenga line-height raro (usar leading-none)
+
+Con estos ajustes vas a ver:
+
+Fondo ocupando toda la altura en tu celu (sin “corte” arriba/negro abajo).
+
+Sticker/foto bien “respirada” respecto a los bordes.
+
+Botones e íconos alineaditos.
+
+“editar” perfectamente centrado.
+
+Si querés, te armo el bloque completo de tu Hero con estas clases para pegar y probar.

@@ -799,6 +799,7 @@ const sectionRenderers = {
   galeriaImagenes: renderImageGridSection,
   carruselImagenes: renderImageCarouselSection,
   detalleVisual: renderImageHighlightSection,
+  detalleVisualVideo: renderVideoHighlightSection,
   imageHighlight: renderImageHighlightSection,
   botonAccion: renderCTASection,
   tarjetaValidacion: renderValidationCardSection,
@@ -1070,6 +1071,110 @@ function renderCTASection(section) {
     button.rel = 'noopener';
     container.appendChild(button);
   }
+  return container;
+}
+
+function renderVideoHighlightSection(section) {
+  // Usamos el mismo layout visual que detalleVisual
+  const container = baseSection('detalleVisual');
+  const media = document.createElement('div');
+  media.className = 'imageHighlight__media';
+
+  const videoData = section.data?.video;
+  const posterData = section.data?.poster;
+  if (videoData) {
+    const videoObj = (typeof videoData === 'object' && videoData) ? videoData : { src: String(videoData) };
+    const frame = document.createElement('div');
+    // Reutilizamos estilos de imágenes para bordes redondeados
+    frame.setAttribute('data-img-frame', '');
+    frame.style.aspectRatio = String(3 / 4);
+
+    const videoEl = document.createElement('video');
+    videoEl.src = resolveImageSrc(videoObj) || '';
+    videoEl.controls = false;
+    videoEl.preload = 'metadata';
+    videoEl.muted = true;
+    videoEl.loop = true;
+    videoEl.autoplay = true;
+    // iOS y móviles
+    videoEl.setAttribute('playsinline', '');
+    videoEl.setAttribute('webkit-playsinline', '');
+    videoEl.style.width = '100%';
+    videoEl.style.height = '100%';
+    videoEl.style.display = 'block';
+    videoEl.style.objectFit = 'cover';
+
+    // Usar poster si existe
+    try {
+      const posterObj = (typeof posterData === 'object' && posterData) ? posterData : (posterData ? { src: posterData } : null);
+      if (posterObj) {
+        const posterSrc = resolveImageSrc(posterObj, true);
+        if (posterSrc) videoEl.poster = posterSrc;
+        // Si el video no tiene crop, heredar del poster
+        if (!videoObj.crop && posterObj.crop) {
+          videoObj.crop = { ...posterObj.crop };
+        }
+      }
+    } catch (_) {}
+
+    try {
+      // Reutiliza la lógica de recorte/posicionamiento
+      applyImageDisplay(frame, videoEl, videoObj);
+      // Reaplicar cuando cargue metadata por dimensiones
+      videoEl.addEventListener('loadedmetadata', () => applyImageDisplay(frame, videoEl, videoObj), { once: true });
+    } catch (_) {}
+
+    // Autoplay defensivo (algunos navegadores requieren intento tras metadata)
+    const tryPlay = () => {
+      const p = videoEl.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {/* ignorar bloqueo de autoplay */});
+      }
+    };
+    videoEl.addEventListener('loadedmetadata', tryPlay, { once: true });
+    // Pausar/Reanudación automática por visibilidad en viewport (≈60%)
+    try {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            tryPlay();
+          } else {
+            videoEl.pause();
+          }
+        });
+      }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+      io.observe(frame);
+    } catch (_) {}
+    // Toggle play/pause al tocar/clickear
+    const toggle = () => {
+      if (videoEl.paused) {
+        tryPlay();
+      } else {
+        videoEl.pause();
+      }
+    };
+    frame.addEventListener('click', toggle);
+    frame.addEventListener('touchstart', toggle, { passive: true });
+
+    frame.appendChild(videoEl);
+    media.appendChild(frame);
+  }
+
+  const body = document.createElement('div');
+  body.className = 'imageHighlight__body';
+  if (section.data?.title) {
+    const heading = document.createElement('h3');
+    heading.innerHTML = section.data.title;
+    body.appendChild(heading);
+  }
+  if (section.data?.body) {
+    const paragraph = document.createElement('p');
+    paragraph.innerHTML = section.data.body;
+    body.appendChild(paragraph);
+  }
+
+  container.appendChild(media);
+  container.appendChild(body);
   return container;
 }
 
