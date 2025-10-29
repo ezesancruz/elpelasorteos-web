@@ -1143,10 +1143,19 @@ function renderVideoHighlightSection(section) {
       applyImageDisplay(frame, videoEl, model);
       // applyImageDisplay limpia aspect-ratio del frame; volvemos a aplicarlo
       applyFrameAspect();
+      // También puede limpiar object-fit; reestablecemos relleno centrado para formatos fijos
+      if (desiredAspect) {
+        videoEl.style.objectFit = 'cover';
+        videoEl.style.objectPosition = 'center center';
+      }
       // Reaplicar cuando cargue metadata por dimensiones
       videoEl.addEventListener('loadedmetadata', () => { 
         applyImageDisplay(frame, videoEl, model);
         applyFrameAspect();
+        if (desiredAspect) {
+          videoEl.style.objectFit = 'cover';
+          videoEl.style.objectPosition = 'center center';
+        }
       }, { once: true });
     } catch (_) {}
 
