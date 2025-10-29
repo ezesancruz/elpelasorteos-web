@@ -62,7 +62,6 @@ Desktop.ini
 # Local data & uploads
 data/site-content.backup.json
 data/*.backup.json
-server/public/uploads/
 !server/public/uploads/.gitkeep
 venv/
 

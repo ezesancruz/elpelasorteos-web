@@ -5,9 +5,9 @@
   },
   "theme": {
     "colors": {
-      "primary": "#fe9200",
+      "primary": "#ffbb00",
       "accent": "#fe9200",
-      "text": "#ffffff",
+      "text": "#fe9200",
       "muted": "#111111"
     },
     "fonts": {
