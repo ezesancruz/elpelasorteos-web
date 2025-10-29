@@ -363,7 +363,18 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.75rem;
-  align-items: center;
+  align-items: center; /* Alineación vertical centrada entre media y texto */
+}
+
+/* Inversión del orden solo en pantallas medianas+ usando CSS Grid */
+@media (min-width: 768px) {
+  .section--detalleVisual {
+    grid-template-columns: 1fr 1fr; /* 2 columnas fijas para control del orden */
+  }
+  .section--detalleVisual .imageHighlight__media { grid-column: 1; }
+  .section--detalleVisual .imageHighlight__body { grid-column: 2; }
+  .section--detalleVisual.is-reverse .imageHighlight__media { grid-column: 2; }
+  .section--detalleVisual.is-reverse .imageHighlight__body { grid-column: 1; }
 }
 
 .imageHighlight__media [data-img-frame] {
@@ -379,9 +390,17 @@ main {
   margin-bottom: 1rem;
 }
 
+.imageHighlight__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centra verticalmente el bloque de texto frente a la imagen */
+}
+
 .imageHighlight__body p {
   line-height: 1.7;
   color: rgba(255,255,255,0.8);
+  text-align: justify;         /* Texto justificado a ambos lados */
+  text-justify: inter-word;    /* Mejora la justificación cuando está soportado */
 }
 
 .section--botonAccion {

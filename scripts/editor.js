@@ -631,6 +631,14 @@ const sectionEditors = {
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
+    // Toggle de inversión de orden (imagen/texto) solo afecta md+
+    wrapper.appendChild(
+      createToggleSwitch(
+        'Invertir orden (imagen/texto)',
+        !!section.data?.reverse,
+        value => updateSection(index, s => { s.data.reverse = !!value; })
+      )
+    );
     const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'image'];
     wrapper.appendChild(createImageField(
       'Imagen',
@@ -646,6 +654,14 @@ const sectionEditors = {
     const pageIndex = currentPageIndex();
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
+    // Toggle de inversión de orden (video/texto) solo afecta md+
+    wrapper.appendChild(
+      createToggleSwitch(
+        'Invertir orden (video/texto)',
+        !!section.data?.reverse,
+        value => updateSection(index, s => { s.data.reverse = !!value; })
+      )
+    );
 
     // Controles de visibilidad para Titulo y Descripcion (estilo "Formato del area")
     const titleVisibility = (section.data?.showTitle === false) ? 'off' : 'on';
@@ -843,12 +859,12 @@ const defaultSections = {
   detalleVisual: {
     id: 'detalleVisual-new',
     type: 'detalleVisual',
-    data: { title: 'Destacado', body: 'Descripcion', image: '' }
+    data: { title: 'Destacado', body: 'Descripcion', image: '', reverse: false }
   },
   detalleVisualVideo: {
     id: 'detalleVisualVideo-new',
     type: 'detalleVisualVideo',
-    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, aspectMode: '3:4', showTitle: true, showDescription: true }
+    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, aspectMode: '3:4', showTitle: true, showDescription: true, reverse: false }
   },
   botonAccion: {
     id: 'botonAccion-new',
