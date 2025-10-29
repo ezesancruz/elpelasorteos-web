@@ -8,6 +8,7 @@ services:
       - PORT=8080
       - EDITOR_ENABLED=false
       - NODE_ENV=production
+    user: "1000:1000" # UID:GID del host (bitnami) para permisos de escritura en ./data
     volumes:
       - ./.env:/app/.env:ro
       - uploads:/app/server/public/uploads
