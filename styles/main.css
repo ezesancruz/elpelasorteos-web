@@ -477,14 +477,20 @@ main {
   text-align: center;
 }
 
-
+.section--botonAccion [data-img-frame] {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1; /* Logos/elementos sensibles - contener */
+  border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.12);
   overflow: hidden;
   margin: 0 auto 1.5rem;
 }
-
+.section--botonAccion [data-img-frame] > img {
+  object-fit: contain;
   border-radius: inherit;
 }
+
 
 .winner-grid {
   display: grid;
@@ -1537,6 +1543,7 @@ input:checked + .slider:before {
 .dv2-slide .section--detalleVisual { align-items: center; }
 .dv2-slide .imageHighlight__media { align-self: center; }
 .dv2-slide .imageHighlight__body { justify-content: center; }
+
 
 
 

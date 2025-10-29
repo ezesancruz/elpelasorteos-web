@@ -1141,8 +1141,13 @@ function renderImageHighlightSection(section) {
 
 function renderCTASection(section) {
   const container = baseSection('botonAccion');
-  if (section.data?.image) {
+    if (section.data?.image) {
     const img = createImg(section.data.image, section.data?.title || 'CTA');
+    try {
+      img.style.aspectRatio = '1';
+      const inner = img.querySelector('img');
+      if (inner) { inner.style.objectFit = 'contain'; inner.style.objectPosition = 'center'; }
+    } catch (_) {}
     container.appendChild(img);
   }
   if (section.data?.title) {
@@ -1526,6 +1531,10 @@ function attachLightbox(frame, full) {
     }
   });
 }
+
+
+
+
 
 
 
