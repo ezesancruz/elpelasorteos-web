@@ -53,6 +53,21 @@ body {
   object-fit: cover;
 }
 
+/* Cuando el fondo se renderiza con createImg (frame + <img>), forzar a cubrir */
+#background-media [data-img-frame] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+#background-media [data-img-frame] > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
 [data-img-frame] {
   position: relative;
   overflow: hidden;
