@@ -1264,7 +1264,8 @@ main {
   }
 
   .hero-body {
-    align-items: flex-start;
+    align-items: center;            /* Centrar contenido en móvil */
+    text-align: center;            /* Texto centrado */
   }
 
   .hero-body--with-profile {
@@ -1273,10 +1274,32 @@ main {
   }
 
   .hero-body--with-profile .hero__profile-wrapper {
-    /* Mobile size */
-    width: 7.5rem;
-    height: 7.5rem; /* Explicit height */
+    /* En móvil, el avatar entra en el flujo y se centra */
+    position: static;
+    margin: 0 auto clamp(0.75rem, 2vw, 1rem);
+    width: 7rem;
+    height: 7rem;
   }
+
+  /* Asegurar centrado y buen flujo del resto de elementos del hero */
+  .hero__title,
+  .hero__subtitle,
+  .hero-body .button-row,
+  .hero-body .social-list {
+    align-self: stretch;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-body .button-row { justify-content: center; flex-wrap: wrap; }
+  .hero-body .social-list { justify-content: center; }
+
+  /* Reordenar en móvil: título → subtítulo → botones → logo → redes */
+  .hero-body .hero__title { order: 1; }
+  .hero-body .hero__subtitle { order: 2; }
+  .hero-body .button-row { order: 3; }
+  .hero-body .hero__profile-wrapper { order: 4; }
+  .hero-body .social-list { order: 5; }
 }
 .social-list {
   display: flex;

@@ -1,0 +1,21 @@
+🧩 Descripción profesional del problema
+
+Contexto:
+En la vista móvil de la tarjeta de presentación (“Hero card” o “Intro card”), los elementos se superponen o se solapan entre sí —especialmente el logo circular y los botones inferiores— mientras que en la versión de escritorio el diseño se muestra correctamente.
+
+Diagnóstico técnico:
+El contenedor principal de la tarjeta tiene una altura fija o un display no adaptativo (por ejemplo, flex o absolute sin flex-wrap ni auto height), lo que impide que el contenido se redistribuya verticalmente en pantallas angostas.
+
+En consecuencia, los elementos de la parte inferior (botones, íconos de redes, logo flotante) no encuentran suficiente espacio vertical y terminan encimándose.
+
+Comportamiento deseado:
+
+En escritorio: mantener la disposición original (alineaciones horizontales, espaciados exactos).
+
+En móvil: cambiar a un layout vertical fluido, donde los elementos se apilen de forma natural (texto → botón → logo → íconos) con márgenes o gap adaptados.
+
+Evitar solapamientos forzando height: auto y usando flex-direction: column o grid con filas dinámicas.
+
+💡 Cómo podrías pedirlo a un desarrollador
+
+“Necesito que la tarjeta de presentación tenga un comportamiento responsive real en móvil: que los elementos inferiores (botones, logo e íconos) no se encimen cuando la pantalla es angosta. En desktop debe mantenerse igual, pero en móvil quiero que se redistribuya el contenido verticalmente con más espacio o en otro orden visual.”e
