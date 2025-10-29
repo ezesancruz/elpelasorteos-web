@@ -1134,8 +1134,16 @@ function renderImageHighlightSection(section) {
     paragraph.innerHTML = section.data.body;
     body.appendChild(paragraph);
   }
-  container.appendChild(media);
-  container.appendChild(body);
+  // Si está activado "invertir" (reverse), en layout de una sola columna
+  // el grid no puede reflejar el cambio de columnas. Cambiamos el orden
+  // de apéndice para que también se vea invertido en móvil.
+  if (section?.data && section.data.reverse) {
+    container.appendChild(body);
+    container.appendChild(media);
+  } else {
+    container.appendChild(media);
+    container.appendChild(body);
+  }
   return container;
 }
 
