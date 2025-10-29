@@ -176,6 +176,23 @@ const upload = multer({
   },
 });
 
+// Uploader para videos (guardar tal cual, sin procesar)
+const videoUpload = multer({
+  storage,
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200 MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      'video/mp4',
+      'video/webm',
+      'video/ogg',
+      'video/quicktime',
+      'application/octet-stream' // algunos navegadores etiquetan así
+    ];
+    const ok = allowed.includes(file.mimetype);
+    cb(ok ? null : new Error('Tipo de video no permitido'), ok);
+  }
+});
+
 // El endpoint de subida ahora requiere ser admin
 app.post('/api/upload', requireAdmin, upload.single('image'), async (req, res) => {
   try {
@@ -214,6 +231,27 @@ app.post('/api/upload', requireAdmin, upload.single('image'), async (req, res) =
   } catch (e) {
     console.error('POST /api/upload', e);
     res.status(500).json({ error: 'No se pudo subir la imagen' });
+  }
+});
+
+// Subida de videos para fondos
+app.post('/api/upload-video', requireAdmin, videoUpload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const uid = randomUUID();
+    const baseName = req.file.originalname
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]/g, '_');
+
+    // Guardamos el archivo tal cual, manteniendo extensión
+    const outPath = path.join(UPLOAD_DIR, `${uid}_${baseName}`);
+    fs.renameSync(req.file.path, outPath);
+
+    return res.json({ url: `/uploads/${path.basename(outPath)}` });
+  } catch (e) {
+    console.error('POST /api/upload-video', e);
+    return res.status(500).json({ error: 'No se pudo subir el video' });
   }
 });
 

@@ -483,6 +483,12 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     if (opts.objectFit) img.style.objectFit = opts.objectFit;
     if (opts.aspect) frame.style.aspectRatio = String(opts.aspect);
 
+    // Aplicar recorte/posicionamiento si el objeto de imagen trae crop
+    try {
+      applyImageDisplay(frame, img, srcOrObj);
+      img.addEventListener('load', () => applyImageDisplay(frame, img, srcOrObj), { once: true });
+    } catch (_) {}
+
     attachLightbox(frame, full);
   }
 

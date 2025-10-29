@@ -108,6 +108,22 @@ async function uploadImage(file) {
   return payload;
 }
 
+// Subida de videos (para fondo de video)
+async function uploadVideo(file) {
+  const fd = new FormData();
+  fd.append('video', file);
+  const res = await fetch('/api/upload-video', {
+    method: 'POST',
+    body: fd
+  });
+  if (!res.ok) throw new Error('No se pudo subir el video');
+  const payload = await res.json();
+  if (!payload || typeof payload.url !== 'string') {
+    throw new Error('Respuesta de subida invalida');
+  }
+  return payload;
+}
+
 function setValueByPath(obj, pathArr, value) {
   if (!Array.isArray(pathArr) || pathArr.length === 0) return;
   let current = obj;
@@ -807,7 +823,41 @@ function renderThemeEditor() {
           // Video background fields
           const videoFields = document.createElement('div');
           videoFields.style.display = (theme.background?.backgroundMode === 'video') ? 'block' : 'none';
-          videoFields.appendChild(createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value)));
+          // Campo URL de video
+          const videoUrlLabel = createInput('Video de fondo (URL)', theme.background?.video || '', value => updateTheme(themeDraft => themeDraft.background.video = value));
+          videoFields.appendChild(videoUrlLabel);
+
+          // Subida de archivo de video
+          const videoUploadControls = document.createElement('div');
+          videoUploadControls.className = 'editor-video-controls';
+          const videoFileInput = document.createElement('input');
+          videoFileInput.type = 'file';
+          videoFileInput.accept = 'video/*';
+          videoFileInput.style.display = 'none';
+          const pickVideoBtn = document.createElement('button');
+          pickVideoBtn.type = 'button';
+          pickVideoBtn.textContent = 'Archivo video';
+          pickVideoBtn.addEventListener('click', () => videoFileInput.click());
+          videoFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            try {
+              const uploaded = await uploadVideo(file);
+              updateTheme(themeDraft => themeDraft.background.video = uploaded.url);
+              // Refrescar el input de texto si existe
+              const inputEl = videoUrlLabel.querySelector('input');
+              if (inputEl) inputEl.value = uploaded.url;
+            } catch (err) {
+              console.error('uploadVideo', err);
+              alert('No se pudo subir el video');
+            } finally {
+              e.target.value = '';
+            }
+          });
+          videoUploadControls.appendChild(videoFileInput);
+          videoUploadControls.appendChild(pickVideoBtn);
+          videoFields.appendChild(videoUploadControls);
+
           const posterPath = ['theme', 'background', 'poster'];
           videoFields.appendChild(createImageField('Poster video', theme.background?.poster || '', posterPath, value => updateTheme(themeDraft => themeDraft.background.poster = value)));
           fieldset.appendChild(videoFields);
