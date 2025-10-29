@@ -629,6 +629,59 @@ const sectionEditors = {
   detalleVisual(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
+    const sliderEnabled = section.data?.slider?.enabled === true;
+    // Toggle maestro: activar/desactivar carrusel
+    wrapper.appendChild(createToggleSwitch('Activar carrusel', sliderEnabled, (value) => {
+      updateSection(index, s => {
+        if (!s.data) s.data = {};
+        if (!s.data.slider) s.data.slider = { enabled: false, items: [] };
+        s.data.slider.enabled = !!value;
+        if (s.data.slider.enabled) {
+          s.data.slider.items = Array.isArray(s.data.slider.items) ? s.data.slider.items : [];
+          if (s.data.slider.items.length === 0) {
+            s.data.slider.items.push({ title: s.data.title || '', body: s.data.body || '', image: s.data.image || '', reverse: !!s.data.reverse });
+          }
+        }
+      }, { rerenderPanel: true });
+    }));
+    if (sliderEnabled) {
+      const list = document.createElement('div');
+      list.className = 'editor-inline-list';
+      const items = (section.data?.slider?.items || []);
+      items.forEach((itemData, itemIndex) => {
+        const item = document.createElement('div');
+        item.className = 'editor-inline-item';
+        const header = document.createElement('div');
+        header.className = 'editor-inline-item__header';
+        header.textContent = `Componente ${itemIndex + 1}`;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = 'Eliminar';
+        remove.addEventListener('click', () => updateSection(index, s => {
+          const arr = (s.data?.slider?.items || []);
+          if (arr.length > 1) arr.splice(itemIndex, 1);
+        }, { rerenderPanel: true }));
+        header.appendChild(remove);
+        item.appendChild(header);
+        item.appendChild(createRichTextInput('Titulo', itemData?.title || '', value => updateSection(index, s => s.data.slider.items[itemIndex].title = value)));
+        item.appendChild(createRichTextInput('Descripcion', itemData?.body || '', value => updateSection(index, s => s.data.slider.items[itemIndex].body = value)));
+        item.appendChild(createToggleSwitch('Invertir', !!itemData?.reverse, value => updateSection(index, s => { s.data.slider.items[itemIndex].reverse = !!value; })));
+        const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'slider', 'items', itemIndex, 'image'];
+        item.appendChild(createImageField('Imagen', itemData?.image || '', imagePath, value => updateSection(index, s => s.data.slider.items[itemIndex].image = value), { aspect: 5 / 6 }));
+        list.appendChild(item);
+      });
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = 'Agregar componente';
+      addBtn.addEventListener('click', () => updateSection(index, s => {
+        if (!s.data.slider) s.data.slider = { enabled: true, items: [] };
+        s.data.slider.items = s.data.slider.items || [];
+        s.data.slider.items.push({ title: 'Nuevo', body: 'Descripcion', image: '', reverse: false });
+      }, { rerenderPanel: true }));
+      wrapper.appendChild(list);
+      wrapper.appendChild(addBtn);
+      return wrapper;
+    }
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
     // Toggle de inversión de orden (imagen/texto) solo afecta md+

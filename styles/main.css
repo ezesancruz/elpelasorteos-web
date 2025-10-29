@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: dark;
   --color-primary: #fe9200;
   --color-accent: #000000;
@@ -359,6 +359,48 @@ main {
   scroll-snap-align: center;
 }
 
+/* Slider dv2 para detalleVisual cuando está activado */
+.dv2-slider {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none; /* IE/Edge oculta scrollbar */
+  scrollbar-width: none;    /* Firefox oculta scrollbar */
+}
+.section--detalleVisualSlider {
+  position: relative;
+}
+
+.dv2-slider::-webkit-scrollbar { display: none; }
+.dv2-slider::-webkit-scrollbar { display: none; }
+.dv2-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+}
+.dv2-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.dv2-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+  border: none;
+  cursor: pointer;
+}
+.dv2-dot[aria-current="true"] {
+  background: var(--color-primary);
+}
+
+/* (rollback) estilos de slider removidos */
+
 .section--detalleVisual {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -366,11 +408,9 @@ main {
   align-items: center; /* Alineación vertical centrada entre media y texto */
 }
 
-/* Inversión del orden solo en pantallas medianas+ usando CSS Grid */
-@media (min-width: 768px) {
-  .section--detalleVisual {
-    grid-template-columns: 1fr 1fr; /* 2 columnas fijas para control del orden */
-  }
+
+  .dv2-slide .section--detalleVisual { align-items: center; }
+  .dv2-slide .imageHighlight__media, .dv2-slide .imageHighlight__body { align-self: center; }
   .section--detalleVisual.is-single {
     grid-template-columns: 1fr; /* Una sola columna cuando no hay descripción */
   }
@@ -389,6 +429,28 @@ main {
   border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.12);
 }
+/* Garantizar esquinas redondeadas también en modo simple (1 componente) */
+.section--detalleVisual .imageHighlight__media [data-img-frame] {
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.section--detalleVisual .imageHighlight__media [data-img-frame] > img {
+  border-radius: inherit;
+}
+
+/* Asegurar bordes redondeados también dentro de slides del carrusel */
+.section--detalleVisualSlider .imageHighlight__media [data-img-frame],
+.dv2-slide [data-img-frame] {
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+
+.dv2-slide [data-img-frame] > img {
+  border-radius: inherit;
+}
+
 
 .imageHighlight__body h3 {
   font-family: var(--font-heading);
@@ -415,15 +477,13 @@ main {
   text-align: center;
 }
 
-.section--botonAccion [data-img-frame] {
-  width: 100%;
-  max-width: 320px;
-  aspect-ratio: 1 / 1; /* Logos/elementos sensibles – contener */
-  border-radius: 18px;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
   margin: 0 auto 1.5rem;
 }
-.section--botonAccion [data-img-frame] > img {
-  object-fit: contain;
+
+  border-radius: inherit;
 }
 
 .winner-grid {
@@ -1469,3 +1529,15 @@ input:checked + .slider:before {
 .page-selector-wrapper .editor-toggle-switch {
   transform: scale(0.8);
 }
+
+
+
+
+/* Alinear contenido de cada slide al centro vertical de la tarjeta */
+.dv2-slide .section--detalleVisual { align-items: center; }
+.dv2-slide .imageHighlight__media { align-self: center; }
+.dv2-slide .imageHighlight__body { justify-content: center; }
+
+
+
+

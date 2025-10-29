@@ -1021,8 +1021,97 @@ function renderImageCarouselSection(section) {
 }
 
 function renderImageHighlightSection(section) {
+  const slider = section?.data?.slider;
+  const sliderEnabled = !!(slider && slider.enabled === true);
+  const sliderItems = Array.isArray(slider?.items) ? slider.items : [];
+
+  // Si el carrusel está activado y hay más de un item, renderizamos como slider
+  if (sliderEnabled && sliderItems.length > 1) {
+    const container = baseSection('detalleVisualSlider');
+    const track = document.createElement('div');
+    track.className = 'dv2-slider';
+
+    const slides = [];
+    sliderItems.forEach((item) => {
+      const data = {
+        title: item?.title || '',
+        body: item?.body || '',
+        image: (typeof item?.image === 'object' && item?.image) ? item.image : (item?.image ? { src: item.image } : null),
+        reverse: !!item?.reverse,
+      };
+      const slide = document.createElement('div');
+      slide.className = 'dv2-slide';
+
+      const layout = document.createElement('div');
+      layout.className = 'section--detalleVisual';
+      if (data.reverse) { layout.classList.add('is-reverse'); }
+
+      const media = document.createElement('div');
+      media.className = 'imageHighlight__media';
+      if (data.image) {
+        const img = createImg(data.image, data.title || 'Destacado', { aspect: 3 / 2, preferThumb: true });
+        media.appendChild(img);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'imageHighlight__body';
+      if (data.title) {
+        const heading = document.createElement('h3');
+        heading.innerHTML = data.title;
+        body.appendChild(heading);
+      }
+      if (data.body) {
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = data.body;
+        body.appendChild(paragraph);
+      }
+
+      layout.appendChild(media);
+      layout.appendChild(body);
+      slide.appendChild(layout);
+      track.appendChild(slide);
+      slides.push(slide);
+    });
+
+    container.appendChild(track);
+
+    // Dots
+    const dots = document.createElement('div');
+    dots.className = 'dv2-dots';
+    const dotEls = sliderItems.map((_, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dv2-dot';
+      btn.setAttribute('aria-label', `Slide ${i + 1}`);
+      btn.addEventListener('click', () => {
+        const target = slides[i];
+        if (!target) return;
+        const left = target.offsetLeft;
+        track.scrollTo({ left, behavior: 'smooth' });
+      });
+      dots.appendChild(btn);
+      return btn;
+    });
+
+    const updateActive = () => {
+      let active = 0;
+      const sl = track.scrollLeft;
+      let best = Infinity;
+      slides.forEach((s, i) => {
+        const d = Math.abs(s.offsetLeft - sl);
+        if (d < best) { best = d; active = i; }
+      });
+      dotEls.forEach((d, i) => d.toggleAttribute('aria-current', i === active));
+    };
+    track.addEventListener('scroll', () => { requestAnimationFrame(updateActive); });
+    setTimeout(updateActive, 0);
+
+    container.appendChild(dots);
+    return container;
+  }
+
+  // Modo actual (sin carrusel o con 0/1 items)
   const container = baseSection('detalleVisual');
-  // Invertir el orden visual en pantallas grandes si data.reverse === true
   if (section?.data && section.data.reverse) {
     try { container.classList.add('is-reverse'); } catch (_) {}
   }
@@ -1437,4 +1526,10 @@ function attachLightbox(frame, full) {
     }
   });
 }
+
+
+
+
+
+
 
