@@ -634,7 +634,7 @@ const sectionEditors = {
     // Toggle de inversión de orden (imagen/texto) solo afecta md+
     wrapper.appendChild(
       createToggleSwitch(
-        'Invertir orden (imagen/texto)',
+        'Invertir',
         !!section.data?.reverse,
         value => updateSection(index, s => { s.data.reverse = !!value; })
       )
@@ -655,13 +655,22 @@ const sectionEditors = {
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
     // Toggle de inversión de orden (video/texto) solo afecta md+
-    wrapper.appendChild(
-      createToggleSwitch(
-        'Invertir orden (video/texto)',
+    {
+      const invertToggle = createToggleSwitch(
+        'Invertir',
         !!section.data?.reverse,
         value => updateSection(index, s => { s.data.reverse = !!value; })
-      )
-    );
+      );
+      if (section.data?.showDescription === false) {
+        const input = invertToggle.querySelector('input');
+        if (input) {
+          input.disabled = true;
+          input.setAttribute('aria-disabled', 'true');
+        }
+        invertToggle.title = 'Invertir deshabilitado: descripción oculta';
+      }
+      wrapper.appendChild(invertToggle);
+    }
 
     // Controles de visibilidad para Titulo y Descripcion (estilo "Formato del area")
     const titleVisibility = (section.data?.showTitle === false) ? 'off' : 'on';
@@ -683,7 +692,7 @@ const sectionEditors = {
         { value: 'off', label: 'OFF' }
       ],
       descVisibility,
-      value => updateSection(index, s => { s.data.showDescription = (value === 'on'); })
+      value => updateSection(index, s => { s.data.showDescription = (value === 'on'); }, { rerenderPanel: true })
     ));
 
     // Selector de formato del area (1:1, 3:4, 9:16, Auto)

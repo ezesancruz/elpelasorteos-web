@@ -1081,14 +1081,17 @@ function renderCTASection(section) {
 function renderVideoHighlightSection(section) {
   // Usamos el mismo layout visual que detalleVisual
   const container = baseSection('detalleVisual');
-  // Invertir el orden visual en pantallas grandes si data.reverse === true
-  if (section?.data && section.data.reverse) {
-    try { container.classList.add('is-reverse'); } catch (_) {}
-  }
   const media = document.createElement('div');
   media.className = 'imageHighlight__media';
   const showTitle = section.data?.showTitle !== false;
   const showDescription = section.data?.showDescription !== false;
+  // Modo single: si no hay descripción, título + video ocupan un solo bloque y se deshabilita inversión
+  if (!showDescription) {
+    try { container.classList.add('is-single'); } catch (_) {}
+  } else if (section?.data && section.data.reverse) {
+    // Invertir solo cuando hay dos bloques (media + body)
+    try { container.classList.add('is-reverse'); } catch (_) {}
+  }
   let headingEl = null;
   if (showTitle && section.data?.title) {
     headingEl = document.createElement('h3');

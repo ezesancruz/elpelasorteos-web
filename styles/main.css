@@ -371,6 +371,12 @@ main {
   .section--detalleVisual {
     grid-template-columns: 1fr 1fr; /* 2 columnas fijas para control del orden */
   }
+  .section--detalleVisual.is-single {
+    grid-template-columns: 1fr; /* Una sola columna cuando no hay descripción */
+  }
+  /* Forzar misma fila para evitar disposición en diagonal al invertir */
+  .section--detalleVisual .imageHighlight__media,
+  .section--detalleVisual .imageHighlight__body { grid-row: 1; }
   .section--detalleVisual .imageHighlight__media { grid-column: 1; }
   .section--detalleVisual .imageHighlight__body { grid-column: 2; }
   .section--detalleVisual.is-reverse .imageHighlight__media { grid-column: 2; }
@@ -388,12 +394,14 @@ main {
   font-family: var(--font-heading);
   font-size: 1.8rem;
   margin-bottom: 1rem;
+  text-align: center; /* Centrar el título sobre el contenido que encabeza */
 }
 
 .imageHighlight__body {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centra verticalmente el bloque de texto frente a la imagen */
+  justify-content: flex-start; /* Título arriba, flujo natural del contenido */
+  align-items: stretch;
 }
 
 .imageHighlight__body p {
