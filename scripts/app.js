@@ -724,7 +724,13 @@ function clamp01(value) {
 
 function renderHero(hero = {}) {
   const section = document.createElement('section');
-  section.className = 'section section--hero';
+  // Resolver efecto desde nuevo selector o bandera anterior (compatibilidad)
+  const effectRaw = (hero && typeof hero.effect === 'string')
+    ? hero.effect
+    : (hero?.effectEnabled ? 'xenon' : 'none');
+  const effect = (effectRaw === 'fire' || effectRaw === 'fireReal') ? 'xenon' : effectRaw;
+  const effectClass = effect === 'xenon' ? ' hero--effect-xenon' : '';
+  section.className = 'section section--hero' + effectClass;
 
   const heroEl = document.createElement('div');
   heroEl.className = 'hero';
@@ -771,13 +777,21 @@ function renderHero(hero = {}) {
     hero.buttons.forEach((btn, index) => {
       const anchor = document.createElement('a');
       anchor.className = `button ${index === 0 ? 'button--primary' : 'button--ghost'}`;
-      anchor.href = btn.href || '#';
-      anchor.textContent = btn.label || 'Ver mas';
-      anchor.addEventListener('click', () => {
-        const label = (btn.label || '').toLowerCase();
-        const ev = label.includes('particip') ? 'cta_participar_click' : 'cta_click';
-        track(ev, { location: 'hero', label: btn.label || '' });
-      });
+      const rawHref = (btn.href || '').trim();
+      const isDisabled = !rawHref || rawHref === '#' || rawHref.toLowerCase() === 'javascript:void(0)';
+      const labelText = btn.label || 'Ver mas';
+      anchor.textContent = labelText;
+      if (isDisabled) {
+        anchor.classList.add('is-disabled');
+        anchor.setAttribute('aria-disabled', 'true');
+      } else {
+        anchor.href = rawHref;
+        anchor.addEventListener('click', () => {
+          const label = (btn.label || '').toLowerCase();
+          const ev = label.includes('particip') ? 'cta_participar_click' : 'cta_click';
+          track(ev, { location: 'hero', label: btn.label || '' });
+        });
+      }
       buttonRow.appendChild(anchor);
     });
     body.appendChild(buttonRow);
@@ -859,6 +873,8 @@ if (!window.__ga4DelegatedClicks) {
   window.__ga4DelegatedClicks = true;
 }
 
+// (Eliminado: capa de fuego realista)
+
 function renderKeyValueSection(section) {
   const container = baseSection('keyValue');
   if (section.data?.title) {
@@ -914,6 +930,23 @@ function renderLinkCardsSection(section) {
   }
   const grid = document.createElement('div');
   grid.className = 'link-cards';
+
+  // Controles de vista (cuadrícula/lista)
+  const controls = document.createElement('div');
+  controls.className = 'section__controls';
+  const toggleBtn = document.createElement('button');
+  toggleBtn.type = 'button';
+  toggleBtn.className = 'view-toggle';
+  toggleBtn.textContent = '👁️';
+  toggleBtn.setAttribute('aria-label', 'Vista');
+  toggleBtn.setAttribute('aria-pressed', 'false');
+  toggleBtn.title = 'Cambiar entre cuadrícula y lista';
+  toggleBtn.addEventListener('click', () => {
+    const isList = grid.classList.toggle('is-list');
+    toggleBtn.setAttribute('aria-pressed', isList ? 'true' : 'false');
+  });
+  controls.appendChild(toggleBtn);
+  container.appendChild(controls);
   section.data?.cards?.forEach(card => {
     const anchor = document.createElement('a');
     anchor.className = 'link-card';

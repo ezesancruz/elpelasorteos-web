@@ -166,7 +166,9 @@ function createToggle() {
   btn.id = 'edit-toggle';
   btn.className = 'editor-toggle';
   btn.type = 'button';
-  btn.textContent = 'Editar';
+  btn.textContent = '✍️';
+  btn.setAttribute('aria-label', 'Editar');
+  btn.title = 'Editar';
   btn.style.display = 'none'; // Oculto por defecto
   btn.addEventListener('click', () => togglePanel());
   document.body.appendChild(btn);
@@ -313,6 +315,46 @@ function renderHeroEditor() {
     value => updateHero(hero => hero.bannerImage = value),
     { aspect: 16 / 9 }
   ));
+
+  // Selector de efecto para botones del hero
+  (function(){
+    const label = document.createElement('label');
+    label.className = 'editor-field';
+    const span = document.createElement('span');
+    span.textContent = 'Efecto de botón (hero)';
+    label.appendChild(span);
+
+    const select = document.createElement('select');
+    // Resolver valor actual: usa hero.effect si existe; si no, mapea effectEnabled
+    let currentEffect = typeof page.hero?.effect === 'string'
+      ? page.hero.effect
+      : (page.hero?.effectEnabled ? 'xenon' : 'none');
+    if (currentEffect === 'fire' || currentEffect === 'fireReal') currentEffect = 'xenon';
+
+    const options = [
+      { value: 'none', text: 'Ninguno' },
+      { value: 'xenon', text: 'Xenón' }
+    ];
+    options.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.value;
+      o.textContent = opt.text;
+      if (opt.value === currentEffect) o.selected = true;
+      select.appendChild(o);
+    });
+
+    select.addEventListener('change', (e) => {
+      const value = e.target.value;
+      updateHero(hero => {
+        hero.effect = value;      // nuevo campo canónico
+        delete hero.effectEnabled; // limpiamos bandera vieja si existiera
+      }, { rerenderPanel: false });
+      onFieldInput(e);
+    });
+
+    label.appendChild(select);
+    fieldset.appendChild(label);
+  })();
 
   const buttonsWrapper = document.createElement('div');
   buttonsWrapper.className = 'editor-inline-list';
