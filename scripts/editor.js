@@ -647,6 +647,18 @@ const sectionEditors = {
     wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
     wrapper.appendChild(createRichTextInput('Descripcion', section.data?.body || '', value => updateSection(index, s => s.data.body = value)));
 
+    // Selector de formato del area (1:1, 3:4, 9:16, Auto)
+    const aspectOptions = [
+      { value: '1:1', label: '1:1' },
+      { value: '3:4', label: '3:4' },
+      { value: '9:16', label: '9:16' },
+      { value: 'auto', label: 'Auto' }
+    ];
+    const currentAspect = section.data?.aspectMode || '3:4';
+    wrapper.appendChild(createRadioGroup('Formato del area', aspectOptions, currentAspect, value => updateSection(index, s => {
+      s.data.aspectMode = value;
+    })));
+
     // Asegurar estructura del objeto de video
     updateSection(index, s => {
       if (!s.data) s.data = {};
@@ -830,7 +842,7 @@ const defaultSections = {
   detalleVisualVideo: {
     id: 'detalleVisualVideo-new',
     type: 'detalleVisualVideo',
-    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, poster: { src: '' } }
+    data: { title: 'Destacado en video', body: 'Descripcion', video: { src: '' }, poster: { src: '' }, aspectMode: '3:4' }
   },
   botonAccion: {
     id: 'botonAccion-new',

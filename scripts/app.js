@@ -1084,10 +1084,27 @@ function renderVideoHighlightSection(section) {
   const posterData = section.data?.poster;
   if (videoData) {
     const videoObj = (typeof videoData === 'object' && videoData) ? videoData : { src: String(videoData) };
+    const aspectMode = String(section.data?.aspectMode || '3:4').toLowerCase();
+    const parseAspect = (mode) => {
+      if (mode === '1:1' || mode === '1/1' || mode === '1') return 1;
+      if (mode === '3:4' || mode === '3/4') return 3 / 4;
+      if (mode === '9:16' || mode === '9/16') return 9 / 16;
+      if (mode === 'auto') return null;
+      return 3 / 4;
+    };
+    const desiredAspect = parseAspect(aspectMode);
+
     const frame = document.createElement('div');
     // Reutilizamos estilos de imágenes para bordes redondeados
     frame.setAttribute('data-img-frame', '');
-    frame.style.aspectRatio = String(3 / 4);
+    const applyFrameAspect = () => {
+      if (desiredAspect) {
+        frame.style.aspectRatio = String(desiredAspect);
+      } else {
+        frame.style.removeProperty('aspect-ratio');
+      }
+    };
+    applyFrameAspect();
 
     const videoEl = document.createElement('video');
     videoEl.src = resolveImageSrc(videoObj) || '';
@@ -1100,28 +1117,37 @@ function renderVideoHighlightSection(section) {
     videoEl.setAttribute('playsinline', '');
     videoEl.setAttribute('webkit-playsinline', '');
     videoEl.style.width = '100%';
-    videoEl.style.height = '100%';
+    videoEl.style.height = desiredAspect ? '100%' : 'auto';
     videoEl.style.display = 'block';
     videoEl.style.objectFit = 'cover';
+    videoEl.style.objectPosition = 'center center';
 
-    // Usar poster si existe
+    // Preparar modelo de display sin mutar datos originales
+    let model = (typeof videoObj === 'object' && videoObj) ? { ...videoObj } : { src: videoEl.src };
+    // Usar poster si existe (solo para poster y, si es AUTO, heredar crop)
     try {
       const posterObj = (typeof posterData === 'object' && posterData) ? posterData : (posterData ? { src: posterData } : null);
       if (posterObj) {
         const posterSrc = resolveImageSrc(posterObj, true);
         if (posterSrc) videoEl.poster = posterSrc;
-        // Si el video no tiene crop, heredar del poster
-        if (!videoObj.crop && posterObj.crop) {
-          videoObj.crop = { ...posterObj.crop };
+        // Solo heredar crop desde el poster cuando el modo es AUTO
+        if (!desiredAspect && !model.crop && posterObj.crop) {
+          model.crop = { ...posterObj.crop };
         }
       }
     } catch (_) {}
 
     try {
       // Reutiliza la lógica de recorte/posicionamiento
-      applyImageDisplay(frame, videoEl, videoObj);
+      // No mutamos el objeto original; usamos modelo local
+      applyImageDisplay(frame, videoEl, model);
+      // applyImageDisplay limpia aspect-ratio del frame; volvemos a aplicarlo
+      applyFrameAspect();
       // Reaplicar cuando cargue metadata por dimensiones
-      videoEl.addEventListener('loadedmetadata', () => applyImageDisplay(frame, videoEl, videoObj), { once: true });
+      videoEl.addEventListener('loadedmetadata', () => { 
+        applyImageDisplay(frame, videoEl, model);
+        applyFrameAspect();
+      }, { once: true });
     } catch (_) {}
 
     // Autoplay defensivo (algunos navegadores requieren intento tras metadata)
