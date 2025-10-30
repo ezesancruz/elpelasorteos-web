@@ -1,0 +1,171 @@
+AUDITORÍA INTEGRAL DE LIGEREZA Y ESTRUCTURA
+
+Fecha: [auto]
+Proyecto: elpelasorteos.shop
+Ubicación del proyecto: raíz del workspace actual
+
+Resumen ejecutivo
+- El sitio funciona como SPA ligera con render dinámico desde `data/site-content.json`, pero hoy la carga inicial es pesada por: (1) JSON de ~705 KB con miniaturas embebidas (base64), (2) dos módulos JS grandes cargados en todas las páginas (`scripts/app.js` ~72 KB y `scripts/editor.js` ~96 KB), (3) recursos multimedia muy pesados/duplicados en `server/public/uploads` (imágenes >1 MB y varios MP4 ~9 MB repetidos), y (4) CSS sin minificar (~49 KB). Hay además problemas de codificación (tildes/ñ rotas) y logs de consola activos en producción.
+- Con cambios muy puntuales (lazy-load del editor, dividir/minificar datos, optimizar medios y activar caché/compresión) se puede reducir la carga inicial en >70% y mejorar TTFB/INP notablemente.
+
+Inventario de archivos clave (peso aproximado)
+- HTML
+  - index.html: 2.8 KB (raíz)
+  - sorteo/index.html: 1.1 KB
+- CSS
+  - styles/main.css: 48,779 bytes
+- JS
+  - scripts/app.js: 72,295 bytes
+  - scripts/editor.js: 95,985 bytes
+  - scripts/new-lightbox.js: 2,065 bytes
+- Datos
+  - data/site-content.json: 704,869 bytes (muy pesado; contiene thumbs en base64)
+- Favicons
+  - `favicon.png`: 215 KB (grande para favicon)
+- Medios destacados (pesados)
+  - server/public/uploads/hero-banner-home.webp: 1,683,912 bytes
+  - server/public/uploads/home-fotos-premio-carousel-4.jpg: 1,826,696 bytes
+  - server/public/uploads/home-fotos-premio-carousel-0/1/2/3.jpg: 247–351 KB c/u
+  - Múltiples videos WhatsApp de ~9,055,089 bytes duplicados con distintos nombres
+
+Estructura actual (alto nivel)
+- Frontend: HTML estático + CSS (`styles/main.css`) + JS modular (`scripts/app.js`, `scripts/editor.js`, `scripts/new-lightbox.js`).
+- Datos: `data/site-content.json` describe meta, tema, navegación y secciones (con imágenes y thumbs base64).
+- Render: `app.js` construye el DOM dinámicamente y aplica tema/fondo; usa `new-lightbox`. `editor.js` inyecta un panel de edición (UI interna) y sube assets al backend.
+- Backend: `server/editor-server.js` (Express) sirve estáticos, API de contenido, auth simple por cookie JWT, y endpoints de subida (Sharp para imágenes, Multer). Sin cabeceras de caché específicas.
+- Prerender: `scripts/prerender.js` genera snapshots estáticos de rutas selectas y les quita `<script src="scripts/(app|editor).js">`.
+
+Hallazgos importantes
+1) Carga inicial pesada por JSON grande
+   - `data/site-content.json` (~705 KB) incluye miniaturas (`thumb`) como data URI base64. Esto infla muchísimo el payload inicial aunque luego las imágenes hagan lazy-load.
+   - Recomendación: eliminar data-URIs y reemplazarlas por URLs de archivos (ya generas `-thumb.webp`); separar contenido por página (p. ej. `data/home.json`, `data/ganadores.json`) y cargar on-demand. Comprimir en servidor (gzip/brotli) y habilitar caché fuerte.
+
+2) Editor cargado siempre
+   - `scripts/editor.js` (~96 KB) se carga en `index.html` y `sorteo/index.html`. Es UI interna y no debe cargar para usuarios finales.
+   - Recomendación: lazy-load del editor solo bajo condición (query param `?dev=1`, cookie admin, o al hacer click en “Modo desarrollador”). Resultado: -96 KB de JS en visitas públicas.
+
+3) Medios sobredimensionados y duplicados
+   - Imágenes >1 MB (hero y algunos carruseles) y varios MP4 de ~9 MB duplicados con nombres distintos en `server/public/uploads`.
+   - Recomendación: deduplicar videos (un solo archivo referenciado), generar variantes responsive (p. ej. 320/640/960/1280/1600) en WebP/AVIF y servir la adecuada por `srcset/sizes`. Limitar heroes a ~200–400 KB en la variante inicial. Para videos de fondo, generar versión optimizada (silenciosa, baja tasa de bits) en WebM/MP4 con `preload=metadata`.
+
+4) CSS sin minificar y posible CSS crítico
+   - `styles/main.css` ~49 KB; si bien no es enorme, puede minificarse y extraer “critical CSS” para el primer render (inline y luego cargar el resto diferido).
+
+5) Logs de consola en producción
+   - `app.js` contiene `console.log/debug/warn` (p. ej., en `renderBackground`).
+   - Recomendación: envolver logs detrás de una bandera `if (window.__DEV__)` o eliminarlos en build de producción.
+
+6) Problemas de codificación (mojibake)
+   - En `index.html` hay texto con caracteres rotos: “ParticipA� fA�cil…”, “ContraseA�a”, “Iniciar sesiA3n”. Esto perjudica SEO y UX.
+   - Recomendación: corregir el contenido (UTF‑8 válido) y verificar que el editor/IDE guarde en UTF‑8. Mantener `<meta charset="utf-8">`.
+
+7) Fuentes
+   - Cargas Google Fonts con `display=swap` (bien) y `preconnect` (bien). Posibles mejoras: limitar variantes/pesos, o autoalojar con subset si buscas máxima performance/privacidad.
+
+8) Caché/compresión
+   - Express sirve estáticos sin cabeceras de caché específicas.
+   - Recomendación: habilitar `Cache-Control` con vencimientos largos para archivos fingerprinted y activar compresión (gzip/brotli) en el reverse proxy (Caddy/NGINX) o middleware.
+
+9) Prerender/despliegue
+   - Tienes `scripts/prerender.js` que genera HTML estático sin los scripts. Si despliegas `dist/`, la primera pintura será instantánea y sin JS pesado.
+   - Recomendación: ampliar `ROUTES`, publicar `dist/` y conservar JS solo para interactividad donde sea necesario.
+
+Detalles por archivo/área
+- index.html
+  - Carga: `styles/main.css`, `scripts/app.js`, `scripts/editor.js`, `scripts/new-lightbox.js`.
+  - Mejora: eliminar `<script type="module" src="scripts/editor.js">` en producción o cargar condicionalmente.
+  - GA4: placeholder `G-XXXXXXXXXX` (ok). Añade `defer` a scripts no-module si agregas alguno no `type="module"`.
+
+- sorteo/index.html
+  - Idem: carga `editor.js`. Aplicar mismo lazy-load.
+
+- scripts/app.js
+  - Bien: `loading="lazy"` y `decoding="async"` en imágenes.
+  - Mejorable: console logs; posible split del módulo; condicionar `newLightbox.init()` según uso real.
+
+- scripts/editor.js
+  - Solo para admins. Hacer import dinámico: `if (isDevOrAdmin) import('./editor.js');` o cargar tras click en “Modo desarrollador”.
+
+- styles/main.css
+  - Estilos bien organizados y con CSS variables; comentarios con tildes rotas (codificación). Minificar y evaluar CSS crítico.
+
+- data/site-content.json
+  - Muy grande por thumbs base64. Reemplazar por URLs a `*-thumb.webp` y/o generar JSON por página.
+
+- server/editor-server.js
+  - Sirve estáticos sin caché específica. Añadir:
+    - `app.use(express.static(ROOT_DIR, { maxAge: '30d', etag: true }));`
+    - Si usas Caddy/NGINX, habilitar `gzip`/`brotli` y `cache-control` allí.
+
+Redundancias detectadas (ejemplos)
+- Múltiples MP4 idénticos en tamaño (~9,055,089 bytes) con nombres distintos:
+  - `server/public/uploads/005a45e3-..._video_de_whatsapp_2025-10-26_...mp4`
+  - `server/public/uploads/07486a0e-...mp4`
+  - `server/public/uploads/077a5dae-...mp4`
+  - `server/public/uploads/1012e99d-...mp4`
+  - etc.
+- Varias imágenes del mismo motivo con pesos muy altos; consolidar y estandarizar tamaños/formatos.
+
+Mejoras priorizadas (quick wins → impacto alto)
+1) No cargar `editor.js` para usuarios.
+   - Condicionar por `?dev=1`/cookie admin/click. Ahorro ~96 KB JS por visita.
+
+2) Quitar data-URIs del JSON y dividir contenido.
+   - Reemplazar `thumb: data:image/...` por URLs a `*-thumb.webp` ya generadas.
+   - Particionar `site-content.json` por página/feature y cargar on-demand.
+
+3) Optimizar medios pesados y deduplicar
+   - Deduplicar MP4; mantener un único archivo y referenciarlo.
+   - Regenerar variantes responsive (Sharp/CI) y limitar héroes a ~200–400 KB.
+
+4) Minificar CSS/JS y extraer crítico
+   - Minificar `main.css` y `app.js`. Extraer “critical CSS” inline para hero/nav.
+
+5) Corregir codificación de textos
+   - Arreglar tildes/ñ en `index.html`, CSS y JSON.
+
+6) Activar caché y compresión
+   - `Cache-Control` + gzip/brotli para `css`, `js`, `json`, `webp`, `png`, `jpg`.
+
+7) Usar prerender en producción
+   - Ampliar `ROUTES` y desplegar `dist/` como HTML estático para primeras vistas muy rápidas.
+
+Sugerencia de plan de acción
+1) Producción segura (sin tocar UX):
+   - Remover `scripts/editor.js` de `index.html` y `sorteo/index.html` o cargarlo en diferido bajo condición.
+   - Eliminar/convertir data-URIs en `data/site-content.json` a URLs.
+   - Generar thumbs y referencias a archivos (ya existe `-thumb.webp`).
+2) Medios:
+   - Script Sharp para generar `srcset` (320–1600px) y reescribir referencias.
+   - Deduplicar MP4 (borrar duplicados y actualizar rutas en JSON).
+3) Build:
+   - Minificar `main.css` y `app.js`. Opcional: bundle con esbuild/rollup.
+   - Extraer “critical CSS” del hero/navbar.
+4) Infra:
+   - Añadir `Cache-Control` y compresión en servidor/reverse proxy.
+5) Prerender:
+   - Ampliar rutas en `scripts/prerender.js` y publicar `dist/` en el host.
+
+Notas adicionales
+- Fuentes: ya usas `display=swap` y `preconnect`. Si deseas más reducción, autoalojar con subset.
+- Accesibilidad: `createImg` permite `alt`; valida que los alt relevantes no queden vacíos. Añade `width/height` cuando sea posible para reducir CLS (o `aspect-ratio`, ya usado en frames).
+- SEO: Corrige meta description con acentos correctos y revisa el `og:image` válido y liviano.
+
+Indicadores a monitorear (antes/después)
+- Peso de transferencia inicial (HTML+CSS+JS+JSON): objetivo < 200–300 KB comprimido.
+- LCP en 4G: < 2.5 s. INP estable.
+- Número de requests iniciales: objetivo < 10–15 en first view.
+- Tasa de caché HIT en CDN/servidor.
+
+Comandos/ideas útiles (referenciales)
+- Minificar rápido con esbuild:
+  esbuild scripts/app.js --bundle --minify --outfile=scripts/app.min.js
+  esbuild styles/main.css --minify --outfile=styles/main.min.css
+- Sharp para variantes:
+  sharp in.webp .resize({ width: 1280 }).webp({ quality: 70 }).toFile('out-1280.webp')
+- Express estáticos con caché:
+  app.use(express.static(ROOT_DIR, { maxAge: '30d', etag: true }));
+
+Conclusión
+Aplicando lazy-load del editor, saneando el JSON (sin base64 e idealmente dividido), optimizando/deduplicando medios, minificando CSS/JS y habilitando caché/compresión, tu sitio quedará mucho más liviano sin reescrituras profundas. El prerender ya disponible puede darte además una primera vista casi instantánea.
+

@@ -1,0 +1,135 @@
+flujo: editás en el editor, tocás “Guardar cambios” y luego subís por git para que el servidor tenga lo mismo. Ese “contenido” se guarda en data/site-content.json. Te explico qué es y
+  por qué pesa.
+
+  Qué guarda
+
+  - Metadatos del sitio: título, descripción.
+  - Tema: colores, tipografías y “fondo” (video/imágen+poster).
+  - Navegación: rutas y a qué página apuntan.
+  - Páginas: un array de páginas con:
+      - hero y sections con todos los bloques de la página (textos, botones, carruseles, etc.).                                                                                                               
+      - Imágenes con datos de presentación: src, thumb, title/caption, y a veces crop (zoom, offset, aspect).                                                                                                 
+  - En síntesis: es “la maqueta” completa de tu sitio en formato JSON. El frontend (scripts/app.js) lo baja al cargar y renderiza todo a partir de ahí. El editor (scripts/editor.js) te permite modificar ese    JSON visualmente y guardar con un PUT a /api/content, que escribe el archivo en disco.                                                                                                                    
+                                                                                                                                                                                                              
+  Por qué se hace pesado                                                                                                                                                                                      
+                                                                                                                                                                                                              
+  - Miniaturas embebidas en base64: en tu JSON hay thumb como data:image/webp;base64,... muy largas. Eso mete cientos de KB dentro del JSON aunque sean “thumbnails”.                                         
+  - Todo el contenido en un único archivo: metés meta+tema+navegación+TODAS las páginas y sus secciones en un solo fetch inicial.                                                                             
+  - Repetición y verbosidad: objetos de imágenes incluyen thumb, poster, crop, etc. para cada bloque; se repiten muchas estructuras.                                                                          
+  - No minificado: se guarda legible (con espacios y saltos de línea).                                                                                                                                        
+  - Resultado: data/site-content.json está en ~705 KB. Como tu app lo descarga de entrada, esa transferencia inicial sube y afecta la “primera pintura”.                                                      
+                                                                                                                                                                                                              
+  Cómo encaja con tu uso (guardar + git)                                                                                                                                                                      
+                                                                                                                                                                                                              
+  - Al tocar “Guardar cambios” en el editor:
+      - El navegador manda el JSON nuevo a /api/content.                                                                                                                                                      
+      - El servidor escribe data/site-content.json.                                                                                                                                                           
+      - Luego vos hacés git add/commit/push y en el servidor git pull. Así, el servidor sirve esa misma versión del JSON y el frontend la usa para renderizar.                                                
+                                                                                                                                                                                                              
+  Cómo aligerarlo sin cambiar tu forma de trabajar                                                                                                                                                            
+                                                                                                                                                                                                              
+  - Reemplazar base64 por URLs: que thumb sea una ruta a archivo (/uploads/xxx-thumb.webp), no data URI. Ya generás -thumb.webp en el servidor.                                                               
+  - Dividir el contenido: en lugar de un único site-content.json, tener uno pequeño (meta/navegación/tema) y “per‑página” (data/home.json, data/ganadores.json) que se cargan on‑demand.                      
+  - Minificar para producción: generar site-content.min.json sin espacios y servir ese en prod.                                                                                                               
+  - Comprimir en servidor: habilitar gzip/brotli y Cache-Control (con ETag) para que el JSON se cachee y se transfiera comprimido.                                                                            
+  - Deduplicar referencias: si varias secciones usan la misma imagen/video, referenciar la misma URL (no replicar objetos grandes).                                                                           
+  - Mantener “poster”/video en URLs (no data URI).
+                                                                                                                                                                                                              
+  Si querés, puedo:                                                                                                                                                                                           
+                                                                                                                                                                                                              
+  - Convertir automáticamente los thumb base64 del JSON a rutas de archivo y actualizar referencias.                                                                                                          
+  - Miniaturas embebidas en base64: en tu JSON hay thumb como data:image/webp;base64,... muy largas. Eso mete cientos de KB dentro del JSON aunque sean “thumbnails”.
+  - Todo el contenido en un único archivo: metés meta+tema+navegación+TODAS las páginas y sus secciones en un solo fetch inicial.
+  - Repetición y verbosidad: objetos de imágenes incluyen thumb, poster, crop, etc. para cada bloque; se repiten muchas estructuras.
+  - No minificado: se guarda legible (con espacios y saltos de línea).
+  - Resultado: data/site-content.json está en ~705 KB. Como tu app lo descarga de entrada, esa transferencia inicial sube y afecta la “primera pintura”.
+
+  Cómo encaja con tu uso (guardar + git)
+
+  - Al tocar “Guardar cambios” en el editor:
+      - El navegador manda el JSON nuevo a /api/content.
+      - El servidor escribe data/site-content.json.
+      - Luego vos hacés git add/commit/push y en el servidor git pull. Así, el servidor sirve esa misma versión del JSON y el frontend la usa para renderizar.
+
+  Cómo aligerarlo sin cambiar tu forma de trabajar
+
+  - Reemplazar base64 por URLs: que thumb sea una ruta a archivo (/uploads/xxx-thumb.webp), no data URI. Ya generás -thumb.webp en el servidor.
+  - Dividir el contenido: en lugar de un único site-content.json, tener uno pequeño (meta/navegación/tema) y “per‑página” (data/home.json, data/ganadores.json) que se cargan on‑demand.
+  - Minificar para producción: generar site-content.min.json sin espacios y servir ese en prod.
+  - Comprimir en servidor: habilitar gzip/brotli y Cache-Control (con ETag) para que el JSON se cachee y se transfiera comprimido.
+  - Deduplicar referencias: si varias secciones usan la misma imagen/video, referenciar la misma URL (no replicar objetos grandes).
+  - Mantener “poster”/video en URLs (no data URI).
+
+  Si querés, puedo:
+
+  - Convertir automáticamente los thumb base64 del JSON a rutas de archivo y actualizar referencias.
+  - Separar el JSON por páginas y ajustar app.js para cargar el contenido de la ruta actual cuando haga falta.
+  - Agregar una versión minificada del JSON en el build y hacer que en producción el frontend pida esa.
+
+
+› Improve documentation in @filename
+
+  - No minificado: se guarda legible (con espacios y saltos de línea).
+  - Resultado: data/site-content.json está en ~705 KB. Como tu app lo descarga de entrada, esa transferencia inicial sube y afecta la “primera pintura”.
+
+  Cómo encaja con tu uso (guardar + git)
+
+  - Al tocar “Guardar cambios” en el editor:
+      - El navegador manda el JSON nuevo a /api/content.
+      - El servidor escribe data/site-content.json.
+      - Luego vos hacés git add/commit/push y en el servidor git pull. Así, el servidor sirve esa misma versión del JSON y el frontend la usa para renderizar.
+
+  Cómo aligerarlo sin cambiar tu forma de trabajar
+
+  - Reemplazar base64 por URLs: que thumb sea una ruta a archivo (/uploads/xxx-thumb.webp), no data URI. Ya generás -thumb.webp en el servidor.
+  - Dividir el contenido: en lugar de un único site-content.json, tener uno pequeño (meta/navegación/tema) y “per‑página” (data/home.json, data/ganadores.json) que se cargan on‑demand.
+  - Minificar para producción: generar site-content.min.json sin espacios y servir ese en prod.
+  - Comprimir en servidor: habilitar gzip/brotli y Cache-Control (con ETag) para que el JSON se cachee y se transfiera comprimido.
+  - Deduplicar referencias: si varias secciones usan la misma imagen/video, referenciar la misma URL (no replicar objetos grandes).
+  - Mantener “poster”/video en URLs (no data URI).
+
+  Si querés, puedo:
+
+  - Convertir automáticamente los thumb base64 del JSON a rutas de archivo y actualizar referencias.
+  - Separar el JSON por páginas y ajustar app.js para cargar el contenido de la ruta actual cuando haga falta.
+  - Agregar una versión minificada del JSON en el build y hacer que en producción el frontend pida esa.
+
+
+› Improve documentation in @filename
+
+  - Al tocar “Guardar cambios” en el editor:
+      - El navegador manda el JSON nuevo a /api/content.
+      - El servidor escribe data/site-content.json.
+      - Luego vos hacés git add/commit/push y en el servidor git pull. Así, el servidor sirve esa misma versión del JSON y el frontend la usa para renderizar.
+
+  Cómo aligerarlo sin cambiar tu forma de trabajar
+
+  - Reemplazar base64 por URLs: que thumb sea una ruta a archivo (/uploads/xxx-thumb.webp), no data URI. Ya generás -thumb.webp en el servidor.
+  - Dividir el contenido: en lugar de un único site-content.json, tener uno pequeño (meta/navegación/tema) y “per‑página” (data/home.json, data/ganadores.json) que se cargan on‑demand.
+  - Minificar para producción: generar site-content.min.json sin espacios y servir ese en prod.
+  - Comprimir en servidor: habilitar gzip/brotli y Cache-Control (con ETag) para que el JSON se cachee y se transfiera comprimido.
+  - Deduplicar referencias: si varias secciones usan la misma imagen/video, referenciar la misma URL (no replicar objetos grandes).
+  - Mantener “poster”/video en URLs (no data URI).
+
+  Si querés, puedo:
+
+  - Convertir automáticamente los thumb base64 del JSON a rutas de archivo y actualizar referencias.
+  - Separar el JSON por páginas y ajustar app.js para cargar el contenido de la ruta actual cuando haga falta.
+  - Agregar una versión minificada del JSON en el build y hacer que en producción el frontend pida esa.
+
+
+› Improve documentation in @filename
+
+
+  - Reemplazar base64 por URLs: que thumb sea una ruta a archivo (/uploads/xxx-thumb.webp), no data URI. Ya generás -thumb.webp en el servidor.
+  - Dividir el contenido: en lugar de un único site-content.json, tener uno pequeño (meta/navegación/tema) y “per‑página” (data/home.json, data/ganadores.json) que se cargan on‑demand.
+  - Minificar para producción: generar site-content.min.json sin espacios y servir ese en prod.
+  - Comprimir en servidor: habilitar gzip/brotli y Cache-Control (con ETag) para que el JSON se cachee y se transfiera comprimido.
+  - Deduplicar referencias: si varias secciones usan la misma imagen/video, referenciar la misma URL (no replicar objetos grandes).
+  - Mantener “poster”/video en URLs (no data URI).
+
+  Si querés, puedo:
+
+  - Convertir automáticamente los thumb base64 del JSON a rutas de archivo y actualizar referencias.
+  - Separar el JSON por páginas y ajustar app.js para cargar el contenido de la ruta actual cuando haga falta.
+  - Agregar una versión minificada del JSON en el build y hacer que en producción el frontend pida esa.

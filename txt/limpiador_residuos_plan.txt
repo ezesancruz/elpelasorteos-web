@@ -1,0 +1,111 @@
+Plan de limpiador de residuos
+
+Objetivo
+- Detectar y gestionar archivos no referenciados, duplicados y pesados en `server/public/uploads`; detectar data URIs en `data/site-content.json` y logs de consola en `scripts/*.js`. Operar en modo informe por defecto y ofrecer cuarentena opcional.
+
+Archivo
+- Script: `scripts/cleaner.js`
+
+Uso
+- Solo informe:
+  node scripts/cleaner.js
+
+- Informe con top N pesados (por ejemplo 20):
+  node scripts/cleaner.js --limit 20
+
+- Mover no referenciados a cuarentena (no borra):
+  node scripts/cleaner.js --quarantine
+
+Salida
+- Genera `txt/limpieza_resumen.txt` con:
+  - Totales (uploads, referenciados, no referenciados)
+  - Grupos de duplicados por hash
+  - Top archivos más pesados
+  - Lista de no referenciados (máx. 200 en el reporte)
+  - Conteo de data URIs en JSON
+  - Conteo de logs de consola por archivo JS
+  - Si se usa `--quarantine`, lista de archivos movidos
+
+Recomendaciones de uso seguro
+- Ejecutar primero sin flags para revisar el informe.
+- Confirmar que “no referenciados” realmente no se usan (revisar JSON y páginas secundarias).
+- Si todo es correcto, usar `--quarantine`. Los archivos quedan en `server/public/uploads/.quarantine/<timestamp>/` y pueden restaurarse.
+
+Próximos pasos sugeridos (tras la limpieza)
+- Reemplazar data URIs del JSON por URLs a thumbs/variantes.
+- Deduplicar referencias en JSON a un único archivo canónico (eliminar duplicados en cuarentena cuando se confirme).
+- Implementar minificación y caché para CSS/JS/JSON.
+
+#############################################################################################################################################################
+
+
+• Esto haría yo para un “limpiador de residuos” enfocado en aligerar y ordenar tu web.
+                                                                                                                                                                                                              
+  Qué limpiaría                                                                                                                                                                                               
+                                                                                                                                                                                                              
+  - Subidas no usadas: archivos en server/public/uploads que no estén referenciados en HTML/JS/CSS/JSON.                                                                                                      
+  - Duplicados por contenido: mismos archivos con distinto nombre (detectados por hash).                                                                                                                      
+  - Pesados desproporcionados: top de imágenes/videos más grandes para decidir optimización o reemplazo.                                                                                                      
+  - Data URIs en JSON: miniaturas base64 dentro de data/site-content.json que inflan la carga inicial.                                                                                                        
+  - Logs de consola en producción: console.log/debug/warn en scripts/*.js.                                                                                                                                    
+                                                                                                                                                                                                              
+  Dónde lo haría                                                                                                                                                                                              
+                                                                                                                                                                                                              
+  - Medios: server/public/uploads (imágenes y videos).                                                                                                                                                        
+  - Contenido: data/site-content.json (busco data URIs y rutas a uploads).                                                                                                                                    
+  - Código: scripts/*.js, index.html, sorteo/index.html, styles/*.css (referencias a uploads y logs).                                                                                                         
+                                                                                                                                                                                                              
+  Cómo lo implementé                                                                                                                                                                                          
+                                                                                                                                                                                                              
+  - Añadí un script de limpieza no destructivo que genera informe y, opcionalmente, mueve a cuarentena:                                                                                                       
+      - Script: scripts/cleaner.js                                                                                                                                                                            
+      - Reporte: txt/limpieza_resumen.txt                                                                                                                                                                     
+      - Cuarentena: server/public/uploads/.quarantine/<timestamp>/ (nunca borra directo).                                                                                                                     
+                                                                                                                                                                                                              
+  Qué hace el limpiador                                                                                                                                                                                       
+      - Reporte: txt/limpieza_resumen.txt
+      - Cuarentena: server/public/uploads/.quarantine/<timestamp>/ (nunca borra directo).
+
+  Qué hace el limpiador
+
+  - Encuentra archivos no referenciados y duplicados por hash.
+  - Lista los archivos más pesados (configurable).
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Opcional: mueve no referenciados a cuarentena para revisión.
+
+
+  Qué hace el limpiador
+
+  - Encuentra archivos no referenciados y duplicados por hash.
+  - Lista los archivos más pesados (configurable).
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Opcional: mueve no referenciados a cuarentena para revisión.
+
+
+  - Encuentra archivos no referenciados y duplicados por hash.
+  - Lista los archivos más pesados (configurable).
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Encuentra archivos no referenciados y duplicados por hash.
+  - Lista los archivos más pesados (configurable).
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Opcional: mueve no referenciados a cuarentena para revisión.
+  - Lista los archivos más pesados (configurable).
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Opcional: mueve no referenciados a cuarentena para revisión.
+
+  - Cuenta data URIs en el JSON y logs de consola en JS.
+  - Opcional: mueve no referenciados a cuarentena para revisión.
+
+  Uso
+
+  - Solo informe: node scripts/cleaner.js
+  - Top N pesados: node scripts/cleaner.js --limit 20
+  - Mover no referenciados a cuarentena: node scripts/cleaner.js --quarantine
+
+  Resultados esperados
+
+  - Un inventario claro de qué se puede quitar o comprimir sin romper nada.
+  - Reducción del tamaño del repo y del riesgo de servir medios innecesarios.
+  - Base para los siguientes pasos: reemplazar data URIs por URLs, deduplicar referencias en el JSON y optimizar los pesados.
+
+#####################################################################################################################################################
