@@ -551,6 +551,8 @@ main {
   background: rgba(0,0,0,0.45);
   border: 1px solid rgba(255,255,255,0.12);
   padding: 0.75rem 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .section--textoLargo summary {
   list-style: none;
@@ -559,7 +561,11 @@ main {
   font-size: 1.4rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  flex-wrap: wrap;              /* Permite que el contenido baje en móvil */
+  gap: 0.25rem 0.5rem;          /* Espacio entre título y hint */
+  overflow-wrap: anywhere;      /* Evita desborde de palabras largas */
+  word-break: break-word;
 }
 .section--textoLargo summary::-webkit-details-marker { display: none; }
 .section--textoLargo summary::after {
@@ -568,7 +574,20 @@ main {
   transition: transform 0.2s ease;
 }
 .section--textoLargo details[open] summary::after { transform: rotate(180deg); }
-.section--textoLargo .text-long__hint { opacity: 0.75; font-size: 0.95rem; margin-left: 0.5rem; }
+.section--textoLargo .text-long__hint {
+  opacity: 0.75;
+  font-size: 0.95rem;
+  margin-left: 0.5rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+@media (max-width: 520px) {
+  .section--textoLargo .text-long__hint {
+    margin-left: 0;          /* Evita empuje lateral en pantallas chicas */
+    flex: 1 1 100%;          /* Ocupa una línea completa debajo del título */
+    font-size: 0.9rem;       /* Leve reducción para caber mejor */
+  }
+}
 .section--textoLargo .text-long__content {
   margin-top: 0.75rem;
 }
