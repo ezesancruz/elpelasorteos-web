@@ -470,7 +470,7 @@ function createImg(srcOrObj, alt = '', opts = {}) {
     // Importante si el contenedor usa aspect-ratio
     if (opts.aspect) frame.style.aspectRatio = String(opts.aspect);
     // <- antes aquí NO había click; ahora lo agregamos:
-    attachLightbox(frame, full);
+    /*lightbox?*/ if ((opts && opts.lightbox) !== false) attachLightbox(frame, full);
   } else {
     // Rama <img> tradicional (ya te funcionaba)
     const img = document.createElement('img');
@@ -498,7 +498,7 @@ function createImg(srcOrObj, alt = '', opts = {}) {
       img.addEventListener('load', () => { applyImageDisplay(frame, img, srcOrObj); reapplyDesiredAspectIfNeeded(); }, { once: true });
     } catch (_) {}
 
-    attachLightbox(frame, full);
+    /*lightbox?*/ if ((opts && opts.lightbox) !== false) attachLightbox(frame, full);
   }
 
   try {
@@ -978,6 +978,7 @@ function renderLinkCardsSection(section) {
 
 function renderImageGridSection(section) {
   const container = baseSection('galeriaImagenes');
+  const mode = (section.data?.mode === 'imageImage') ? 'imageImage' : 'imageText';
   const grid = document.createElement('div');
   grid.className = 'image-grid';
   (section.data?.images || []).forEach(entry => {
@@ -987,27 +988,51 @@ function renderImageGridSection(section) {
     if (!src) return;
 
     const card = document.createElement('div');
-    card.className = 'image-card';
+    card.className = 'image-card' + (mode === 'imageImage' ? ' image-card--two-media' : (image.reverse ? ' image-card--reverse' : ''));
 
     const altText = image.alt || image.title || section.data?.title || 'Imagen';
     const titleText = (image.title || '').trim();
     const descriptionText = (image.subtitle || image.description || '').trim();
 
-    const media = document.createElement('a');
-    media.className = 'image-card__media';
-    media.href = image.href || src;
-    if (image.href) {
-      media.target = '_blank';
-      media.rel = 'noopener';
+    if (mode === 'imageText') {
+      const media = document.createElement('a');
+      media.className = 'image-card__media';
+      const useLink = !!image.href;
+      if (useLink) {
+        media.href = image.href;
+        media.target = '_blank';
+        media.rel = 'noopener';
+      } else {
+        media.href = '#';
+      }
+      const frame = createImg(image, altText, { preferThumb: true, aspect: 3 / 4, objectFit: 'cover', lightbox: !useLink });
+      media.appendChild(frame);
+      card.appendChild(media);
     } else {
-      media.removeAttribute('target');
-      media.removeAttribute('rel');
-    }
-    const frame = createImg(image, altText, { preferThumb: true, aspect: 3 / 4, objectFit: 'cover' });
-    media.appendChild(frame);
-    card.appendChild(media);
+      // imageImage: dos medios lado a lado
+      const mediaA = document.createElement('a');
+      mediaA.className = 'image-card__media';
+      const useLinkA = !!image.href;
+      if (useLinkA) { mediaA.href = image.href; mediaA.target = '_blank'; mediaA.rel = 'noopener'; } else { mediaA.href = '#'; }
+      const frameA = createImg(image, altText, { preferThumb: true, aspect: 3 / 4, objectFit: 'cover', lightbox: !useLinkA });
+      mediaA.appendChild(frameA);
+      card.appendChild(mediaA);
 
-    if (titleText || descriptionText) {
+      const rawImageB = image.image2 || image.img2 || image.second;
+      if (rawImageB) {
+        const mediaB = document.createElement('a');
+        mediaB.className = 'image-card__media';
+        const imageB = (typeof rawImageB === 'object') ? rawImageB : { src: rawImageB };
+        const useLinkB = !!image.href2;
+        if (useLinkB) { mediaB.href = image.href2; mediaB.target = '_blank'; mediaB.rel = 'noopener'; } else { mediaB.href = '#'; }
+        const altB = imageB.alt || imageB.title || altText;
+        const frameB = createImg(imageB, altB, { preferThumb: true, aspect: 3 / 4, objectFit: 'cover', lightbox: !useLinkB });
+        mediaB.appendChild(frameB);
+        card.appendChild(mediaB);
+      }
+    }
+
+    if (titleText || (mode === 'imageText' && descriptionText)) {
       const content = document.createElement('div');
       content.className = 'image-card__content';
 
@@ -1018,7 +1043,7 @@ function renderImageGridSection(section) {
         content.appendChild(heading);
       }
 
-      if (descriptionText) {
+      if (mode === 'imageText' && descriptionText) {
         const bodyText = document.createElement('p');
         bodyText.className = 'image-card__description';
         bodyText.innerHTML = descriptionText;
@@ -1581,6 +1606,7 @@ function attachLightbox(frame, full) {
     }
   });
 }
+
 
 
 

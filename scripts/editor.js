@@ -575,6 +575,28 @@ const sectionEditors = {
     const list = document.createElement('div');
     const pageIndex = currentPageIndex();
     list.className = 'editor-inline-list';
+
+    // Selector de modo
+    const modeLabel = document.createElement('label');
+    modeLabel.className = 'editor-field';
+    const span = document.createElement('span');
+    span.textContent = 'Modo de galería';
+    modeLabel.appendChild(span);
+    const select = document.createElement('select');
+    const currentMode = (section.data?.mode === 'imageImage') ? 'imageImage' : 'imageText';
+    [
+      { value: 'imageText', text: 'Imagen y texto' },
+      { value: 'imageImage', text: 'Imagen e imagen' }
+    ].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.value; o.textContent = opt.text; if (opt.value === currentMode) o.selected = true; select.appendChild(o);
+    });
+    select.addEventListener('change', (e) => {
+      const value = e.target.value === 'imageImage' ? 'imageImage' : 'imageText';
+      updateSection(index, s => { s.data.mode = value; }, { rerenderPanel: true });
+    });
+    modeLabel.appendChild(select);
+    list.appendChild(modeLabel);
     const mutateImage = (cardIndex, mutator) => {
       updateSection(index, s => {
         s.data.images = s.data.images || [];
@@ -586,6 +608,7 @@ const sectionEditors = {
         mutator(current);
       });
     };
+    const mode = (section.data?.mode === 'imageImage') ? 'imageImage' : 'imageText';
     (section.data?.images || []).forEach((card, cardIndex) => {
       const image = normalizeImageValue(card);      const item = document.createElement('div');
       item.className = 'editor-inline-item';
@@ -600,15 +623,17 @@ const sectionEditors = {
       item.appendChild(header);
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', cardIndex];
       item.appendChild(createImageField('Imagen', image, imagePath, value => mutateImage(cardIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 3 / 4 }));
-      item.appendChild(createInput('Link opcional', image.href || '', value => mutateImage(cardIndex, img => {
-        img.href = value;
-      })));
-      item.appendChild(createRichTextInput('Título (opcional)', image.title || '', value => mutateImage(cardIndex, img => {
-        img.title = value;
-      })));
-      item.appendChild(createRichTextInput('Subtítulo (opcional)', image.subtitle || '', value => mutateImage(cardIndex, img => {
-        img.subtitle = value;
-      })));
+      item.appendChild(createInput('Link opcional', image.href || '', value => mutateImage(cardIndex, img => { img.href = value; })));
+      item.appendChild(createRichTextInput('Título (opcional)', image.title || '', value => mutateImage(cardIndex, img => { img.title = value; })));
+      if (mode === 'imageText') {
+        item.appendChild(createRichTextInput('Subtítulo (opcional)', image.subtitle || '', value => mutateImage(cardIndex, img => { img.subtitle = value; })));
+        item.appendChild(createToggleSwitch('Invertir', !!image.reverse, value => mutateImage(cardIndex, img => { img.reverse = !!value; })));
+      } else {
+        const image2Path = ['pages', pageIndex, 'sections', index, 'data', 'images', cardIndex, 'image2'];
+        const normalizedImage2 = normalizeImageValue(image.image2 || '');
+        item.appendChild(createImageField('Imagen 2', normalizedImage2, image2Path, value => mutateImage(cardIndex, img => { img.image2 = normalizeImageValue(value); }), { aspect: 3 / 4 }));
+        item.appendChild(createInput('Link opcional 2', image.href2 || '', value => mutateImage(cardIndex, img => { img.href2 = value; })));
+      }
       list.appendChild(item);
     });
     const addBtn = document.createElement('button');
