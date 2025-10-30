@@ -1360,7 +1360,15 @@ function renderVideoCarouselSection(section) {
   }
   const track = document.createElement('div');
   track.className = 'carousel';
-  (section.data?.videos || []).forEach(entry => {
+  const validVideos = (section.data?.videos || []).filter(v => {
+    const it = (typeof v === 'object' && v) ? v : { src: v };
+    return !!it.src;
+  });
+  const count = validVideos.length;
+  if (count <= 1) track.classList.add('is-count-1');
+  else if (count === 2) track.classList.add('is-count-2');
+  else track.classList.add('is-count-3plus');
+  validVideos.forEach(entry => {
     if (!entry) return;
     const vid = (typeof entry === 'object' && entry) ? entry : { src: entry };
     if (!vid.src) return;

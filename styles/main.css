@@ -553,13 +553,40 @@ main {
   text-align: center;
 }
 .section--videoCarousel p { text-align: center; color: #fff; }
+.section--videoCarousel .carousel {
+  --vc-gap: 1.25rem;
+  gap: var(--vc-gap);
+  -webkit-overflow-scrolling: touch;
+}
+.section--videoCarousel .carousel::-webkit-scrollbar { display: none; }
+.section--videoCarousel .carousel { scrollbar-width: none; }
+
+.section--videoCarousel .carousel__item {
+  flex: 0 0 calc((100% - 2 * var(--vc-gap)) / 3);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: grid;
+  place-items: center; /* centrar contenido H y V */
+}
 .section--videoCarousel video {
   border-radius: 18px;
-  width: clamp(190px, 32vw, 280px);
+  width: 100%;
   aspect-ratio: 9 / 16;
   object-fit: cover;
   display: block;
-  scroll-snap-align: center;
+}
+
+/* Ajustes por cantidad (desktop) */
+@media (min-width: 720px) {
+  .section--videoCarousel .carousel.is-count-1 { justify-content: center; }
+  .section--videoCarousel .carousel.is-count-1 .carousel__item { flex-basis: min(420px, 60vw); }
+  .section--videoCarousel .carousel.is-count-2 { justify-content: center; }
+  .section--videoCarousel .carousel.is-count-2 .carousel__item { flex-basis: clamp(260px, 40vw, 480px); }
+}
+
+/* Móvil: siempre 1 video por vista con snap por video */
+@media (max-width: 719px) {
+  .section--videoCarousel .carousel__item { flex: 0 0 100%; }
 }
 
 /* Texto largo con encabezado desplegable */
