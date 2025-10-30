@@ -240,6 +240,8 @@ main {
   font-size: 1.05rem;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.86);
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .section--opcionesCompra h2 {
@@ -475,8 +477,12 @@ main {
   margin: 0;
   font-size: 1.05rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
+  text-align: justify;
+  text-justify: inter-word;
 }
+
+/* (Regla específica de :last-child eliminada; ahora se justifica globalmente en .image-card__description) */
 
 .section--imageCarousel h2 {
   font-family: var(--font-heading);
@@ -487,6 +493,7 @@ main {
 
 .section--imageCarousel p {
   text-align: center;
+  color: #fff;
 }
 
 .carousel {
@@ -654,6 +661,10 @@ main {
 
 .section--botonAccion {
   text-align: center;
+}
+
+.section--botonAccion p {
+  color: #fff;
 }
 
 .section--botonAccion [data-img-frame] {
@@ -1471,15 +1482,15 @@ main {
   background: transparent; /* No background */
   border-radius: 0; /* No circle */
   box-shadow: none; /* No shadow */
-  transition: opacity 0.2s ease; /* Subtle hover transition */
+  transition: color 0.2s ease, transform 0.2s ease; /* Smooth color + zoom */
   color: #fff;
   /* Remove fixed width/height and grid centering */
 }
 
-.social-list a:hover {
-  opacity: 0.85; /* Subtle hover effect */
-  transform: none; /* Remove previous transform */
-  box-shadow: none; /* Ensure no shadow on hover */
+.social-list a:hover,
+.social-list a:active,
+.social-list a:focus-visible {
+  transform: scale(1.08); /* Leve zoom al interactuar */
 }
 
 .social-list a:focus-visible {
@@ -1495,6 +1506,26 @@ main {
   fill: currentColor;
   display: block; /* Remove extra space below */
 }
+
+/* Colores por red social al interactuar */
+.social-list a[href*="instagram.com"]:hover,
+.social-list a[href*="instagram.com"]:active,
+.social-list a[href*="instagram.com"]:focus-visible { color: #E1306C; }
+
+.social-list a[href*="facebook.com"]:hover,
+.social-list a[href*="facebook.com"]:active,
+.social-list a[href*="facebook.com"]:focus-visible { color: #1877F2; }
+
+.social-list a[href*="wa.me"]:hover,
+.social-list a[href*="wa.me"]:active,
+.social-list a[href*="wa.me"]:focus-visible,
+.social-list a[href*="whatsapp.com"]:hover,
+.social-list a[href*="whatsapp.com"]:active,
+.social-list a[href*="whatsapp.com"]:focus-visible { color: #25D366; }
+
+.social-list a[href*="tiktok.com"]:hover,
+.social-list a[href*="tiktok.com"]:active,
+.social-list a[href*="tiktok.com"]:focus-visible { color: #000; }
 @media (prefers-reduced-motion: reduce) {
   video { animation: none; }
 }
