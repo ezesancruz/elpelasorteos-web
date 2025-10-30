@@ -998,12 +998,7 @@ const sectionEditors = {
         s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
         s.data.videos[vidIndex].controls = value;
       })));
-      const posterPath = ['pages', pageIndex, 'sections', index, 'data', 'videos', vidIndex, 'poster'];
-      item.appendChild(createImageField('Poster (opcional)', (it && it.poster) || '', posterPath, value => updateSection(index, s => {
-        s.data.videos = s.data.videos || [];
-        const current = s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
-        current.poster = value;
-      })));
+      // Se eliminó el campo de póster opcional por requerimiento
       list.appendChild(item);
     });
     const addBtn = document.createElement('button');

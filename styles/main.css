@@ -578,10 +578,13 @@ main {
 
 /* Ajustes por cantidad (desktop) */
 @media (min-width: 720px) {
-  .section--videoCarousel .carousel.is-count-1 { justify-content: center; }
-  .section--videoCarousel .carousel.is-count-1 .carousel__item { flex-basis: min(420px, 60vw); }
+  /* Mantener el mismo tamaño de item que en 3 columnas, pero centrado si hay 1 o 2 */
+  .section--videoCarousel .carousel.is-count-1,
   .section--videoCarousel .carousel.is-count-2 { justify-content: center; }
-  .section--videoCarousel .carousel.is-count-2 .carousel__item { flex-basis: clamp(260px, 40vw, 480px); }
+  .section--videoCarousel .carousel.is-count-1 .carousel__item,
+  .section--videoCarousel .carousel.is-count-2 .carousel__item {
+    flex-basis: calc((100% - 2 * var(--vc-gap)) / 3);
+  }
 }
 
 /* Móvil: siempre 1 video por vista con snap por video */
