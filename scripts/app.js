@@ -1205,10 +1205,16 @@ function renderImageCarouselSection(section) {
   }
   const track = document.createElement('div');
   track.className = 'carousel';
-  (section.data?.images || []).forEach(entry => {
-    if (!entry) return;
-    const image = typeof entry === 'object' && entry ? entry : { src: entry };
-    if (!image.src) return;
+  const validImages = (section.data?.images || []).map(entry => {
+    if (!entry) return null;
+    const image = (typeof entry === 'object' && entry) ? entry : { src: entry };
+    return image?.src ? image : null;
+  }).filter(Boolean);
+  const count = validImages.length;
+  if (count <= 1) track.classList.add('is-count-1');
+  else if (count === 2) track.classList.add('is-count-2');
+  else track.classList.add('is-count-3plus');
+  validImages.forEach(image => {
     const item = document.createElement('div');
     item.className = 'carousel__item';
     const frame = createImg(image, image.alt || image.title || section.data?.title || 'Galeria', { preferThumb: true });

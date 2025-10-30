@@ -545,6 +545,39 @@ main {
   scroll-snap-align: center;
 }
 
+/* Carrusel de imágenes con comportamiento de slide como videos */
+.section--imageCarousel .carousel {
+  --ic-gap: 1.25rem;
+  gap: var(--ic-gap);
+  -webkit-overflow-scrolling: touch;
+}
+.section--imageCarousel .carousel::-webkit-scrollbar { display: none; }
+.section--imageCarousel .carousel { scrollbar-width: none; }
+.section--imageCarousel .carousel__item {
+  flex: 0 0 calc((100% - 2 * var(--ic-gap)) / 3);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: grid;
+  place-items: center;
+}
+.section--imageCarousel .carousel [data-img-frame] {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  display: block;
+}
+@media (min-width: 720px) {
+  .section--imageCarousel .carousel.is-count-1,
+  .section--imageCarousel .carousel.is-count-2 { justify-content: center; }
+  .section--imageCarousel .carousel.is-count-1 .carousel__item,
+  .section--imageCarousel .carousel.is-count-2 .carousel__item {
+    flex-basis: calc((100% - 2 * var(--ic-gap)) / 3);
+  }
+}
+@media (max-width: 719px) {
+  .section--imageCarousel .carousel__item { flex: 0 0 100%; }
+}
+
 /* Carrusel de videos (misma UI que imágenes) */
 .section--videoCarousel h2 {
   font-family: var(--font-heading);
