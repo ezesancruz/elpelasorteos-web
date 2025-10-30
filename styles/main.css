@@ -566,6 +566,12 @@ main {
   border-radius: 18px;
   display: block;
 }
+.section--imageCarousel .carousel [data-img-frame] > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
 @media (min-width: 720px) {
   .section--imageCarousel .carousel.is-count-1,
   .section--imageCarousel .carousel.is-count-2 { justify-content: center; }
@@ -1111,10 +1117,10 @@ main {
   display: flex;
   gap: 0.75rem;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Forzar una sola fila */
   width: 80%; /* Match the width of the preview */
   margin: 0 auto; /* Center the controls */
-  justify-content: center;
+  justify-content: space-between; /* Repartir espacio en una fila */
 }
 
 .editor-image-controls input[type="file"] {
@@ -1130,6 +1136,11 @@ main {
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
   min-width: 0; /* Allow to shrink below content size */
+  flex: 1 1 0; /* Ambos botones comparten el ancho disponible */
+  text-align: center;
+  white-space: nowrap; /* Mantener texto en una sola línea */
+  overflow: hidden;     /* Evitar desbordes visuales */
+  text-overflow: ellipsis; /* Mostrar elipsis si no entra */
 }
 
 .editor-image-controls button:hover {
@@ -1144,7 +1155,7 @@ main {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   z-index: 120;
 }
 
@@ -1153,8 +1164,8 @@ main {
 }
 
 .editor-cropper {
-  width: min(920px, 100%);
-  max-height: 90vh;
+  width: min(720px, 96vw);
+  max-height: 86vh;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1172,16 +1183,17 @@ main {
 
 .editor-cropper__body {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Mantener canvas y panel lado a lado */
   gap: 1.5rem;
-  padding: 0 1.5rem 1.25rem 1.5rem;
+  padding: 0 1rem 0.75rem 1rem;
   justify-content: center;
   flex: 1;
   overflow-y: auto;
+  overflow-x: auto; /* Permite desplazamiento horizontal si no entra */
 }
 
 .editor-cropper__canvas {
-  width: min(600px, 65vw);
+  width: min(520px, 70vw);
   max-width: 100%;
   border-radius: 12px;
   background: #000;
@@ -1192,7 +1204,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-width: clamp(200px, 25vw, 240px);
+  min-width: clamp(180px, 24vw, 220px);
 }
 
 .editor-cropper__label {
@@ -1253,18 +1265,17 @@ main {
 
 @media (max-width: 720px) {
   .editor-cropper__body {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;     /* Lado a lado también en móvil */
+    align-items: flex-start;
+    overflow-x: auto;
   }
-
   .editor-cropper__aside {
-    width: 100%;
-    min-width: 0;
+    width: auto;
+    min-width: 180px;
   }
-
   .editor-cropper__preview {
-    max-width: 320px;
-    margin: 0 auto;
+    max-width: 160px;
+    margin: 0;
   }
 }
 
@@ -1774,10 +1785,7 @@ main {
   touch-action: manipulation;    /* mejora tap en mobile */
 }
 
-/* Prevents "double cropping" when using legacy transform crop mode */
-.carousel [data-img-frame][data-crop-mode="legacy-transform"] > img {
-  object-fit: fill;
-}
+/* No forzar fill en legacy-transform: respetar object-fit elegido (contain/cover) */
 
 /* Toggle Switch Styles */
 .editor-toggle-switch {

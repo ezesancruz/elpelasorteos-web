@@ -821,10 +821,73 @@ const sectionEditors = {
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(imgIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
-                  const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
-                  item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: 9 / 16 }));
-                  list.appendChild(item);
-                });
+      // Selector de frame (relación de aspecto)
+      const aspectMode = image?.aspectMode || '9:16';
+      const aspectOptions = [
+        { value: '3:4', label: '3:4' },
+        { value: '1:1', label: '1:1' },
+        { value: '9:16', label: '9:16' },
+        { value: 'custom', label: 'Personalizado' }
+      ];
+      const aspectFromMode = (mode, custom) => {
+        if (mode === '3:4') return 3 / 4;
+        if (mode === '1:1') return 1;
+        if (mode === '9:16') return 9 / 16;
+        if (mode === 'custom') {
+          const raw = (custom || '').trim();
+          if (!raw) return 9 / 16;
+          if (/^\d+\s*:\s*\d+$/.test(raw)) {
+            const [w, h] = raw.split(':').map(n => parseFloat(n));
+            return (w > 0 && h > 0) ? (w / h) : 9 / 16;
+          }
+          const num = parseFloat(raw.replace(',', '.'));
+          return (num > 0) ? num : 9 / 16;
+        }
+        return 9 / 16;
+      };
+      item.appendChild(createRadioGroup('Frame', aspectOptions, aspectMode, value => updateSection(index, s => {
+        s.data.images = s.data.images || [];
+        const curr = normalizeImageValue(s.data.images[imgIndex]);
+        curr.aspectMode = value;
+        // Sincronizar crop.aspect para que se refleje en la tarjeta final
+        const ratio = aspectFromMode(value, curr.aspectCustom);
+        curr.crop = curr.crop && typeof curr.crop === 'object' ? curr.crop : {};
+        curr.crop.aspect = ratio;
+        s.data.images[imgIndex] = curr;
+      }, { rerenderPanel: true })));
+      if (aspectMode === 'custom') {
+        const current = (image && image.aspectCustom) || '';
+        item.appendChild(createInput('Relación (ej: 5:6 o 1.2)', current, value => updateSection(index, s => {
+          s.data.images = s.data.images || [];
+          const curr = normalizeImageValue(s.data.images[imgIndex]);
+          curr.aspectCustom = value;
+          // Actualizar crop.aspect con la relación personalizada
+          const ratio = aspectFromMode('custom', value);
+          curr.crop = curr.crop && typeof curr.crop === 'object' ? curr.crop : {};
+          curr.crop.aspect = ratio;
+          s.data.images[imgIndex] = curr;
+        }, { rerenderPanel: true })));
+      }
+      const computedAspect = aspectFromMode(aspectMode, image?.aspectCustom);
+
+      const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'images', imgIndex];
+      item.appendChild(createImageField('Imagen', image, imagePath, value => ensureImage(imgIndex, img => Object.assign(img, normalizeImageValue(value))), { aspect: computedAspect }));
+
+      // Ajuste de imagen dentro del frame (sin deformar): cover vs contain
+      const fitOptions = [
+        { value: 'contain', label: 'Mostrar completa (contain)' },
+        { value: 'cover', label: 'Recortar para llenar (cover)' }
+      ];
+      const currentFit = (image && image.crop && typeof image.crop.objectFit === 'string') ? image.crop.objectFit : 'contain';
+      item.appendChild(createRadioGroup('Ajuste en frame', fitOptions, currentFit, value => updateSection(index, s => {
+        s.data.images = s.data.images || [];
+        const curr = normalizeImageValue(s.data.images[imgIndex]);
+        curr.crop = curr.crop && typeof curr.crop === 'object' ? curr.crop : {};
+        curr.crop.objectFit = value === 'cover' ? 'cover' : 'contain';
+        s.data.images[imgIndex] = curr;
+      })));
+      list.appendChild(item);
+    });
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
                 addBtn.textContent = 'Agregar imagen';
@@ -1680,22 +1743,24 @@ function openImageCropper({ src, aspect = 1, initialCrop }) {
     }
 
     function updateCanvasSize() {
-      const maxWidth = 600;
-      const maxHeight = 450;
+      const vw = Math.max(320, Math.min(window.innerWidth || 1024, 1200));
+      const vh = Math.max(480, Math.min(window.innerHeight || 800, 1400));
       const aspect = state.aspect;
 
-      let width = maxWidth;
-      let height = width / aspect;
+      const maxWidth = Math.floor(Math.min(520, vw * 0.6));
+      const maxHeight = Math.floor(Math.min(360, vh * 0.5));
 
+      let width = maxWidth;
+      let height = Math.round(width / aspect);
       if (height > maxHeight) {
         height = maxHeight;
-        width = height * aspect;
+        width = Math.round(height * aspect);
       }
 
       canvas.width = width;
       canvas.height = height;
-      previewCanvas.width = 200;
-      previewCanvas.height = Math.round(previewCanvas.width / aspect);
+      previewCanvas.width = 180;
+      previewCanvas.height = Math.max(120, Math.round(previewCanvas.width / aspect));
     }
 
     function updateBaseScale() {
@@ -1873,14 +1938,9 @@ function openImageCropper({ src, aspect = 1, initialCrop }) {
 
 function renderImagePreview(previewEl, imageObj) {
   if (!previewEl) return;
-  const thumb = imageObj?.thumb;
-  if (thumb) {
-    previewEl.style.backgroundImage = `url(${thumb})`;
-    previewEl.classList.remove('is-empty');
-    return;
-  }
-  if (imageObj?.src) {
-    previewEl.style.backgroundImage = `url(${imageObj.src})`;
+  const src = imageObj?.src;
+  if (src) {
+    previewEl.style.backgroundImage = `url(${src})`;
     previewEl.classList.remove('is-empty');
   } else {
     previewEl.style.backgroundImage = '';

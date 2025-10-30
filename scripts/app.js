@@ -661,9 +661,11 @@ function resolveLegacyTransform(crop) {
     return null;
   }
 
-  // Only apply scale. The translate part was conflicting with object-position.
+  // Aplicar escala y anclar el zoom al punto seleccionado (offsets)
+  // Usamos transform-origin basado en offsetX/offsetY para que el paneo se respete sin usar translate.
   const value = `scale(${zoom})`;
-  return { value, origin: 'center center', willChange: 'transform', mode: 'legacy-transform' };
+  const origin = `${formatPercent(offsetX)} ${formatPercent(offsetY)}`;
+  return { value, origin, willChange: 'transform', mode: 'legacy-transform' };
 }
 
 function toPositiveNumber(value, fallback) {
@@ -1217,10 +1219,27 @@ function renderImageCarouselSection(section) {
   validImages.forEach(image => {
     const item = document.createElement('div');
     item.className = 'carousel__item';
-    const frame = createImg(image, image.alt || image.title || section.data?.title || 'Galeria', { preferThumb: true });
+    const aspectMode = image?.aspectMode || '9:16';
+    const resolveAspect = (mode, custom) => {
+      if (mode === '3:4') return 3 / 4;
+      if (mode === '1:1') return 1;
+      if (mode === '9:16') return 9 / 16;
+      if (mode === 'custom') {
+        const raw = (custom || '').trim();
+        if (/^\d+\s*:\s*\d+$/.test(raw)) { const [w,h] = raw.split(':').map(parseFloat); if (w>0&&h>0) return w/h; }
+        const num = parseFloat((custom || '').replace(',', '.'));
+        if (num > 0) return num;
+      }
+      return 9 / 16;
+    };
+    const aspect = resolveAspect(aspectMode, image?.aspectCustom);
+    const fit = (image && image.crop && typeof image.crop.objectFit === 'string') ? image.crop.objectFit : 'contain';
+    const frame = createImg(image, image.alt || image.title || section.data?.title || 'Galeria', { aspect, objectFit: fit });
     item.appendChild(frame);
     track.appendChild(item);
   });
+  // Enhancements: drag and wheel-to-scroll support
+  enhanceCarouselScrolling(track);
   container.appendChild(track);
   return container;
 }
@@ -1405,8 +1424,33 @@ function renderVideoCarouselSection(section) {
     item.appendChild(videoEl);
     track.appendChild(item);
   });
+  enhanceCarouselScrolling(track);
   container.appendChild(track);
   return container;
+}
+
+function enhanceCarouselScrolling(track) {
+  if (!track || track.__enhanced) return;
+  track.__enhanced = true;
+  try { track.style.cursor = 'grab'; } catch (_) {}
+  let isDown = false; let startX = 0; let scrollLeft = 0;
+  const onDown = (e) => { isDown = true; startX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0; scrollLeft = track.scrollLeft; track.style.cursor = 'grabbing'; };
+  const onMove = (e) => { if (!isDown) return; const x = e.clientX || (e.touches && e.touches[0]?.clientX) || 0; const dx = x - startX; track.scrollLeft = scrollLeft - dx; };
+  const onUp = () => { isDown = false; track.style.cursor = 'grab'; };
+  track.addEventListener('mousedown', onDown);
+  track.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  track.addEventListener('touchstart', onDown, { passive: true });
+  track.addEventListener('touchmove', onMove, { passive: true });
+  track.addEventListener('touchend', onUp, { passive: true });
+  track.addEventListener('mouseleave', onUp);
+  // Convert vertical wheel to horizontal scroll for convenience
+  track.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      track.scrollLeft += e.deltaY; // scroll horizontally with vertical wheel
+      e.preventDefault();
+    }
+  }, { passive: false });
 }
 
 function renderCTASection(section) {
