@@ -828,27 +828,158 @@ const sectionRenderers = {
   tarjetaValidacion: renderValidationCardSection,
   muroGanadores: renderWinnerCardsSection,
   keyValue: renderKeyValueSection,
-  faq: renderFAQSection
+  faq: renderFAQSection,
+  textoLargo: renderTextLongSection
 };
 
 function renderRichTextSection(section) {
+  const data = section?.data || {};
+  const mode = (data.mode === 'twoColumns') ? 'twoColumns' : 'single';
+  const slider = data?.slider;
+  const sliderEnabled = !!(slider && slider.enabled === true && Array.isArray(slider.items) && slider.items.length > 1);
+
+  // Si hay slider habilitado y elementos suficientes, renderizamos carrusel de texto corto (modo single por slide)
+  if (sliderEnabled) {
+    const container = baseSection('textoInformativo');
+    if (data.title && !data.sharedTitle) {
+      const heading = document.createElement('h2');
+      heading.innerHTML = data.title;
+      container.appendChild(heading);
+    }
+    const track = document.createElement('div');
+    track.className = 'dv2-slider';
+    slider.items.forEach((it) => {
+      const slide = document.createElement('div');
+      slide.className = 'dv2-slide';
+      const block = document.createElement('div');
+      const isTwo = Array.isArray(it?.columns);
+      block.className = 'text-short-slide' + (isTwo ? ' ts-two' : '');
+      if (isTwo) {
+        // Título compartido opcional por slide
+        if (it.sharedTitle && it.title) {
+          const h = document.createElement('h3');
+          h.innerHTML = it.title;
+          block.appendChild(h);
+        }
+        const grid = document.createElement('div');
+        grid.className = 'ts-grid';
+        const cols = it.columns.slice(0, 2);
+        while (cols.length < 2) cols.push({});
+        cols.forEach((col) => {
+          const cell = document.createElement('div');
+          cell.className = 'ts-col';
+          if (!it.sharedTitle && col.title) {
+            const ch = document.createElement('h3');
+            ch.innerHTML = col.title;
+            cell.appendChild(ch);
+          }
+          const body = (col.body && typeof col.body === 'string') ? col.body : '';
+          if (body) {
+            const p = document.createElement('p');
+            p.innerHTML = body;
+            cell.appendChild(p);
+          }
+          grid.appendChild(cell);
+        });
+        block.appendChild(grid);
+      } else {
+        if (it.title) {
+          const h = document.createElement('h3');
+          h.innerHTML = it.title;
+          block.appendChild(h);
+        }
+        const p = document.createElement('p');
+        p.innerHTML = it.body || '';
+        block.appendChild(p);
+      }
+      slide.appendChild(block);
+      track.appendChild(slide);
+    });
+    container.appendChild(track);
+    return container;
+  }
+
+  // Sin slider: render simple o dos columnas
   const container = baseSection('textoInformativo');
-  if (section.data?.title) {
+  if (mode === 'twoColumns') {
+    // Título compartido opcional
+    if (data.sharedTitle && data.title) {
+      const heading = document.createElement('h2');
+      heading.innerHTML = data.title;
+      container.appendChild(heading);
+    }
+    container.classList.add('ts-two');
+    const grid = document.createElement('div');
+    grid.className = 'ts-grid';
+    const cols = Array.isArray(data.columns) ? data.columns.slice(0, 2) : [];
+    while (cols.length < 2) cols.push({});
+    cols.forEach((col, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'ts-col';
+      if (!data.sharedTitle && col.title) {
+        const h = document.createElement('h3');
+        h.innerHTML = col.title;
+        cell.appendChild(h);
+      }
+      const body = (col.body && typeof col.body === 'string') ? col.body : '';
+      if (body) {
+        const p = document.createElement('p');
+        p.innerHTML = body;
+        cell.appendChild(p);
+      }
+      grid.appendChild(cell);
+    });
+    container.appendChild(grid);
+    return container;
+  }
+
+  // Modo single (comportamiento original ampliado)
+  if (data.title) {
     const heading = document.createElement('h2');
-    heading.innerHTML = section.data.title;
+    heading.innerHTML = data.title;
     container.appendChild(heading);
   }
-  if (section.data?.html) {
+  if (data?.html) {
     const wrapper = document.createElement('div');
-    wrapper.innerHTML = section.data.html;
+    wrapper.innerHTML = data.html;
     container.appendChild(wrapper);
   } else {
-    section.data?.lines?.forEach(line => {
+    (data?.lines || []).forEach(line => {
       const p = document.createElement('p');
       p.innerHTML = line;
       container.appendChild(p);
     });
   }
+  return container;
+}
+
+function renderTextLongSection(section) {
+  const data = section?.data || {};
+  const container = baseSection('textoLargo');
+
+  const details = document.createElement('details');
+  if (data.expanded === true) {
+    try { details.setAttribute('open', ''); } catch (_) {}
+  }
+  const summary = document.createElement('summary');
+  const hint = (typeof data.hint === 'string' && data.hint.trim()) ? data.hint : '(tocar para desplegar)';
+  const titleText = data.title || 'Contenido';
+  summary.innerHTML = `${titleText} <span class="text-long__hint">${hint}</span>`;
+  details.appendChild(summary);
+
+  const content = document.createElement('div');
+  content.className = 'text-long__content';
+  if (data?.html) {
+    content.innerHTML = data.html;
+  } else {
+    (data?.lines || []).forEach(line => {
+      const p = document.createElement('p');
+      p.innerHTML = line;
+      content.appendChild(p);
+    });
+  }
+  details.appendChild(content);
+  container.appendChild(details);
   return container;
 }
 

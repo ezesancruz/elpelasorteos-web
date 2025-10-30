@@ -240,8 +240,42 @@ main {
   font-size: 1.05rem;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.86);
-  text-align: justify;
-  text-justify: inter-word;
+}
+
+/* Texto corto en dos columnas */
+.section--textoInformativo.ts-two .ts-grid {
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .section--textoInformativo.ts-two .ts-grid { grid-template-columns: 1fr 1fr; }
+}
+.section--textoInformativo.ts-two .ts-col h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-family: var(--font-heading);
+}
+.text-short-slide h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.25rem;
+  font-family: var(--font-heading);
+}
+.text-short-slide p { margin: 0; line-height: 1.7; }
+
+/* Dos columnas dentro de slides de texto corto */
+.text-short-slide.ts-two .ts-grid {
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .text-short-slide.ts-two .ts-grid { grid-template-columns: 1fr 1fr; }
+}
+.text-short-slide.ts-two .ts-col h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-family: var(--font-heading);
 }
 
 .section--opcionesCompra h2 {
@@ -509,6 +543,40 @@ main {
   width: clamp(190px, 32vw, 280px);
   aspect-ratio: 9 / 16;
   scroll-snap-align: center;
+}
+
+/* Texto largo con encabezado desplegable */
+.section--textoLargo details {
+  border-radius: 16px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 0.75rem 1rem;
+}
+.section--textoLargo summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section--textoLargo summary::-webkit-details-marker { display: none; }
+.section--textoLargo summary::after {
+  content: '▾';
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+.section--textoLargo details[open] summary::after { transform: rotate(180deg); }
+.section--textoLargo .text-long__hint { opacity: 0.75; font-size: 0.95rem; margin-left: 0.5rem; }
+.section--textoLargo .text-long__content {
+  margin-top: 0.75rem;
+}
+.section--textoLargo .text-long__content p {
+  margin: 0.5rem 0;
+  line-height: 1.8;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 /* Slider dv2 para detalleVisual cuando está activado */

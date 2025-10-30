@@ -528,8 +528,146 @@ function renderSectionsEditor() {
 const sectionEditors = {
   textoInformativo(section, index) {
     const wrapper = document.createElement('div');
-    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
-    const textarea = createRichTextInput('Lineas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
+
+    const currentMode = (section.data?.mode === 'twoColumns') ? 'twoColumns' : 'single';
+
+    const modeLabel = document.createElement('label');
+    modeLabel.className = 'editor-field';
+    const span = document.createElement('span');
+    span.textContent = 'Modo de texto';
+    modeLabel.appendChild(span);
+    const select = document.createElement('select');
+    [
+      { value: 'single', text: 'Simple (título + texto)' },
+      { value: 'twoColumns', text: 'Texto – texto (dos columnas)' }
+    ].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.value; o.textContent = opt.text; if (opt.value === currentMode) o.selected = true; select.appendChild(o);
+    });
+    select.addEventListener('change', (e) => updateSection(index, s => { s.data.mode = e.target.value; }, { rerenderPanel: true }));
+    modeLabel.appendChild(select);
+    wrapper.appendChild(modeLabel);
+
+    if (currentMode === 'twoColumns') {
+      const shared = !!section.data?.sharedTitle;
+      wrapper.appendChild(createToggleSwitch('Compartir título para ambas columnas', shared, value => updateSection(index, s => { s.data.sharedTitle = value; }, { rerenderPanel: true })));
+      if (shared) {
+        wrapper.appendChild(createRichTextInput('Título', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+      }
+      const cols = Array.isArray(section.data?.columns) ? section.data.columns : [{}, {}];
+      while (cols.length < 2) cols.push({});
+      cols.slice(0, 2).forEach((col, i) => {
+        const box = document.createElement('div');
+        box.className = 'editor-inline-item';
+        const header = document.createElement('div');
+        header.className = 'editor-inline-item__header';
+        header.textContent = `Columna ${i + 1}`;
+        box.appendChild(header);
+        if (!shared) {
+          box.appendChild(createRichTextInput('Título', col.title || '', value => updateSection(index, s => {
+            s.data.columns = s.data.columns || [{}, {}];
+            s.data.columns[i] = s.data.columns[i] || {};
+            s.data.columns[i].title = value;
+          })));
+        }
+        box.appendChild(createRichTextInput('Texto', col.body || '', value => updateSection(index, s => {
+          s.data.columns = s.data.columns || [{}, {}];
+          s.data.columns[i] = s.data.columns[i] || {};
+          s.data.columns[i].body = value;
+        })));
+        wrapper.appendChild(box);
+      });
+    } else {
+      wrapper.appendChild(createRichTextInput('Título', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+      const textarea = createRichTextInput('Líneas (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
+        s.data.lines = value.split('\n');
+      }));
+      wrapper.appendChild(textarea);
+    }
+
+    // Slider opcional para Texto corto
+    const slider = section.data?.slider || {};
+    const isEnabled = slider.enabled === true;
+    wrapper.appendChild(createToggleSwitch('Habilitar slider (múltiples bloques)', !!isEnabled, value => updateSection(index, s => {
+      s.data.slider = s.data.slider || { enabled: false, items: [] };
+      s.data.slider.enabled = value;
+    }, { rerenderPanel: true })));
+
+    if (isEnabled) {
+      const list = document.createElement('div');
+      list.className = 'editor-inline-list';
+      const items = Array.isArray(slider.items) ? slider.items : [];
+      items.forEach((item, itemIndex) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'editor-inline-item';
+        const header = document.createElement('div');
+        header.className = 'editor-inline-item__header';
+        header.textContent = `Slide ${itemIndex + 1}`;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = 'Eliminar';
+        remove.addEventListener('click', () => updateSection(index, s => s.data.slider.items.splice(itemIndex, 1), { rerenderPanel: true }));
+        header.appendChild(remove);
+        itemEl.appendChild(header);
+        const isTwo = !!item?.twoColumns || Array.isArray(item?.columns);
+        itemEl.appendChild(createToggleSwitch('Dos columnas en este slide', isTwo, value => updateSection(index, s => {
+          const it = s.data.slider.items[itemIndex] = s.data.slider.items[itemIndex] || {};
+          it.twoColumns = value;
+          if (value && !Array.isArray(it.columns)) it.columns = [{}, {}];
+          if (!value) { delete it.columns; delete it.sharedTitle; }
+        }, { rerenderPanel: true })));
+
+        if (isTwo) {
+          const shared = !!item?.sharedTitle;
+          itemEl.appendChild(createToggleSwitch('Compartir título en columnas', shared, value => updateSection(index, s => { s.data.slider.items[itemIndex].sharedTitle = value; }, { rerenderPanel: true })));
+          if (shared) {
+            itemEl.appendChild(createRichTextInput('Título del slide', item?.title || '', value => updateSection(index, s => s.data.slider.items[itemIndex].title = value)));
+          }
+          const cols = Array.isArray(item?.columns) ? item.columns : [{}, {}];
+          while (cols.length < 2) cols.push({});
+          cols.slice(0, 2).forEach((col, i) => {
+            const box = document.createElement('div');
+            box.className = 'editor-inline-item';
+            const h = document.createElement('div'); h.className = 'editor-inline-item__header'; h.textContent = `Columna ${i + 1}`; box.appendChild(h);
+            if (!shared) {
+              box.appendChild(createRichTextInput('Título columna', col.title || '', value => updateSection(index, s => {
+                s.data.slider.items[itemIndex].columns = s.data.slider.items[itemIndex].columns || [{}, {}];
+                s.data.slider.items[itemIndex].columns[i] = s.data.slider.items[itemIndex].columns[i] || {};
+                s.data.slider.items[itemIndex].columns[i].title = value;
+              })));
+            }
+            box.appendChild(createRichTextInput('Texto', col.body || '', value => updateSection(index, s => {
+              s.data.slider.items[itemIndex].columns = s.data.slider.items[itemIndex].columns || [{}, {}];
+              s.data.slider.items[itemIndex].columns[i] = s.data.slider.items[itemIndex].columns[i] || {};
+              s.data.slider.items[itemIndex].columns[i].body = value;
+            })));
+            itemEl.appendChild(box);
+          });
+        } else {
+          itemEl.appendChild(createRichTextInput('Título (opcional)', item?.title || '', value => updateSection(index, s => s.data.slider.items[itemIndex].title = value)));
+          itemEl.appendChild(createRichTextInput('Texto', item?.body || '', value => updateSection(index, s => s.data.slider.items[itemIndex].body = value)));
+        }
+        list.appendChild(itemEl);
+      });
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.textContent = 'Agregar slide de texto';
+      add.addEventListener('click', () => updateSection(index, s => {
+        s.data.slider = s.data.slider || { enabled: true, items: [] };
+        s.data.slider.items.push({ title: '', body: 'Nuevo texto' });
+      }, { rerenderPanel: true }));
+      wrapper.appendChild(list);
+      wrapper.appendChild(add);
+    }
+
+    return wrapper;
+  },
+  textoLargo(section, index) {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(createRichTextInput('Título', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createToggleSwitch('Expandido por defecto', !!section.data?.expanded, value => updateSection(index, s => s.data.expanded = value)));
+    wrapper.appendChild(createInput('Indicador (hint)', section.data?.hint || '(tocar para desplegar)', value => updateSection(index, s => s.data.hint = value)));
+    const textarea = createRichTextInput('Líneas de contenido (una por fila)', (section.data?.lines || []).join('\n'), value => updateSection(index, s => {
       s.data.lines = value.split('\n');
     }));
     wrapper.appendChild(textarea);
@@ -968,7 +1106,12 @@ const defaultSections = {
   textoInformativo: {
     id: 'textoInformativo-new',
     type: 'textoInformativo',
-    data: { title: 'Nuevo bloque', lines: ['Contenido editable'] }
+    data: { title: 'Nuevo bloque', lines: ['Contenido editable'], mode: 'single' }
+  },
+  textoLargo: {
+    id: 'textoLargo-new',
+    type: 'textoLargo',
+    data: { title: 'Título desplegable', lines: ['Contenido largo editable'], expanded: false, hint: '(tocar para desplegar)' }
   },
   opcionesCompra: {
     id: 'opcionesCompra-new',
@@ -1024,7 +1167,8 @@ const defaultSections = {
 };
 
 const sectionAliases = {
-  textoInformativo: 'Tarjeta texto',
+  textoInformativo: 'Tarjeta texto (corto)',
+  textoLargo: 'Tarjeta texto (largo)',
   opcionesCompra: 'Tarjeta productos',
   galeriaImagenes: 'Tarjeta galería de imágenes',
   carruselImagenes: 'Tarjeta carrusel de imágenes',
