@@ -821,6 +821,7 @@ const sectionRenderers = {
   linkCards: renderLinkCardsSection,
   galeriaImagenes: renderImageGridSection,
   carruselImagenes: renderImageCarouselSection,
+  carruselVideos: renderVideoCarouselSection,
   detalleVisual: renderImageHighlightSection,
   detalleVisualVideo: renderVideoHighlightSection,
   imageHighlight: renderImageHighlightSection,
@@ -1342,6 +1343,55 @@ function renderImageHighlightSection(section) {
     container.appendChild(media);
     container.appendChild(body);
   }
+  return container;
+}
+
+function renderVideoCarouselSection(section) {
+  const container = baseSection('videoCarousel');
+  if (section.data?.title) {
+    const heading = document.createElement('h2');
+    heading.innerHTML = section.data.title;
+    container.appendChild(heading);
+  }
+  if (section.data?.description) {
+    const description = document.createElement('p');
+    description.innerHTML = section.data.description;
+    container.appendChild(description);
+  }
+  const track = document.createElement('div');
+  track.className = 'carousel';
+  (section.data?.videos || []).forEach(entry => {
+    if (!entry) return;
+    const vid = (typeof entry === 'object' && entry) ? entry : { src: entry };
+    if (!vid.src) return;
+    const item = document.createElement('div');
+    item.className = 'carousel__item';
+    const videoEl = document.createElement('video');
+    const auto = (vid.autoplay !== false);      // por defecto true
+    const muted = (vid.muted !== false);        // por defecto true
+    const loop = (vid.loop !== false);          // por defecto true
+    const showControls = (vid.controls === true); // por defecto false
+
+    if (auto) videoEl.setAttribute('autoplay', '');
+    if (muted) videoEl.muted = true;
+    if (loop) videoEl.setAttribute('loop', '');
+    if (showControls) videoEl.setAttribute('controls', '');
+    videoEl.setAttribute('playsinline', 'true');
+    videoEl.setAttribute('preload', 'metadata');
+    if (vid.poster) videoEl.poster = vid.poster;
+    const source = document.createElement('source');
+    source.src = vid.src;
+    videoEl.appendChild(source);
+    // Tocar/click: alternar play/pausa
+    videoEl.addEventListener('click', () => {
+      try {
+        if (videoEl.paused) videoEl.play(); else videoEl.pause();
+      } catch (_) {}
+    });
+    item.appendChild(videoEl);
+    track.appendChild(item);
+  });
+  container.appendChild(track);
   return container;
 }
 

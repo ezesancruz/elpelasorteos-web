@@ -911,6 +911,112 @@ const sectionEditors = {
     ));
     return wrapper;
   },
+  carruselVideos(section, index) {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(createRichTextInput('Titulo', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
+    wrapper.appendChild(createRichTextInput('Descripcion', section.data?.description || '', value => updateSection(index, s => s.data.description = value)));
+    const list = document.createElement('div');
+    list.className = 'editor-inline-list';
+    const pageIndex = currentPageIndex();
+    (section.data?.videos || []).forEach((it, vidIndex) => {
+      const item = document.createElement('div');
+      item.className = 'editor-inline-item';
+      const header = document.createElement('div');
+      header.className = 'editor-inline-item__header';
+      header.textContent = `Video ${vidIndex + 1}`;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Eliminar';
+      remove.addEventListener('click', () => updateSection(index, s => s.data.videos.splice(vidIndex, 1), { rerenderPanel: true }));
+      header.appendChild(remove);
+      item.appendChild(header);
+      const videoUrlLabel = createInput('Video (URL)', (it && it.src) || it || '', value => updateSection(index, s => {
+        s.data.videos = s.data.videos || [];
+        const current = s.data.videos[vidIndex];
+        if (typeof current === 'object' && current) {
+          current.src = value;
+        } else {
+          s.data.videos[vidIndex] = { src: value };
+        }
+      }));
+      item.appendChild(videoUrlLabel);
+
+      // Subida de archivo de video por ítem
+      const videoUploadControls = document.createElement('div');
+      videoUploadControls.className = 'editor-video-controls';
+      const videoFileInput = document.createElement('input');
+      videoFileInput.type = 'file';
+      videoFileInput.accept = 'video/*';
+      videoFileInput.style.display = 'none';
+      const pickVideoBtn = document.createElement('button');
+      pickVideoBtn.type = 'button';
+      pickVideoBtn.textContent = 'Archivo video';
+      pickVideoBtn.addEventListener('click', () => videoFileInput.click());
+      videoFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const uploaded = await uploadVideo(file);
+          updateSection(index, s => {
+            s.data.videos = s.data.videos || [];
+            const current = s.data.videos[vidIndex];
+            if (typeof current === 'object' && current) {
+              current.src = uploaded.url;
+            } else {
+              s.data.videos[vidIndex] = { src: uploaded.url };
+            }
+          });
+          const inputEl = videoUrlLabel.querySelector('input');
+          if (inputEl) inputEl.value = uploaded.url;
+        } catch (err) {
+          console.error('uploadVideo', err);
+          alert('No se pudo subir el video');
+        } finally {
+          e.target.value = '';
+        }
+      });
+      videoUploadControls.appendChild(videoFileInput);
+      videoUploadControls.appendChild(pickVideoBtn);
+      item.appendChild(videoUploadControls);
+
+      // Opciones por video
+      const current = (typeof it === 'object' && it) ? it : {};
+      const defaultOn = (val, def) => (typeof val === 'boolean' ? val : def);
+      item.appendChild(createToggleSwitch('Autoplay', defaultOn(current.autoplay, true), value => updateSection(index, s => {
+        s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
+        s.data.videos[vidIndex].autoplay = value;
+      })));
+      item.appendChild(createToggleSwitch('Silenciar (muted)', defaultOn(current.muted, true), value => updateSection(index, s => {
+        s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
+        s.data.videos[vidIndex].muted = value;
+      })));
+      item.appendChild(createToggleSwitch('Repetir (loop)', defaultOn(current.loop, true), value => updateSection(index, s => {
+        s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
+        s.data.videos[vidIndex].loop = value;
+      })));
+      item.appendChild(createToggleSwitch('Mostrar controles', defaultOn(current.controls, false), value => updateSection(index, s => {
+        s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
+        s.data.videos[vidIndex].controls = value;
+      })));
+      const posterPath = ['pages', pageIndex, 'sections', index, 'data', 'videos', vidIndex, 'poster'];
+      item.appendChild(createImageField('Poster (opcional)', (it && it.poster) || '', posterPath, value => updateSection(index, s => {
+        s.data.videos = s.data.videos || [];
+        const current = s.data.videos[vidIndex] = (typeof s.data.videos[vidIndex] === 'object' && s.data.videos[vidIndex]) ? s.data.videos[vidIndex] : { src: (s.data.videos[vidIndex] || '') };
+        current.poster = value;
+      })));
+      list.appendChild(item);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.textContent = 'Agregar video';
+    addBtn.addEventListener('click', () => updateSection(index, s => {
+      s.data.videos = s.data.videos || [];
+      s.data.videos.push({ src: '' });
+    }, { rerenderPanel: true }));
+    wrapper.appendChild(list);
+    wrapper.appendChild(addBtn);
+    return wrapper;
+  },
   detalleVisualVideo(section, index) {
     const wrapper = document.createElement('div');
     const pageIndex = currentPageIndex();
@@ -1132,6 +1238,11 @@ const defaultSections = {
     type: 'carruselImagenes',
     data: { title: 'Galeria', description: '', images: [{ src: '' }] }
   },
+  carruselVideos: {
+    id: 'carruselVideos-new',
+    type: 'carruselVideos',
+    data: { title: 'Videos', description: '', videos: [{ src: '', autoplay: true, muted: true, loop: true, controls: false }] }
+  },
   detalleVisual: {
     id: 'detalleVisual-new',
     type: 'detalleVisual',
@@ -1181,7 +1292,8 @@ const sectionAliases = {
   botonAccion: 'Tarjeta tienda',
   tarjetaValidacion: 'Tarjeta validacion',
   muroGanadores: 'Tarjeta muro de ganadores',
-  faq: 'Tarjeta FAQ'
+  faq: 'Tarjeta FAQ',
+  carruselVideos: 'Tarjeta carrusel de videos'
 };
 
 function renderThemeEditor() {
