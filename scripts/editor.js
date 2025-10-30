@@ -616,10 +616,14 @@ const sectionEditors = {
           if (value && !Array.isArray(it.columns)) it.columns = [{}, {}];
           if (!value) { delete it.columns; delete it.sharedTitle; }
         }, { rerenderPanel: true })));
+        // Opción de compartir título: visible siempre; deshabilitada si no hay dos columnas
+        const shared = !!item?.sharedTitle;
+        const sharedToggle = createToggleSwitch('Compartir título en columnas', shared, value => updateSection(index, s => { s.data.slider.items[itemIndex].sharedTitle = value; }));
+        // Deshabilitar visualmente si no es twoColumns
+        try { sharedToggle.querySelector('input[type="checkbox"]').disabled = !isTwo; } catch (_) {}
+        itemEl.appendChild(sharedToggle);
 
         if (isTwo) {
-          const shared = !!item?.sharedTitle;
-          itemEl.appendChild(createToggleSwitch('Compartir título en columnas', shared, value => updateSection(index, s => { s.data.slider.items[itemIndex].sharedTitle = value; }, { rerenderPanel: true })));
           if (shared) {
             itemEl.appendChild(createRichTextInput('Título del slide', item?.title || '', value => updateSection(index, s => s.data.slider.items[itemIndex].title = value)));
           }

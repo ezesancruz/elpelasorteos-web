@@ -836,7 +836,7 @@ function renderRichTextSection(section) {
   const data = section?.data || {};
   const mode = (data.mode === 'twoColumns') ? 'twoColumns' : 'single';
   const slider = data?.slider;
-  const sliderEnabled = !!(slider && slider.enabled === true && Array.isArray(slider.items) && slider.items.length > 1);
+  const sliderEnabled = !!(slider && slider.enabled === true && Array.isArray(slider.items) && slider.items.length >= 1);
 
   // Si hay slider habilitado y elementos suficientes, renderizamos carrusel de texto corto (modo single por slide)
   if (sliderEnabled) {
