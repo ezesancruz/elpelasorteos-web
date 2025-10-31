@@ -61,6 +61,39 @@ function onFieldInput() {
   debouncedPreview();
 }
 
+// Helper: convierte un item de edición en plegable con <details>/<summary>
+function makeInlineItemCollapsible(itemEl, headerEl, { open = false } = {}) {
+  if (!itemEl || !headerEl) return null;
+
+  const details = document.createElement('details');
+  details.className = itemEl.className;
+  details.open = !!open;
+
+  const summary = document.createElement('summary');
+  summary.className = headerEl.className;
+
+  while (headerEl.firstChild) summary.appendChild(headerEl.firstChild);
+  details.appendChild(summary);
+
+  // Evita que los botones dentro del header plieguen/desplieguen
+  summary.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  const body = document.createElement('div');
+  body.className = 'editor-inline-item__body';
+
+  const rest = [];
+  for (let n = headerEl.nextSibling; n; n = n.nextSibling) rest.push(n);
+  rest.forEach(n => body.appendChild(n));
+
+  details.appendChild(body);
+
+  if (itemEl.parentNode) itemEl.parentNode.replaceChild(details, itemEl);
+  return { details, summary, body };
+}
+
 function renderPreview() {
   if (!editorState.site || !window.siteApp?.setSite) {
     return;
@@ -199,12 +232,12 @@ function createPanel() {
   
   const downloadBtn = document.createElement('button');
   downloadBtn.type = 'button';
-  downloadBtn.textContent = 'Descargar JSON';
+  downloadBtn.textContent = '⬇️ JSON';
   downloadBtn.addEventListener('click', downloadContent);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
-  saveBtn.textContent = 'Guardar cambios';
+  saveBtn.textContent = '💾 Cambios';
   saveBtn.addEventListener('click', saveContent);
 
   const logoutBtn = document.createElement('button');
@@ -212,6 +245,7 @@ function createPanel() {
   logoutBtn.id = 'logout-admin';
   logoutBtn.textContent = 'Salir del modo edición';
 
+  logoutBtn.textContent = '❌ Editor';
   actions.appendChild(downloadBtn);
   actions.appendChild(saveBtn);
   actions.appendChild(logoutBtn);
@@ -366,13 +400,16 @@ function renderHeroEditor() {
     header.textContent = `Boton ${index + 1}`;
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.textContent = 'Eliminar';
+    remove.textContent = '(x)';
     remove.addEventListener('click', () => updateHero(hero => hero.buttons.splice(index, 1), { rerenderPanel: true }));
     header.appendChild(remove);
     item.appendChild(header);
     item.appendChild(createInput('Etiqueta', button.label || '', value => updateHero(hero => hero.buttons[index].label = value)));
     item.appendChild(createInput('URL', button.href || '', value => updateHero(hero => hero.buttons[index].href = value)));
-    buttonsWrapper.appendChild(item);
+    {
+      const c = makeInlineItemCollapsible(item, header, { open: false });
+      buttonsWrapper.appendChild(c ? c.details : item);
+    }
   });
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -399,13 +436,16 @@ function renderHeroEditor() {
     header.textContent = `Social ${index + 1}`;
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.textContent = 'Eliminar';
+    remove.textContent = '(x)';
     remove.addEventListener('click', () => updateHero(hero => hero.social.splice(index, 1), { rerenderPanel: true }));
     header.appendChild(remove);
     item.appendChild(header);
     item.appendChild(createInput('Plataforma', social.platform || '', value => updateHero(hero => hero.social[index].platform = value)));
     item.appendChild(createInput('URL', social.url || '', value => updateHero(hero => hero.social[index].url = value)));
-    socialWrapper.appendChild(item);
+    {
+      const c = makeInlineItemCollapsible(item, header, { open: false });
+      socialWrapper.appendChild(c ? c.details : item);
+    }
   });
   const addSocial = document.createElement('button');
   addSocial.type = 'button';
@@ -575,7 +615,10 @@ const sectionEditors = {
           s.data.columns[i] = s.data.columns[i] || {};
           s.data.columns[i].body = value;
         })));
-        wrapper.appendChild(box);
+        {
+          const c = makeInlineItemCollapsible(box, header, { open: false });
+          wrapper.appendChild(c ? c.details : box);
+        }
       });
     } else {
       wrapper.appendChild(createRichTextInput('Título', section.data?.title || '', value => updateSection(index, s => s.data.title = value)));
@@ -605,7 +648,7 @@ const sectionEditors = {
         header.textContent = `Slide ${itemIndex + 1}`;
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.textContent = 'Eliminar';
+        remove.textContent = '(x)';
         remove.addEventListener('click', () => updateSection(index, s => s.data.slider.items.splice(itemIndex, 1), { rerenderPanel: true }));
         header.appendChild(remove);
         itemEl.appendChild(header);
@@ -645,13 +688,19 @@ const sectionEditors = {
               s.data.slider.items[itemIndex].columns[i] = s.data.slider.items[itemIndex].columns[i] || {};
               s.data.slider.items[itemIndex].columns[i].body = value;
             })));
-            itemEl.appendChild(box);
+            {
+              const c = makeInlineItemCollapsible(box, h, { open: false });
+              itemEl.appendChild(c ? c.details : box);
+            }
           });
         } else {
           itemEl.appendChild(createRichTextInput('Título (opcional)', item?.title || '', value => updateSection(index, s => s.data.slider.items[itemIndex].title = value)));
           itemEl.appendChild(createRichTextInput('Texto', item?.body || '', value => updateSection(index, s => s.data.slider.items[itemIndex].body = value)));
         }
-        list.appendChild(itemEl);
+        {
+          const c = makeInlineItemCollapsible(itemEl, header, { open: false });
+          list.appendChild(c ? c.details : itemEl);
+        }
       });
       const add = document.createElement('button');
       add.type = 'button';
@@ -691,7 +740,7 @@ const sectionEditors = {
       header.textContent = `Opcion ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -700,7 +749,10 @@ const sectionEditors = {
       item.appendChild(createInput('URL', card.href || '', value => updateSection(index, s => s.data.cards[cardIndex].href = value)));
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'cards', cardIndex, 'image'];
       item.appendChild(createImageField('Imagen', card.image || '', imagePath, value => updateSection(index, s => s.data.cards[cardIndex].image = value)));
-      list.appendChild(item);
+      {
+        const c = makeInlineItemCollapsible(item, header, { open: false });
+        list.appendChild(c ? c.details : item);
+      }
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -759,7 +811,7 @@ const sectionEditors = {
       header.textContent = `Imagen ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -776,7 +828,10 @@ const sectionEditors = {
         item.appendChild(createImageField('Imagen 2', normalizedImage2, image2Path, value => mutateImage(cardIndex, img => { img.image2 = normalizeImageValue(value); }), { aspect: 3 / 4 }));
         item.appendChild(createInput('Link opcional 2', image.href2 || '', value => mutateImage(cardIndex, img => { img.href2 = value; })));
       }
-      list.appendChild(item);
+      {
+        const c = makeInlineItemCollapsible(item, header, { open: false });
+        list.appendChild(c ? c.details : item);
+      }
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -817,7 +872,7 @@ const sectionEditors = {
       header.textContent = `Imagen ${imgIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(imgIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -886,7 +941,10 @@ const sectionEditors = {
         curr.crop.objectFit = value === 'cover' ? 'cover' : 'contain';
         s.data.images[imgIndex] = curr;
       })));
-      list.appendChild(item);
+      {
+        const c = makeInlineItemCollapsible(item, header, { open: false });
+        list.appendChild(c ? c.details : item);
+      }
     });
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
@@ -928,7 +986,7 @@ const sectionEditors = {
         header.textContent = `Componente ${itemIndex + 1}`;
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.textContent = 'Eliminar';
+        remove.textContent = '(x)';
         remove.addEventListener('click', () => updateSection(index, s => {
           const arr = (s.data?.slider?.items || []);
           if (arr.length > 1) arr.splice(itemIndex, 1);
@@ -940,7 +998,10 @@ const sectionEditors = {
         item.appendChild(createToggleSwitch('Invertir', !!itemData?.reverse, value => updateSection(index, s => { s.data.slider.items[itemIndex].reverse = !!value; })));
         const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'slider', 'items', itemIndex, 'image'];
         item.appendChild(createImageField('Imagen', itemData?.image || '', imagePath, value => updateSection(index, s => s.data.slider.items[itemIndex].image = value), { aspect: 5 / 6 }));
-        list.appendChild(item);
+        {
+          const c = makeInlineItemCollapsible(item, header, { open: false });
+          list.appendChild(c ? c.details : item);
+        }
       });
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
@@ -989,7 +1050,7 @@ const sectionEditors = {
       header.textContent = `Video ${vidIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.videos.splice(vidIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -1062,7 +1123,10 @@ const sectionEditors = {
         s.data.videos[vidIndex].controls = value;
       })));
       // Se eliminó el campo de póster opcional por requerimiento
-      list.appendChild(item);
+      {
+        const c = makeInlineItemCollapsible(item, header, { open: false });
+        list.appendChild(c ? c.details : item);
+      }
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -1212,7 +1276,7 @@ const sectionEditors = {
       header.textContent = `Ganador ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -1223,7 +1287,10 @@ const sectionEditors = {
       item.appendChild(createInput('Ubicacion', card.location || '', value => updateSection(index, s => s.data.cards[cardIndex].location = value)));
       const imagePath = ['pages', pageIndex, 'sections', index, 'data', 'cards', cardIndex, 'image'];
       item.appendChild(createImageField('Imagen', card.image || '', imagePath, value => updateSection(index, s => s.data.cards[cardIndex].image = value)));
-      list.appendChild(item);
+      {
+        const c = makeInlineItemCollapsible(item, header, { open: false });
+        list.appendChild(c ? c.details : item);
+      }
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -1249,13 +1316,16 @@ const sectionEditors = {
       header.textContent = `Pregunta ${itemIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Eliminar';
+      remove.textContent = '(x)';
       remove.addEventListener('click', () => updateSection(index, s => s.data.items.splice(itemIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       itemEl.appendChild(header);
       itemEl.appendChild(createRichTextInput('Pregunta', item.q || '', value => updateSection(index, s => s.data.items[itemIndex].q = value)));
       itemEl.appendChild(createRichTextInput('Respuesta', item.a || '', value => updateSection(index, s => s.data.items[itemIndex].a = value)));
-      list.appendChild(itemEl);
+      {
+        const c = makeInlineItemCollapsible(itemEl, header, { open: false });
+        list.appendChild(c ? c.details : itemEl);
+      }
     });
     const addBtn = document.createElement('button');
     addBtn.type = 'button';

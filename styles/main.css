@@ -1294,10 +1294,12 @@ main {
 
 .editor-panel__actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.5rem 1.5rem;
   border-top: 1px solid rgba(255,255,255,0.1);
+  overflow-x: auto; /* evita salto de línea, permite scroll si no entra */
 }
 
 .editor-panel__actions button,
@@ -1310,6 +1312,8 @@ main {
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
+  white-space: nowrap; /* textos en una sola línea */
+  flex: 0 0 auto;     /* no permitir que colapsen y se apilen */
 }
 
 .editor-color-field {
@@ -1453,6 +1457,12 @@ main {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.6rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.editor-inline-item__header::-webkit-details-marker {
+  display: none;
 }
 
 .editor-inline-item__header button {
