@@ -1,0 +1,134 @@
+Bit√°cora de Limpieza y Optimizaci√≥n
+
+Prop√≥sito
+- Registrar, con fecha y detalle, los cambios realizados en cada fase del limpiador (qu√© se hizo y por qu√©), manteniendo seguridad y trazabilidad.
+
+Alcance
+- Directorios/archivos: server/public/uploads, data/site-content.json, index.html, sorteo/index.html, scripts/*.js, styles/*.css.
+- Tipos de acciones: reporte/descubrimiento, saneamiento de JSON (thumbs/base64‚Üíarchivo), deduplicaci√≥n de medios y reescritura de referencias, cuarentena de no referenciados, validaciones/rollback.
+
+Lineamientos de seguridad
+- Sin borrado directo: siempre cuarentena y backups previos.
+- Validar JSON antes de reemplazar.
+- Reescribir referencias antes de mover archivos.
+- Mantener lista de protecci√≥n (keep-list) si se define.
+
+Fases planificadas
+1) Descubrimiento y Reporte (solo informe)
+2) Saneamiento de JSON (thumbs/base64 ‚Üí archivos, referencias a URLs)
+3) Deduplicaci√≥n de medios y normalizaci√≥n de referencias
+4) Limpieza (cuarentena) de no referenciados
+5) Validaci√≥n y posibilidad de rollback
+6) Opcionales (optimizaci√≥n de medios, minificaci√≥n, cach√©)
+
+Formato de registros
+- [Fase N] Nombre
+  - Fecha/hora:
+  - Acciones:
+  - Archivos afectados:
+  - Resultado:
+  - Motivo/beneficio:
+  - Observaciones:
+
+Registro
+
+[Fase 0] Inicializaci√≥n de Bit√°cora
+- Fecha/hora: [se completa al ejecutar]
+- Acciones: creaci√≥n de este archivo y definici√≥n de fases/seguridad.
+- Archivos afectados: txt/limpieza_bitacora.txt (nuevo)
+- Resultado: bit√°cora creada; sin cambios en c√≥digo ni contenido.
+- Motivo/beneficio: trazabilidad y revisi√≥n paso a paso con tu OK.
+- Observaciones: a la espera de aprobaci√≥n para iniciar Fase 1 (reporte).
+
+[Fase 1] Descubrimiento y Reporte (solo informe)
+- Fecha/hora: 2025-10-30 23:46Z
+- Acciones:
+  - Ejecuci√≥n de `node scripts/cleaner.js` en modo informe (sin cuarentena ni borrado).
+  - Generaci√≥n de `txt/limpieza_resumen.txt` con totales, duplicados, top pesados y conteo de data URIs.
+- Archivos afectados:
+  - txt/limpieza_resumen.txt (nuevo)
+- Resultado (resumen del reporte):
+  - uploads totales: 242
+  - referenciados: 0
+  - NO referenciados: 242
+  - grupos de duplicados por hash: 39 (incluye un grupo de 26 MP4 id√©nticos de ~9 MB)
+  - data URIs en JSON: 14
+  - top pesados: varios MP4 ~9,055,089 bytes; im√°genes grandes como `home-fotos-premio-carousel-4.jpg` (~1.82 MB) y `hero-banner-home.webp` (~1.68 MB)
+- Motivo/beneficio:
+  - Establecer l√≠nea base de limpieza: identificar candidatos a cuarentena, duplicados y focos de peso.
+- Observaciones:
+  - Precauci√≥n: el conteo de ‚Äúreferenciados = 0‚Äù sugiere una normalizaci√≥n distinta entre rutas encontradas en JSON (`/uploads/...`) y rutas de disco reportadas (`/server/public/uploads/...`).
+  - Antes de Fase 4 (cuarentena) ajustaremos el normalizador en el limpiador para que compare `/uploads/...` ‚â° `server/public/uploads/...` y as√≠ obtener un conteo realista de referenciados.
+  - El JSON contiene 14 data URIs (base64) que conviene convertir a archivos f√≠sicos en Fase 2.
+
+[Fase 2] Saneamiento de JSON (thumbs/base64 ? archivos)
+- Fecha/hora: 2025-10-30 23:48Z
+- Acciones:
+  - Backup creado de data/site-content.json con timestamp.
+  - ConversiÛn de 14 miniaturas base64 a archivos WebP en uploads.
+  - ActualizaciÛn de referencias en JSON a rutas /uploads/*.webp.
+- Archivos afectados:
+  - data/site-content.json (actualizado)
+  - data/site-content.backup-YYYYMMDD-HHMMSS.json (nuevo)
+  - server/public/uploads/*.webp (14 creados o reutilizados por hash)
+  - txt/fix_thumbs_resumen.txt (nuevo)
+- Resultado:
+  - Data URIs antes: 14 | despuÈs: 0.
+  - Reemplazos realizados: 14.
+- Motivo/beneficio:
+  - Reducir el peso del JSON, mejorar TTFB y facilitar caching del contenido.
+- Observaciones:
+  - Nombres de archivos basados en SHA1 del contenido para evitar duplicados.
+  - No se han borrado archivos; solo se aÒadieron y se actualizÛ el JSON.
+
+[Fase 3] DeduplicaciÛn de medios y normalizaciÛn de referencias
+- Fecha/hora: 2025-10-30 23:50Z
+- Acciones:
+  - AgrupaciÛn por hash de uploads y elecciÛn de canÛnico por grupo (prioriza el m·s referenciado).
+  - Reescritura de referencias a duplicados en data/site-content.json y fuentes (JSON resultÛ con 13 reemplazos; no hubo cambios en HTML/JS/CSS).
+  - Backups de archivos modificados en txt/backups_dedupe_TIMESTAMP/.
+- Archivos afectados:
+  - data/site-content.json (referencias normalizadas)
+  - txt/dedupe_resumen.txt (nuevo)
+  - txt/backups_dedupe_*/ (carpeta con respaldos)
+- Resultado:
+  - Grupos de duplicados detectados: 39.
+  - Archivos modificados: 1 (JSON) con 13 reemplazos.
+  - No se movieron ni borraron archivos (eso ser· la Fase 4).
+- Motivo/beneficio:
+  - Unificar referencias hacia un ˙nico archivo por contenido, simplificando futuras limpiezas y reduciendo riesgo de referenciar copias.
+- Observaciones:
+  - En la Fase 4 ajustarÈ el conteo de referenciados para mapear /uploads/* ? server/public/uploads/* y asÌ mover a cuarentena sÛlo lo realmente no referenciado.
+
+[Fase 4] Limpieza (cuarentena) de no referenciados
+- Fecha/hora: 2025-10-30 23:52Z
+- Acciones:
+  - NormalizaciÛn de rutas en el limpiador: comparaciÛn por URL web (/uploads/*) para evitar falsos positivos.
+  - EjecuciÛn del informe actualizado (sin mover) para validar conteos.
+  - AplicaciÛn de cuarentena: node scripts/cleaner.js --quarantine
+- Archivos afectados:
+  - server/public/uploads/.quarantine/<timestamp>/* (migrados no referenciados)
+  - txt/limpieza_resumen.txt (actualizado)
+- Resultado:
+  - uploads totales (antes de mover): 255
+  - referenciados: 31 | NO referenciados: 224
+  - Cuarentena aplicada sin borrado; se puede revertir moviendo de .quarantine de regreso.
+- Motivo/beneficio:
+  - Reducir huÈrfanos y duplicados no usados en el ·rbol de medios, manteniendo reversibilidad.
+- Observaciones:
+  - Recomendado navegar el sitio y el editor para verificar que no falta ning˙n recurso; de ser necesario, restaurar puntualmente desde .quarantine.
+
+[Fase 5] ValidaciÛn y posibilidad de rollback
+- Fecha/hora: 2025-10-30 23:54Z
+- Acciones:
+  - VerificaciÛn de JSON (v·lido) y ausencia de data URIs (0).
+  - RecolecciÛn de referencias reales a /uploads/* (extensiones v·lidas) en JSON/HTML/JS/CSS.
+  - Chequeo de existencia fÌsica en server/public/uploads.
+- Resultado:
+  - Referencias encontradas: 31
+  - Archivos faltantes: 0
+  - No fue necesario restaurar desde .quarantine.
+- Motivo/beneficio:
+  - Garantizar que la limpieza no rompiÛ referencias y que el sitio puede renderizar normalmente.
+- Observaciones:
+  - El validador ignora placeholders tipo /uploads/* o /uploads/ para evitar falsos positivos.

@@ -1,0 +1,133 @@
+Instructivo del Limpiador de Residuos y Saneamiento
+
+Objetivo general
+- Mantener la carpeta de medios limpia (imágenes/videos) y el contenido JSON liviano sin romper el sitio ni el flujo de edición.
+- Todas las acciones son seguras: usan backups y Cuarentena (no borrado directo).
+
+Requisitos
+- Node.js instalado (ya lo usás para el servidor/editor).
+- Ejecutar los comandos desde la raíz del proyecto.
+
+Componentes del sistema
+- scripts/cleaner.js
+  - Descubre y reporta: no referenciados, duplicados por hash, archivos más pesados, data URIs y logs de consola.
+  - Opcional: mueve NO referenciados a Cuarentena.
+- scripts/fix-thumbs.js
+  - Sanea data URIs (base64) en data/site-content.json convirtiéndolas a archivos reales en uploads y actualiza referencias.
+- scripts/dedupe-uploads.js
+  - Detecta archivos duplicados por contenido y normaliza referencias (apunta todo al archivo canónico). No borra ni mueve.
+- scripts/validate-content.js
+  - Verifica JSON válido, ausencia de data URIs y existencia física de todas las referencias /uploads/*.
+
+Rutas relevantes
+- Carpeta de medios: server/public/uploads
+- Cuarentena (reversible): server/public/uploads/.quarantine/<timestamp>/
+- Contenido: data/site-content.json
+- Reportes/bitácora: txt/*.txt
+
+Flujo recomendado (paso a paso)
+1) Fase 1 — Descubrimiento (reporte solamente)
+   - Comando: node scripts/cleaner.js
+   - Sale: txt/limpieza_resumen.txt (totales, duplicados, top pesados, data URIs, logs de consola).
+
+2) Fase 2 — Saneamiento de JSON (data URI → archivos)
+   - Comando: node scripts/fix-thumbs.js
+   - Qué hace: crea backup, convierte thumbs base64 del JSON a archivos WebP y actualiza rutas.
+   - Sale: txt/fix_thumbs_resumen.txt, data/site-content.backup-YYYYMMDD-HHMMSS.json
+
+3) Fase 3 — Deduplicación de referencias
+   - Comando: node scripts/dedupe-uploads.js
+   - Qué hace: agrupa por hash, elige canónico y reescribe referencias en JSON/HTML/JS/CSS hacia ese archivo.
+   - No mueve/borra. Backups en txt/backups_dedupe_*.
+
+4) Fase 4 — Limpieza (Cuarentena) de no referenciados
+   - Comando (revisar antes el reporte): node scripts/cleaner.js
+   - Comando (aplicar Cuarentena): node scripts/cleaner.js --quarantine
+   - Qué hace: mueve a .quarantine los archivos que nadie referencia (según JSON/HTML/JS/CSS). No borra.
+
+5) Fase 5 — Validación y posible rollback
+   - Comando (validar): node scripts/validate-content.js
+   - Comando (intentar restaurar faltantes desde Cuarentena): node scripts/validate-content.js --restore-missing
+   - Qué hace: confirma JSON válido, 0 data URIs y que todas las rutas /uploads/* existen. Si falta algo, lo intenta restaurar desde .quarantine.
+
+6) Fase 6 — Opcionales de optimización (no automatizados en estos scripts)
+   - Optimizar imágenes pesadas (variants WebP/AVIF y srcset).
+   - Minificar CSS/JS y condicionar carga del editor.
+   - Cabeceras de caché/compresión en servidor/proxy.
+
+Qué limpia/hace exactamente
+- Saca base64 incrustado del JSON (lo guarda como archivos y ajusta rutas) para aligerar la carga inicial.
+- Detecta duplicados por contenido y normaliza referencias para que todo apunte a un solo archivo.
+- Identifica archivos no referenciados y los mueve a Cuarentena (limpieza reversible).
+- Verifica que el sitio quede consistente (todas las referencias existen y el JSON está OK).
+
+Recomendaciones de uso
+- Siempre corré primero los reportes (sin flags) para revisar resultados.
+- Usá la Cuarentena antes de borrar manualmente: podés revertir moviendo de vuelta los archivos.
+- Hacé commit en git después de cada fase exitosa (para tener puntos de restauración claros).
+- Si tenés archivos “sensibles” que no querés mover, creá txt/keep-list.txt con nombres o patrones y podemos extender el limpiador para respetarla.
+- Luego de Cuarentena, navegá el sitio (y el editor) y ejecutá la validación.
+
+Restaurar un archivo desde Cuarentena (manual)
+1) Buscá el archivo en server/public/uploads/.quarantine/<timestamp>/
+2) Movelo de vuelta a server/public/uploads/ (manteniendo el nombre exacto)
+3) Ejecutá: node scripts/validate-content.js
+
+Notas y límites
+- El limpiador considera referenciados solo los recursos a los que se hace referencia explícita desde JSON/HTML/JS/CSS.
+- Placeholders del estilo /uploads/${algo} o /uploads/* son ignorados para evitar falsos positivos.
+- No borra nada por sí mismo; deja todo reversible.
+
+Ejemplos rápidos (Windows PowerShell)
+- Reporte general: node scripts/cleaner.js
+- Saneamiento de JSON: node scripts/fix-thumbs.js
+- Deduplicar referencias: node scripts/dedupe-uploads.js
+- Cuarentena de no referenciados: node scripts/cleaner.js --quarantine
+- Validación post-limpieza: node scripts/validate-content.js
+- Validación con restauración: node scripts/validate-content.js --restore-missing
+
+Recomendación sobre cuando borrar
+
+  - No borres la cuarentena inmediatamente. Mantenela unos días mientras navegás el sitio y seguís editando con el editor para confirmar que nada falta.
+  - La cuarentena existe para poder volver atrás rápido; una vez verificado, podés eliminarla para recuperar espacio.
+
+  Checklist Antes De Borrar
+
+  - Ejecutar validación: node scripts/validate-content.js (debe decir “Archivos faltantes: 0”).
+  - Navegar páginas clave (home, sorteo, galerías/lightbox, héroe, carruseles).
+  - Probar el editor: abrir, previsualizar imágenes y guardar un cambio (mínimo).
+  - Si todo ok, hacé un commit: git add -A && git commit -m "Post-limpieza validada"
+
+  Opciones Seguras
+
+  - Conservar por un tiempo: dejar server/public/uploads/.quarantine/ durante 7–14 días.
+  - Archivarla y borrar: comprimir y guardar localmente o en nube, luego borrar.
+      - PowerShell (Windows):
+          - Comprimir: Compress-Archive -Path server/public/uploads/.quarantine -DestinationPath txt\\quarantine-backup.zip
+          - Borrar: Remove-Item server/public/uploads/.quarantine -Recurse -Force
+
+  - Ejecutar validación: node scripts/validate-content.js (debe decir “Archivos faltantes: 0”).  
+  - Navegar páginas clave (home, sorteo, galerías/lightbox, héroe, carruseles).
+  - Probar el editor: abrir, previsualizar imágenes y guardar un cambio (mínimo).
+  - Si todo ok, hacé un commit: git add -A && git commit -m "Post-limpieza validada"
+
+  Opciones Seguras
+
+  - Conservar por un tiempo: dejar server/public/uploads/.quarantine/ durante 7–14 días.
+  - Archivarla y borrar: comprimir y guardar localmente o en nube, luego borrar.
+      - PowerShell (Windows):
+          - Comprimir: Compress-Archive -Path server/public/uploads/.quarantine -DestinationPath txt\\quarantine-backup.zip
+          - Borrar: Remove-Item server/public/uploads/.quarantine -Recurse -Force
+
+  Cuándo Borrar
+
+  - Cuando la validación dé 0 faltantes y, tras unos días de uso normal (incluido el editor), no detectes recursos ausentes. Ahí sí, borrarla libera espacio sin riesgo.
+
+  Cómo Restaurar Si Aún No Borraste
+
+  - Mover el archivo desde server/public/uploads/.quarantine/<timestamp>/el-archivo.ext a server/public/uploads/.
+  - Verificar: node scripts/validate-content.js
+
+  Si Ya La Borraste Y Te Falta Algo
+
+  - Restaurar desde el zip (si lo generaste) o desde git/backups externos. Si el nombre del archivo es el mismo que el JSON referencia, el validador volverá a dar OK.

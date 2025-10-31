@@ -1,0 +1,20 @@
+Fase 2: Saneamiento de JSON (thumbs/base64 → archivos)
+Fecha: 2025-10-30T23:48:15.461Z
+Backups: data\site-content.backup-20251030-204815.json
+Reemplazos realizados: 14
+Data URIs antes: 14 | después: 0
+Detalle (primeros 50):
+- key=thumb mime=image/webp bytes=53726 -> /uploads/f01ed389c7ee9b60d6ec833f4e964aa4b286932f_thumb.webp
+- key=thumb mime=image/webp bytes=29552 -> /uploads/2761ce1c64a419d6aeeca6b841a4edfa1884b987_thumb.webp
+- key=thumb mime=image/webp bytes=59242 -> /uploads/5a9588cf669c20dbd43ff93825c3a3d4cd124f82_thumb.webp
+- key=thumb mime=image/webp bytes=16790 -> /uploads/619dcb054dd8a461639555902093d3afcc84fdf5_thumb.webp
+- key=thumb mime=image/webp bytes=16790 -> /uploads/619dcb054dd8a461639555902093d3afcc84fdf5_thumb.webp
+- key=thumb mime=image/webp bytes=27288 -> /uploads/ca2a52fabc4d6079799e3f91c2adaedb2d5a15a6_thumb.webp
+- key=thumb mime=image/webp bytes=28478 -> /uploads/78c373e351a54b8c967daab62b4756d00977f0e5_thumb.webp
+- key=thumb mime=image/webp bytes=24862 -> /uploads/f4b376d6eef67013c8ea2e2aca12768dade2cac7_thumb.webp
+- key=thumb mime=image/webp bytes=34390 -> /uploads/23f38e6523698795c2f501a95c701fd4eeef78dd_thumb.webp
+- key=thumb mime=image/webp bytes=25060 -> /uploads/32d87f86c4864985c9ea76e07851dfdcb65bf092_thumb.webp
+- key=thumb mime=image/webp bytes=35190 -> /uploads/cc2d08aa3c0a610a0583c04bd496c19a8f31737a_thumb.webp
+- key=thumb mime=image/webp bytes=39132 -> /uploads/c1670682df13642aa951065d31c8d36f030c360e_thumb.webp
+- key=thumb mime=image/webp bytes=54522 -> /uploads/33bb8ef2a6c8b54fb9ce97b3c6f11d1347880c8b_thumb.webp
+- key=thumb mime=image/webp bytes=58710 -> /uploads/97a21c9bc8322bcec7d117299d70d932162c4803_thumb.webp

@@ -1,0 +1,150 @@
+Fase 3: Deduplicación de medios y normalización de referencias
+Fecha: 2025-10-30T23:50:05.255Z
+Grupos de duplicados detectados: 39
+Detalle de grupos (primeros 20):
+- HASH e6572c22bab75614c0cb27939e39e10059a3099f canonical=/uploads/005a45e3-2e53-40ef-9349-cc4bd63619b5_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/005a45e3-2e53-40ef-9349-cc4bd63619b5_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/07486a0e-8ba4-4108-b0d7-a794b2ecd365_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/077a5dae-c07d-4b1e-94bd-c49705931409_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/0b6f4544-1bcb-4b16-9f42-8e04255859ff_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/1012e99d-3d82-4bec-89fd-a92454bbaec4_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/16605f0c-341f-4909-a430-ade5757076e5_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/4ce378a7-8691-4db0-9f02-4db1b85100d0_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/4ea2c080-ba2e-4510-bd79-a4591afe40da_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/53f12a41-2719-4644-be06-4c75d7a79d13_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/712ab9cf-89ba-4904-a84c-b74101a989e5_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/8381111f-1ff2-4c55-ba24-ae308fde4b18_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/89c0420b-be05-437b-9392-049b53d17548_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/915e9577-1859-4849-a808-12f1078c81b7_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/9ac61986-bbda-4e13-9113-601af7f77de3_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/a0a77bfe-ce0d-4560-b697-1347cbddd784_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/b859088a-b451-4ab2-b522-4bc98181a1a8_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/c9f71988-16cd-4f6c-bb3b-84b2ef813e01_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/c9fc97b2-7d9a-4690-9ddf-12d43a3f9fbf_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/cb11f1e9-853e-4d2d-94f9-e5ae5a688e4c_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/cc63c2fa-f3cf-4211-bbf7-518d1e1d4684_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/d21b5cd5-1be0-4c1f-8229-6ef6bdd0ca11_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/d6601264-081e-4b0a-9d79-84f26acbe248_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/d9930d44-428c-4412-915b-dfa57c50c9ec_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/dcc12185-1d1d-4021-a5c7-443b4d2e868b_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/f609ea45-5bd4-4507-9d0b-b835c33227d7_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+  * /uploads/f6bfd249-62b9-4c85-9d87-9fe4e6f408aa_video_de_whatsapp_2025-10-26_a_las_18.13.35_c4a2821f.mp4
+- HASH cbeb14dbf4f7656691c39ba4e31c9fbd36a54233 canonical=/uploads/00b4b664-4761-4b5f-a772-87e7e178d8e7_g1owhkwxkaajs0p-thumb.webp
+  * /uploads/00b4b664-4761-4b5f-a772-87e7e178d8e7_g1owhkwxkaajs0p-thumb.webp
+  * /uploads/309473cb-5d8b-4357-8403-88752c1dcf08_g1owhkwxkaajs0p-thumb.webp
+- HASH 1d62e999f175c851c13a850a6377664cfef72a98 canonical=/uploads/00b4b664-4761-4b5f-a772-87e7e178d8e7_g1owhkwxkaajs0p.webp
+  * /uploads/00b4b664-4761-4b5f-a772-87e7e178d8e7_g1owhkwxkaajs0p.webp
+  * /uploads/309473cb-5d8b-4357-8403-88752c1dcf08_g1owhkwxkaajs0p.webp
+- HASH 55c4b03d933e4b9a2c1bfc3fd22cb0c14826b0e3 canonical=/uploads/37d4518f-2014-424f-9d05-2bc5cb7cb620_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/051698ed-3f14-4d62-aafa-4165545b0ac7_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/37d4518f-2014-424f-9d05-2bc5cb7cb620_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/4951c8fb-110c-42f7-8920-c283a6b0d4b4_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/4b2e5eed-c6d7-4201-bd15-c71a63d9d538_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/4b96b519-5b88-4281-8588-aae19c327934_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/516c285d-fc12-46da-a728-2ac63348d787_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/53cce1a3-8922-4d69-b57e-f1d3b8a9aa3b_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/9db69dd2-c84e-41d4-a058-550af12ad592_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/a7b8dee7-f29d-4e7d-99a2-67e6c85f9d46_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/ece8f17c-6134-4c70-a6ae-9fa9f2ebc23d_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+- HASH 3c9ebefd5dce3f7b22ca73f293ab78f2963d484a canonical=/uploads/051698ed-3f14-4d62-aafa-4165545b0ac7_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/051698ed-3f14-4d62-aafa-4165545b0ac7_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/37d4518f-2014-424f-9d05-2bc5cb7cb620_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/4951c8fb-110c-42f7-8920-c283a6b0d4b4_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/4b2e5eed-c6d7-4201-bd15-c71a63d9d538_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/4b96b519-5b88-4281-8588-aae19c327934_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/516c285d-fc12-46da-a728-2ac63348d787_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/53cce1a3-8922-4d69-b57e-f1d3b8a9aa3b_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/9db69dd2-c84e-41d4-a058-550af12ad592_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/a7b8dee7-f29d-4e7d-99a2-67e6c85f9d46_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/ece8f17c-6134-4c70-a6ae-9fa9f2ebc23d_2imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+- HASH 77065bb5c921ccc3689ffb95d1ca6d407245d6f2 canonical=/uploads/1242121b-3916-4a97-9dae-55a04db294bc_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/071644bc-bd20-42a9-9adf-726b4ab15eda_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/1242121b-3916-4a97-9dae-55a04db294bc_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/21f9f57f-25ac-43a1-9a24-d894ae558680_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/472e706a-f9e5-475e-b40f-873c2fb355bf_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/b1e8d5e5-baf2-4a34-8641-392b6a7d0e1a_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+  * /uploads/f0251fcf-7a53-4c13-8ef3-81f70c8b755b_gemini_generated_image_cp1nlpcp1nlpcp1n__2_-thumb.webp
+- HASH 75883550b0287348a0224fd671be24b4fe08364e canonical=/uploads/1242121b-3916-4a97-9dae-55a04db294bc_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/071644bc-bd20-42a9-9adf-726b4ab15eda_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/0a550d79-e8cd-4c4d-9cd8-a3b49adace8c_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/1242121b-3916-4a97-9dae-55a04db294bc_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/21f9f57f-25ac-43a1-9a24-d894ae558680_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/472e706a-f9e5-475e-b40f-873c2fb355bf_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/b1e8d5e5-baf2-4a34-8641-392b6a7d0e1a_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+  * /uploads/f0251fcf-7a53-4c13-8ef3-81f70c8b755b_gemini_generated_image_cp1nlpcp1nlpcp1n__2_.webp
+- HASH 3f79ae27fc8ab72c6b1c520fc2b99b58f9b57edd canonical=/uploads/0f4b8b30-eaca-4f72-b4ee-067aa63cd91f_2-thumb.webp
+  * /uploads/0f4b8b30-eaca-4f72-b4ee-067aa63cd91f_2-thumb.webp
+  * /uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2-thumb.webp
+  * /uploads/dd79da6b-0743-40c5-bf8f-ca9107c07b8c_2-thumb.webp
+- HASH 0c833bcea5d32eabcba5824fac481ea91b2281f9 canonical=/uploads/0f4b8b30-eaca-4f72-b4ee-067aa63cd91f_2.webp
+  * /uploads/0f4b8b30-eaca-4f72-b4ee-067aa63cd91f_2.webp
+  * /uploads/8afc8ff6-3b3a-4067-b4f5-8eb8a9f68023_2.webp
+  * /uploads/dd79da6b-0743-40c5-bf8f-ca9107c07b8c_2.webp
+- HASH bb2a7075d8b3fade2907a14bcd0ddade7d6f1f95 canonical=/uploads/104c0cce-2a89-414c-8cb9-dacd42949947_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d-thumb.webp
+  * /uploads/104c0cce-2a89-414c-8cb9-dacd42949947_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d-thumb.webp
+  * /uploads/9ee07a77-5153-4ba1-b116-c9812716acd6_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d-thumb.webp
+- HASH 500f10e47700e008eda7b3d40951a2e387b58dc7 canonical=/uploads/9ee07a77-5153-4ba1-b116-c9812716acd6_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d.webp
+  * /uploads/104c0cce-2a89-414c-8cb9-dacd42949947_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d.webp
+  * /uploads/9ee07a77-5153-4ba1-b116-c9812716acd6_imagen_de_whatsapp_2025-10-23_a_las_18.31.08_d963164d.webp
+- HASH 59d0d76e1a9d065ea02782bf324208d83e6a1c41 canonical=/uploads/1806db4d-7847-45cf-b8eb-65863e4b5215_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/1806db4d-7847-45cf-b8eb-65863e4b5215_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/1ad7896e-1720-411c-a4e3-c265e68d36aa_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/35dde2f5-95e8-435d-80b8-9d41f9439fae_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/bfd7d238-8c5c-4737-9b82-9ce212a14f5e_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/cbe5ea84-bbc6-4515-bdf5-1d8a40721485_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+- HASH f2ecd5e2dcd0a2030ebfb9604267e56e5a4f2277 canonical=/uploads/1806db4d-7847-45cf-b8eb-65863e4b5215_captura_2de_pantalla_2025-10-25_050128.webp
+  * /uploads/1806db4d-7847-45cf-b8eb-65863e4b5215_captura_2de_pantalla_2025-10-25_050128.webp
+  * /uploads/1ad7896e-1720-411c-a4e3-c265e68d36aa_captura_2de_pantalla_2025-10-25_050128.webp
+  * /uploads/35dde2f5-95e8-435d-80b8-9d41f9439fae_captura_2de_pantalla_2025-10-25_050128.webp
+  * /uploads/bfd7d238-8c5c-4737-9b82-9ce212a14f5e_captura_2de_pantalla_2025-10-25_050128.webp
+  * /uploads/cbe5ea84-bbc6-4515-bdf5-1d8a40721485_captura_2de_pantalla_2025-10-25_050128.webp
+- HASH b8fafc5109215fc4befb44e050ec01678e8b8164 canonical=/uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+  * /uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+  * /uploads/643c89c8-f031-46ee-a78d-b30d0d42cac3_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+  * /uploads/72608920-c958-4bee-91b1-70be5a1120f5_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+  * /uploads/9372eed3-f8a2-4084-8e18-79d5ca3d016f_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+  * /uploads/fc9969ce-4b4a-49db-8160-bddc2700e6b9_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10-thumb.webp
+- HASH 618d8d09a42bbde921aacec9598ab7751f3486df canonical=/uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+  * /uploads/2bb453e4-d212-4450-a4f2-c07d56012970_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+  * /uploads/643c89c8-f031-46ee-a78d-b30d0d42cac3_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+  * /uploads/72608920-c958-4bee-91b1-70be5a1120f5_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+  * /uploads/9372eed3-f8a2-4084-8e18-79d5ca3d016f_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+  * /uploads/fc9969ce-4b4a-49db-8160-bddc2700e6b9_imagen_de_whatsapp_2025-10-22_a_las_21.27.12_eb5bca10.webp
+- HASH 33a821cfb29411fc9333ca94e44764d0c0429288 canonical=/uploads/2d206170-952b-41e2-8032-3b3238c9043b_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/2d206170-952b-41e2-8032-3b3238c9043b_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/5baa1acb-6472-4dc4-8b1d-c9ee4bc3ef46_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/69449916-5d87-43d4-98e1-3e23b2e6399a_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/87540f05-358b-46f6-965a-6c3dcdabe3b7_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/8e5351f8-d2d6-4bab-ab41-4a77b72728a9_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/9604c45e-b1b1-4586-a58a-06fb37bc8e0a_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/9cbb3b73-03c0-4504-8d96-2db0f8adaa1c_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+  * /uploads/ff854ba7-3b01-4c93-9714-2d395f18c990_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5-thumb.webp
+- HASH f24639700bf9ef8d7a8cc4ce4ac959b843f3e142 canonical=/uploads/87540f05-358b-46f6-965a-6c3dcdabe3b7_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/2d206170-952b-41e2-8032-3b3238c9043b_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/5baa1acb-6472-4dc4-8b1d-c9ee4bc3ef46_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/69449916-5d87-43d4-98e1-3e23b2e6399a_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/87540f05-358b-46f6-965a-6c3dcdabe3b7_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/8e5351f8-d2d6-4bab-ab41-4a77b72728a9_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/9604c45e-b1b1-4586-a58a-06fb37bc8e0a_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/9cbb3b73-03c0-4504-8d96-2db0f8adaa1c_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+  * /uploads/ff854ba7-3b01-4c93-9714-2d395f18c990_imagen_de_whatsapp_2025-10-22_a_las_21.27.09_c33e64d5.webp
+- HASH 0738876820cccaf938d06b00761c5f744ed69097 canonical=/uploads/340dce35-4fd6-46af-8ce3-04715ef71310_captura_de_pantalla_2025-10-23_195209-thumb.webp
+  * /uploads/340dce35-4fd6-46af-8ce3-04715ef71310_captura_de_pantalla_2025-10-23_195209-thumb.webp
+  * /uploads/6febc670-0f33-41c2-8c48-a59219633313_captura_de_pantalla_2025-10-23_195209-thumb.webp
+  * /uploads/8ae0f99e-cb0c-4c23-a96a-8e9475717d96_captura_de_pantalla_2025-10-23_195209-thumb.webp
+  * /uploads/be9c9b88-ac2d-44b2-8085-4676f85a48ed_captura_de_pantalla_2025-10-23_195209-thumb.webp
+  * /uploads/d163de3d-f1a2-42e0-b1e8-fed9e833df51_captura_de_pantalla_2025-10-23_195209-thumb.webp
+- HASH 0e4d1b7ca3d03de31a3a1a6382e035849d9d29f0 canonical=/uploads/8ae0f99e-cb0c-4c23-a96a-8e9475717d96_captura_de_pantalla_2025-10-23_195209.webp
+  * /uploads/340dce35-4fd6-46af-8ce3-04715ef71310_captura_de_pantalla_2025-10-23_195209.webp
+  * /uploads/6febc670-0f33-41c2-8c48-a59219633313_captura_de_pantalla_2025-10-23_195209.webp
+  * /uploads/8ae0f99e-cb0c-4c23-a96a-8e9475717d96_captura_de_pantalla_2025-10-23_195209.webp
+  * /uploads/be9c9b88-ac2d-44b2-8085-4676f85a48ed_captura_de_pantalla_2025-10-23_195209.webp
+  * /uploads/d163de3d-f1a2-42e0-b1e8-fed9e833df51_captura_de_pantalla_2025-10-23_195209.webp
+- HASH b33b6ac0c116aea6b32fc2d3b981956ceeecac47 canonical=/uploads/36d23219-9e09-4c4e-a344-435d374f6e5e_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/36d23219-9e09-4c4e-a344-435d374f6e5e_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/5aa08019-3f32-41ac-9ed0-2f6e917b8793_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+  * /uploads/77fcf523-9865-43fe-826d-83c0afbabc12_captura_2de_pantalla_2025-10-25_050128-thumb.webp
+... (+19 más)
+Archivos modificados: 1
+- data/site-content.json (13 reemplazos)

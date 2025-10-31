@@ -98,7 +98,8 @@ function main() {
 
   // Listar uploads
   const uploadFiles = walk(UPLOADS_DIR, p => /\.(jpe?g|png|webp|gif|mp4|webm|mov|ogg|heic|avif)$/i.test(p));
-  const rel = f => f.replace(ROOT, '').replace(/\\/g, '/');
+  const relFs = f => f.replace(ROOT, '').replace(/\\/g, '/');
+  const toWebUrl = f => '/uploads/' + path.relative(UPLOADS_DIR, f).replace(/\\/g, '/');
 
   // Referencias
   const { refs, dataRefs } = collectReferences();
@@ -108,11 +109,11 @@ function main() {
     const stat = fs.statSync(f);
     let hash = '';
     try { hash = sha1OfFile(f); } catch {}
-    return { path: f, rel: rel(f), size: stat.size, hash };
+    return { path: f, relFs: relFs(f), webUrl: toWebUrl(f), size: stat.size, hash };
   });
 
   // No referenciados
-  const unreferenced = infos.filter(i => !refs.has(i.rel));
+  const unreferenced = infos.filter(i => !refs.has(i.webUrl));
 
   // Duplicados por hash
   const byHash = new Map();
@@ -149,7 +150,7 @@ function main() {
       const dest = path.join(target, path.basename(u.path));
       try {
         fs.renameSync(u.path, dest);
-        moved.push({ from: rel(u.path), to: rel(dest) });
+        moved.push({ from: relFs(u.path), to: relFs(dest) });
       } catch (e) {}
     }
   }
@@ -168,13 +169,13 @@ function main() {
   lines.push('');
   lines.push('Top archivos pesados:');
   for (const h of heaviest) {
-    lines.push(`- ${h.rel}  ${h.size} bytes`);
+    lines.push(`- ${h.webUrl}  ${h.size} bytes`);
   }
   lines.push('');
   if (unreferenced.length) {
     lines.push('No referenciados:');
     for (const u of unreferenced.slice(0, 200)) {
-      lines.push(`- ${u.rel}  ${u.size} bytes`);
+      lines.push(`- ${u.webUrl}  ${u.size} bytes`);
     }
     if (unreferenced.length > 200) {
       lines.push(`- ... (${unreferenced.length - 200} más)`);
@@ -206,4 +207,3 @@ function main() {
 }
 
 main();
-

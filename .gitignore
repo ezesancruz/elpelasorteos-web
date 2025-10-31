@@ -64,6 +64,7 @@ data/site-content.backup.json
 data/*.backup.json
 !server/public/uploads/.gitkeep
 venv/
+*venv/
 
 # SSL/TLS keys & certs
 *.pem
