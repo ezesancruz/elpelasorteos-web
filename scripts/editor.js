@@ -2265,23 +2265,31 @@ function createRichTextInput(labelText, value, onChange) {
 function createToggleSwitch(labelText, value, onChange) {
   const label = document.createElement('label');
   label.className = 'editor-toggle-switch';
-
-  const span = document.createElement('span');
-  span.textContent = labelText;
-  label.appendChild(span);
-
+  
   const input = document.createElement('input');
   input.type = 'checkbox';
+  input.className = 'sr-only';
   input.checked = !!value;
+  input.setAttribute('role', 'switch');
+  input.setAttribute('aria-checked', input.checked ? 'true' : 'false');
   input.addEventListener('change', event => {
-    onChange(event.target.checked);
+    const checked = event.target.checked;
+    onChange(checked);
     onFieldInput(event);
+    try { input.setAttribute('aria-checked', checked ? 'true' : 'false'); } catch (_) {}
   });
 
   const slider = document.createElement('span');
-  slider.className = 'slider round';
+  slider.className = 'editor-toggle-switch__track';
+
+  const span = document.createElement('span');
+  span.textContent = labelText;
+  span.className = 'editor-toggle-switch__label';
+
+  // Orden: input (oculto) + slider (toggle visual) + texto al lado derecho
   label.appendChild(input);
   label.appendChild(slider);
+  label.appendChild(span);
 
   return label;
 }

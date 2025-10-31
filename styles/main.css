@@ -1761,35 +1761,45 @@ main {
   position: relative;
   display: flex;
   align-items: center;
-  height: 22px;
+  gap: 0.5rem;           /* espacio entre toggle y texto */
+  height: 24px;
   margin-bottom: 0.9rem;
   cursor: pointer;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.75);
-  width: fit-content;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+  max-width: 100%;
+  flex-wrap: nowrap;
+}
+/* Texto del toggle: permite wrap sin superponer */
+.editor-toggle-switch__label {
+  white-space: normal;
+  line-height: 1.2;
 }
 
-.editor-toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
+.editor-toggle-switch input.sr-only {
   position: absolute;
-  right: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+}
+
+.editor-toggle-switch__track {
+  position: relative;      /* participa del flujo flex */
   cursor: pointer;
-  top: 0;
-  left: auto;
-  bottom: 0;
   background-color: rgba(255, 255, 255, 0.2);
-  transition: .4s;
+  transition: background-color .2s ease;
   width: 44px;
   height: 24px;
   border-radius: 999px;
+  flex: 0 0 auto;
 }
 
-.slider:before {
+.editor-toggle-switch__track:before {
   position: absolute;
   content: "";
   height: 18px;
@@ -1797,19 +1807,20 @@ main {
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .4s;
+  transition: transform .2s ease;
   border-radius: 50%;
 }
 
-input:checked + .slider {
+.editor-toggle-switch input.sr-only:checked + .editor-toggle-switch__track {
   background-color: var(--color-primary);
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px var(--color-primary);
+.editor-toggle-switch input.sr-only:focus-visible + .editor-toggle-switch__track {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-input:checked + .slider:before {
+.editor-toggle-switch input.sr-only:checked + .editor-toggle-switch__track:before {
   transform: translateX(20px);
 }
 
