@@ -326,6 +326,56 @@ function renderPageSelector() {
   });
   wrapper.appendChild(hiddenToggle);
 
+  // Campo para renombrar la página (afecta title, no id)
+  const nameInput = createInput('Nombre de la página', page.title || '', value => {
+    updatePage(p => { p.title = value; });
+    // Reflejar el cambio en el select sin re-render completo
+    const opt = Array.from(select.options).find(o => o.value === editorState.pageId);
+    if (opt) opt.textContent = value || editorState.pageId;
+  });
+  wrapper.appendChild(nameInput);
+
+  // Botón para crear una nueva página y navegar a ella
+  const actions = document.createElement('div');
+  actions.style.display = 'flex';
+  actions.style.gap = '0.5rem';
+  actions.style.alignItems = 'center';
+  const addPageBtn = document.createElement('button');
+  addPageBtn.type = 'button';
+  addPageBtn.textContent = 'Nueva página';
+  addPageBtn.addEventListener('click', () => addNewPageFlow());
+  actions.appendChild(addPageBtn);
+
+  // Reordenar páginas (arriba/abajo)
+  const moveUpBtn = document.createElement('button');
+  moveUpBtn.type = 'button';
+  moveUpBtn.title = 'Mover página arriba';
+  moveUpBtn.textContent = '⬆️';
+  moveUpBtn.addEventListener('click', () => movePage(-1));
+  actions.appendChild(moveUpBtn);
+
+  const moveDownBtn = document.createElement('button');
+  moveDownBtn.type = 'button';
+  moveDownBtn.title = 'Mover página abajo';
+  moveDownBtn.textContent = '⬇️';
+  moveDownBtn.addEventListener('click', () => movePage(1));
+  actions.appendChild(moveDownBtn);
+
+  // Eliminar página actual
+  const deletePageBtn = document.createElement('button');
+  deletePageBtn.type = 'button';
+  deletePageBtn.title = 'Eliminar página actual';
+  deletePageBtn.textContent = '🗑️';
+  deletePageBtn.addEventListener('click', () => removeCurrentPage());
+  actions.appendChild(deletePageBtn);
+
+  // Estados de deshabilitado según posición/cantidad
+  const idx = currentPageIndex();
+  moveUpBtn.disabled = (idx === 0);
+  moveDownBtn.disabled = (idx === editorState.site.pages.length - 1);
+  deletePageBtn.disabled = (editorState.site.pages.length <= 1);
+  wrapper.appendChild(actions);
+
   return wrapper;
 }
 
@@ -2405,6 +2455,90 @@ function currentPageIndex() {
 }
 function currentPage() {
   return editorState.site.pages.find(p => p.id === editorState.pageId) || editorState.site.pages[0];
+}
+
+// Utilidades para creación de páginas
+function slugify(text) {
+  if (typeof text !== 'string') return '';
+  const s = text
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // sin acentos
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  return s;
+}
+
+function ensureUniquePageId(baseId, pages) {
+  let id = baseId && baseId.length ? baseId : `page-${Date.now()}`;
+  const exists = (x) => pages.some(p => p.id === x);
+  if (!exists(id)) return id;
+  let n = 2;
+  while (exists(`${id}-${n}`) && n < 1000) n++;
+  return `${id}-${n}`;
+}
+
+function addNewPageFlow() {
+  try {
+    const defaultName = 'Nueva página';
+    const name = (window.prompt?.('Nombre de la nueva página:', defaultName) || '').trim() || defaultName;
+    updateSite(site => {
+      site.pages = Array.isArray(site.pages) ? site.pages : [];
+      const base = slugify(name);
+      const id = ensureUniquePageId(base, site.pages);
+      const newPage = { id, title: name, hidden: false, hero: { buttons: [], social: [] }, sections: [] };
+      site.pages.push(newPage);
+      editorState.pageId = id;
+    }, { rerenderPanel: true });
+    window.siteApp.setPage(editorState.pageId);
+    editorState.site = window.siteApp.getSite();
+  } catch (e) {
+    console.error('addNewPageFlow', e);
+  }
+}
+
+function movePage(delta) {
+  try {
+    updateSite(site => {
+      const i = site.pages.findIndex(p => p.id === editorState.pageId);
+      const j = i + delta;
+      if (i < 0 || j < 0 || j >= site.pages.length) return;
+      const tmp = site.pages[i];
+      site.pages[i] = site.pages[j];
+      site.pages[j] = tmp;
+    }, { rerenderPanel: true });
+    // Mantener la página activa
+    window.siteApp.setPage(editorState.pageId);
+    editorState.site = window.siteApp.getSite();
+  } catch (e) {
+    console.error('movePage', e);
+  }
+}
+
+function removeCurrentPage() {
+  try {
+    const pagesCount = editorState.site?.pages?.length || 0;
+    if (pagesCount <= 1) {
+      alert('No se puede eliminar la única página.');
+      return;
+    }
+    const page = currentPage();
+    const ok = window.confirm?.(`Eliminar la página "${page.title || page.id}"? Esta acción no se puede deshacer.`);
+    if (!ok) return;
+    updateSite(site => {
+      const i = site.pages.findIndex(p => p.id === editorState.pageId);
+      if (i === -1) return;
+      site.pages.splice(i, 1);
+      const nextIndex = Math.max(0, i - 1);
+      const next = site.pages[nextIndex];
+      editorState.pageId = next?.id || site.pages[0].id;
+    }, { rerenderPanel: true });
+    window.siteApp.setPage(editorState.pageId);
+    editorState.site = window.siteApp.getSite();
+  } catch (e) {
+    console.error('removeCurrentPage', e);
+  }
 }
 
 function downloadContent() {
