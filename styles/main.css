@@ -1451,6 +1451,7 @@ main {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   padding: 0.75rem;
+  background: rgba(255,255,255,0.05); /* tono sutil para diferenciar de la seccion madre */
 }
 
 .editor-inline-item__header {
@@ -1467,10 +1468,19 @@ main {
 }
 
 .editor-inline-item__header button {
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,0.7);
   cursor: pointer;
+}
+
+/* Botón eliminar de subtarjetas con estilo consistente con seccion madre */
+.editor-inline-item__remove {
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+}
+.editor-inline-item__remove:hover {
+  background: rgba(0,0,0,0.6);
 }
 
 .editor-add-section {

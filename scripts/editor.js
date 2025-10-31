@@ -78,7 +78,7 @@ function makeInlineItemCollapsible(itemEl, headerEl, { open = false } = {}) {
   // Evita que los botones dentro del header plieguen/desplieguen
   summary.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
-    if (btn) { e.preventDefault(); e.stopPropagation(); }
+    if (btn) { e.preventDefault(); }
   }, true);
 
   const body = document.createElement('div');
@@ -400,7 +400,8 @@ function renderHeroEditor() {
     header.textContent = `Boton ${index + 1}`;
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.textContent = '(x)';
+    remove.className = 'editor-inline-item__remove';
+    remove.textContent = 'x';
     remove.addEventListener('click', () => updateHero(hero => hero.buttons.splice(index, 1), { rerenderPanel: true }));
     header.appendChild(remove);
     item.appendChild(header);
@@ -436,7 +437,8 @@ function renderHeroEditor() {
     header.textContent = `Social ${index + 1}`;
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.textContent = '(x)';
+    remove.className = 'editor-inline-item__remove';
+    remove.textContent = 'x';
     remove.addEventListener('click', () => updateHero(hero => hero.social.splice(index, 1), { rerenderPanel: true }));
     header.appendChild(remove);
     item.appendChild(header);
@@ -648,7 +650,8 @@ const sectionEditors = {
         header.textContent = `Slide ${itemIndex + 1}`;
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.textContent = '(x)';
+        remove.className = 'editor-inline-item__remove';
+        remove.textContent = 'x';
         remove.addEventListener('click', () => updateSection(index, s => s.data.slider.items.splice(itemIndex, 1), { rerenderPanel: true }));
         header.appendChild(remove);
         itemEl.appendChild(header);
@@ -740,7 +743,7 @@ const sectionEditors = {
       header.textContent = `Opcion ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -811,7 +814,9 @@ const sectionEditors = {
       header.textContent = `Imagen ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.className = 'editor-inline-item__remove';
+      remove.className = 'editor-inline-item__remove';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -872,7 +877,8 @@ const sectionEditors = {
       header.textContent = `Imagen ${imgIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.className = 'editor-inline-item__remove';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.images.splice(imgIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -986,7 +992,8 @@ const sectionEditors = {
         header.textContent = `Componente ${itemIndex + 1}`;
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.textContent = '(x)';
+        remove.className = 'editor-inline-item__remove';
+        remove.textContent = 'x';
         remove.addEventListener('click', () => updateSection(index, s => {
           const arr = (s.data?.slider?.items || []);
           if (arr.length > 1) arr.splice(itemIndex, 1);
@@ -1050,7 +1057,8 @@ const sectionEditors = {
       header.textContent = `Video ${vidIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.className = 'editor-inline-item__remove';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.videos.splice(vidIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -1276,7 +1284,8 @@ const sectionEditors = {
       header.textContent = `Ganador ${cardIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.className = 'editor-inline-item__remove';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.cards.splice(cardIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       item.appendChild(header);
@@ -1316,7 +1325,7 @@ const sectionEditors = {
       header.textContent = `Pregunta ${itemIndex + 1}`;
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = '(x)';
+      remove.textContent = 'x';
       remove.addEventListener('click', () => updateSection(index, s => s.data.items.splice(itemIndex, 1), { rerenderPanel: true }));
       header.appendChild(remove);
       itemEl.appendChild(header);
