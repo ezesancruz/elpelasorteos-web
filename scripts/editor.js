@@ -365,11 +365,65 @@ function renderPageSelector() {
   // Campo para renombrar la página (afecta title, no id)
   const nameInput = createInput('Nombre de la página', page.title || '', value => {
     updatePage(p => { p.title = value; });
+    // Sincronizar label de la solapa (navigation)
+    updateSite(site => {
+      site.navigation = Array.isArray(site.navigation) ? site.navigation : [];
+      const nav = site.navigation.find(n => n.pageId === editorState.pageId);
+      if (nav) nav.label = value || editorState.pageId;
+    });
     // Reflejar el cambio en el select sin re-render completo
     const opt = Array.from(select.options).find(o => o.value === editorState.pageId);
     if (opt) opt.textContent = value || editorState.pageId;
   });
   body.appendChild(nameInput);
+
+  // Cambio de URL/ID (avanzado)
+  const slugRow = document.createElement('div');
+  slugRow.className = 'page-config-slug-row';
+  const slugLabel = document.createElement('label');
+  slugLabel.textContent = 'URL/ID de la página';
+  const slugInput = document.createElement('input');
+  slugInput.type = 'text';
+  slugInput.value = editorState.pageId || '';
+  slugInput.setAttribute('aria-label', 'URL/ID de la página');
+  slugLabel.appendChild(slugInput);
+  const applySlugBtn = document.createElement('button');
+  applySlugBtn.type = 'button';
+  applySlugBtn.className = 'editor-action';
+  applySlugBtn.title = 'Cambiar URL/ID';
+  applySlugBtn.textContent = '🔁 Cambiar URL';
+  applySlugBtn.addEventListener('click', () => {
+    const currentId = editorState.pageId;
+    const raw = (slugInput.value || '').trim();
+    const base = slugify(raw);
+    if (!base) { alert('Ingresá una URL/ID válida'); return; }
+    if (base === currentId) { return; }
+    updateSite(site => {
+      site.pages = Array.isArray(site.pages) ? site.pages : [];
+      const newId = ensureUniquePageId(base, site.pages);
+      const idx = site.pages.findIndex(p => p.id === currentId);
+      if (idx === -1) return;
+      const ok = window.confirm?.(`Cambiar URL/ID de "${currentId}" a "${newId}"? Esto puede afectar enlaces.`);
+      if (!ok) return;
+      // Actualizar id de la página
+      site.pages[idx].id = newId;
+      // Actualizar navegación
+      site.navigation = Array.isArray(site.navigation) ? site.navigation : [];
+      site.navigation.forEach(n => {
+        if (n.pageId === currentId) {
+          n.pageId = newId;
+          n.path = `/${newId}/`;
+        }
+      });
+      // Actualizar estado actual
+      editorState.pageId = newId;
+    }, { rerenderPanel: true });
+    window.siteApp.setPage(editorState.pageId);
+    editorState.site = window.siteApp.getSite();
+  });
+  slugRow.appendChild(slugLabel);
+  slugRow.appendChild(applySlugBtn);
+  body.appendChild(slugRow);
 
   // Acciones: nueva, mover, eliminar
   const actions = document.createElement('div');
@@ -2535,6 +2589,8 @@ function addNewPageFlow() {
         site.navigation.push({ label: name, pageId: id, path: `/${id}/` });
       }
     }, { rerenderPanel: true });
+    // Forzar refresco inmediato del sitio y la nav, y navegar
+    try { window.siteApp.setSite(deepClone(editorState.site)); } catch(_) {}
     window.siteApp.setPage(editorState.pageId);
     editorState.site = window.siteApp.getSite();
   } catch (e) {
@@ -2551,6 +2607,16 @@ function movePage(delta) {
       const tmp = site.pages[i];
       site.pages[i] = site.pages[j];
       site.pages[j] = tmp;
+      // Reordenar navegación para seguir el orden de pages
+      if (Array.isArray(site.navigation)) {
+        const order = new Map(site.pages.map((p, idx) => [p.id, idx]));
+        site.navigation.sort((a, b) => {
+          const ai = order.get(a.pageId); const bi = order.get(b.pageId);
+          const av = (ai === undefined ? Number.MAX_SAFE_INTEGER : ai);
+          const bv = (bi === undefined ? Number.MAX_SAFE_INTEGER : bi);
+          return av - bv;
+        });
+      }
     }, { rerenderPanel: true });
     // Mantener la página activa
     window.siteApp.setPage(editorState.pageId);

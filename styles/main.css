@@ -2060,3 +2060,16 @@ main {
     grid-template-columns: 1fr auto;
   }
 }
+
+.page-config-slug-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .page-config-slug-row {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
