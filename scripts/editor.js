@@ -299,8 +299,39 @@ function renderPanelImmediate() {
 }
 
 function renderPageSelector() {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'page-selector-wrapper';
+  // Card plegable
+  const card = document.createElement('details');
+  card.className = 'section-editor section-editor--page-config';
+  card.open = false;
+
+  const summary = document.createElement('summary');
+  summary.className = 'section-editor__heading page-config-summary';
+  const title = document.createElement('strong');
+  title.textContent = 'Configuración página';
+  const chevron = document.createElement('button');
+  chevron.type = 'button';
+  chevron.className = 'section-editor__chevron editor-action';
+  chevron.textContent = card.open ? '▾' : '▸';
+  chevron.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    card.open = !card.open;
+    chevron.textContent = card.open ? '▾' : '▸';
+  });
+  // Sincronizar icono cuando el <details> abre/cierra por cualquier medio
+  card.addEventListener('toggle', () => {
+    chevron.textContent = card.open ? '▾' : '▸';
+  });
+  summary.appendChild(title);
+  summary.appendChild(chevron);
+  card.appendChild(summary);
+
+  const body = document.createElement('div');
+  body.className = 'section-editor__grid page-selector-wrapper';
+
+  // Selector de página actual
+  const row = document.createElement('div');
+  row.className = 'page-config-row';
   const label = document.createElement('label');
   label.textContent = 'Pagina actual';
   const select = document.createElement('select');
@@ -318,13 +349,18 @@ function renderPageSelector() {
     renderPanel(true);
   });
   label.appendChild(select);
-  wrapper.appendChild(label);
+  row.appendChild(label);
 
   const page = currentPage();
   const hiddenToggle = createToggleSwitch('Oculta', page.hidden, isHidden => {
     updatePage(p => p.hidden = isHidden);
+    // Si se hace visible, asegurar solapa en navegación
+    if (!isHidden) {
+      ensurePageNavEntry(editorState.pageId, page.title || editorState.pageId);
+    }
   });
-  wrapper.appendChild(hiddenToggle);
+  row.appendChild(hiddenToggle);
+  body.appendChild(row);
 
   // Campo para renombrar la página (afecta title, no id)
   const nameInput = createInput('Nombre de la página', page.title || '', value => {
@@ -333,24 +369,25 @@ function renderPageSelector() {
     const opt = Array.from(select.options).find(o => o.value === editorState.pageId);
     if (opt) opt.textContent = value || editorState.pageId;
   });
-  wrapper.appendChild(nameInput);
+  body.appendChild(nameInput);
 
-  // Botón para crear una nueva página y navegar a ella
+  // Acciones: nueva, mover, eliminar
   const actions = document.createElement('div');
-  actions.style.display = 'flex';
-  actions.style.gap = '0.5rem';
-  actions.style.alignItems = 'center';
+  actions.className = 'page-config-actions';
+
   const addPageBtn = document.createElement('button');
   addPageBtn.type = 'button';
-  addPageBtn.textContent = 'Nueva página';
+  addPageBtn.textContent = '📄';
+  addPageBtn.title = 'Nueva página';
+  addPageBtn.className = 'editor-action';
   addPageBtn.addEventListener('click', () => addNewPageFlow());
   actions.appendChild(addPageBtn);
 
-  // Reordenar páginas (arriba/abajo)
   const moveUpBtn = document.createElement('button');
   moveUpBtn.type = 'button';
   moveUpBtn.title = 'Mover página arriba';
   moveUpBtn.textContent = '⬆️';
+  moveUpBtn.className = 'editor-action';
   moveUpBtn.addEventListener('click', () => movePage(-1));
   actions.appendChild(moveUpBtn);
 
@@ -358,25 +395,27 @@ function renderPageSelector() {
   moveDownBtn.type = 'button';
   moveDownBtn.title = 'Mover página abajo';
   moveDownBtn.textContent = '⬇️';
+  moveDownBtn.className = 'editor-action';
   moveDownBtn.addEventListener('click', () => movePage(1));
   actions.appendChild(moveDownBtn);
 
-  // Eliminar página actual
   const deletePageBtn = document.createElement('button');
   deletePageBtn.type = 'button';
   deletePageBtn.title = 'Eliminar página actual';
   deletePageBtn.textContent = '🗑️';
+  deletePageBtn.className = 'editor-action';
   deletePageBtn.addEventListener('click', () => removeCurrentPage());
   actions.appendChild(deletePageBtn);
 
-  // Estados de deshabilitado según posición/cantidad
   const idx = currentPageIndex();
   moveUpBtn.disabled = (idx === 0);
   moveDownBtn.disabled = (idx === editorState.site.pages.length - 1);
   deletePageBtn.disabled = (editorState.site.pages.length <= 1);
-  wrapper.appendChild(actions);
 
-  return wrapper;
+  body.appendChild(actions);
+  card.appendChild(body);
+
+  return card;
 }
 
 function renderHeroEditor() {
@@ -2490,6 +2529,11 @@ function addNewPageFlow() {
       const newPage = { id, title: name, hidden: false, hero: { buttons: [], social: [] }, sections: [] };
       site.pages.push(newPage);
       editorState.pageId = id;
+      // Asegurar solapa en navegación
+      site.navigation = Array.isArray(site.navigation) ? site.navigation : [];
+      if (!site.navigation.some(n => n.pageId === id)) {
+        site.navigation.push({ label: name, pageId: id, path: `/${id}/` });
+      }
     }, { rerenderPanel: true });
     window.siteApp.setPage(editorState.pageId);
     editorState.site = window.siteApp.getSite();
@@ -2529,7 +2573,11 @@ function removeCurrentPage() {
     updateSite(site => {
       const i = site.pages.findIndex(p => p.id === editorState.pageId);
       if (i === -1) return;
-      site.pages.splice(i, 1);
+      const removed = site.pages.splice(i, 1)[0];
+      // Limpiar navegación para esta página
+      if (Array.isArray(site.navigation)) {
+        site.navigation = site.navigation.filter(n => n.pageId !== removed.id);
+      }
       const nextIndex = Math.max(0, i - 1);
       const next = site.pages[nextIndex];
       editorState.pageId = next?.id || site.pages[0].id;
@@ -2539,6 +2587,18 @@ function removeCurrentPage() {
   } catch (e) {
     console.error('removeCurrentPage', e);
   }
+}
+
+// Asegura que exista una solapa de navegación para la página dada
+function ensurePageNavEntry(pageId, labelText) {
+  updateSite(site => {
+    site.navigation = Array.isArray(site.navigation) ? site.navigation : [];
+    if (!site.navigation.some(n => n.pageId === pageId)) {
+      const label = labelText || pageId;
+      const path = `/${pageId}/`;
+      site.navigation.push({ label, pageId, path });
+    }
+  });
 }
 
 function downloadContent() {
